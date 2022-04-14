@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -36,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts',
-    #'django.contrib.sites',
+    # 'django.contrib.sites',
     # 'allauth',
     # 'allauth.account',
     # 'allauth.socialaccount',
@@ -61,10 +62,13 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
+# 템플릿 경로 지정
+# DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# TEMPLATE_DIR = os.path.join(DIR, 'templates')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -78,7 +82,6 @@ TEMPLATES = [
 ]
 
 # AUTH_USER_MODEL = 'accounts.User'
-
 
 
 WSGI_APPLICATION = 'config.wsgi.application'
@@ -171,6 +174,11 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
+
+# 로그인 성공후 이동하는 URL
+LOGIN_REDIRECT_URL = '/estimate/'
+# 회원가입 후 이동 URL
+ACCOUNT_SIGNUP_REDIRECT_URL = '/estimate/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

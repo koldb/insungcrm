@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from .forms import UserForm
+from django.urls import reverse
 
 
 # Create your views here.
@@ -14,7 +15,8 @@ def signup(request):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)  # 사용자 인증
             login(request, user)  # 로그인
-            return redirect('index')
+            return redirect('/estimate/')
+
     else:
         form = UserForm()
     return render(request, 'accounts/signup.html', {'form': form})

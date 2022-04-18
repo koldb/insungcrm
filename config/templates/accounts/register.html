@@ -1,0 +1,20 @@
+{% extends "base/base.html" %}
+{% block content %}
+<div>회원가입 페이지</div>
+
+<form action="" method="POST">
+    {% csrf_token %}
+
+    {% for form in forms %}
+    <div>
+        <label>{{ form.label }}</label>
+        {{ form }}
+    </div>
+    {% endfor %}
+
+    {% if error %}
+    {{ error }}
+    {% endif %}
+    <button type="submit" name="register" value="register">회원 가입</button>
+</form>
+{% endblock %}

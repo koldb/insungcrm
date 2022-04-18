@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('estimate/', include('estimate.urls')),
     path('accounts/', include('accounts.urls')),
+    path('isscm/', include('isscm.urls')),
 
     # path('bookmark/', include('bookmark.urls')),
     # path('accounts/', include('accounts.urls')),

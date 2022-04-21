@@ -87,10 +87,10 @@
         <div class="mb-3">
             <label for="finish">종결 여부</label>
                <select name="finish" id="finish">
-                {% if detailView.finish == None %}
+                {% if detailView.finish == '' %}
                    <option value="" selected> </option>
-                   <option value="진행 중" >진행 중</option>
-                    <option value="종료">종료</option>
+                   <option value="진행 중" hidden>진행 중</option>
+                   <option value="종료" hidden>종료</option>
                 {% else %}
                 <option value="{{ detailView.finish }}">{{ detailView.finish }}</option>
                 {% endif %}
@@ -102,7 +102,7 @@
             <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:uploadFile' detailView.no %}'" value="파일 업로드">
         </div>
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:sheet_modify' detailView.no %}'" value="수정">
-        <input type="button" class="btn btn-primary" onclick="location.href='uploadFile/'" value="삭제">
+        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:sheet_delete' detailView.no %}'" value="삭제">
     </form>
 </div>
 

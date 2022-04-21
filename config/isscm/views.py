@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, reverse
 from .models import EstimateSheet, UploadFile
 from . import models
 import mimetypes
@@ -46,13 +46,21 @@ def sheet_insert(request):
 def sheet_list(request):
     print("리스트 시작")
     login_session = request.session.get('login_session')
-    if login_session == 'insung':
-        company_sheet = EstimateSheet.objects.all()
-    else:
+
+    if request.method == 'GET':
+        print('겟인가')
         company_sheet = EstimateSheet.objects.filter(cname=login_session)
-    context = { 'company_sheet': company_sheet, 'login_session': login_session }
-    print("리스트 끝")
-    return render(request, 'isscm/sheet_list.html', context)
+        context = {'login_session': login_session, 'company_sheet': company_sheet}
+        return render(request, 'isscm/sheet_list.html', context)
+    elif request.method == 'POST':
+        print('포스트인가')
+        if login_session == 'insung':
+            company_sheet = EstimateSheet.objects.all()
+        else:
+            company_sheet = EstimateSheet.objects.filter(cname=login_session)
+        context = { 'company_sheet': company_sheet, 'login_session': login_session }
+        print("리스트 끝")
+        return render(request, 'isscm/sheet_list.html', context)
 
 
 # 파일 업로드/다운로드
@@ -104,10 +112,7 @@ def sheet_detail(request, pk):
         login_session = request.session.get('login_session')
         detailView = get_object_or_404(EstimateSheet, no=pk)
         #detailView = EstimateSheet.objects.filter(no=pk)
-
-
         context = { 'detailView': detailView, 'login_session': login_session }
-
     else:
         print("설마 포스트")
     return render(request, 'isscm/sheet_detail.html', context)
@@ -138,6 +143,7 @@ def sheet_modify(request, pk):
 
         #수정 내용 저장
         detailView.rp_date = request.POST['rp_date']
+        print(detailView.rp_date)
         detailView.product_name = request.POST['product_name']
         detailView.quantity = request.POST['quantity']
         detailView.per_price = request.POST.get('per_price', None)
@@ -157,4 +163,13 @@ def sheet_modify(request, pk):
         return render(request, 'isscm/sheet_detail.html', context)
 
 # 견적 접수건 삭제
-def sheet_delete
+def sheet_delete(request, pk):
+    login_session = request.session.get('login_session')
+    detailView = get_object_or_404(EstimateSheet, no=pk)
+    context = {'login_session': login_session }
+    if detailView.cname == login_session:
+        detailView.delete()
+        print('삭제완료')
+        return redirect('isscm:sheet_list')
+    else:
+        return redirect(f'/isscm/sheet_detail/{pk}')

@@ -30,7 +30,7 @@
             <div>
                 <label for="rp_date">회신 완료 일자</label>
                 {% if detailView.rp_date == None %}
-                <input type="text">
+                <input type="date" value="{{ detailView.rp_date }}" name="rp_date" >
                 {% else %}
                 <input type="date" value="{{ detailView.rp_date }}" name="rp_date" id="rp_date" >
                 {% endif %}
@@ -104,10 +104,10 @@
           <div class="mb-3">
             <label for="finish">종결 여부</label>
                <select name="finish" id="finish">
-                {% if detailView.finish == "진행 중"%}
+                {% if detailView.finish == "진행 중" %}
                     <option value="{{ detailView.finish }}">{{ detailView.finish }}</option>
                     <option value="종료">종료</option>
-                {% elif detailView.finish == None %}
+                {% elif detailView.finish == '' %}
                     <option value="" selected> </option>
                     <option value="진행 중" >진행 중</option>
                     <option value="종료">종료</option>

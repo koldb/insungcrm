@@ -4,6 +4,7 @@ from django.core.validators import RegexValidator
 
 # Create your models here.
 
+#유저 정보 모델
 class User(models.Model):
     no = models.AutoField(primary_key=True)
     user_id = models.CharField(max_length=100, unique=True, verbose_name='아이디')
@@ -22,3 +23,8 @@ class User(models.Model):
         db_table = 'accounts'
         verbose_name = '유저'
         verbose_name_plural = '유저'
+
+
+
+
+

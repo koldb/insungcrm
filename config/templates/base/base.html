@@ -27,7 +27,9 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    {% if login_session %}
+                    {% if login_session == 'insung' %}
+                    <a class="nav-link" href="{% url 'accounts:logout' %}">로그아웃</a>
+                    {% elif login_session == 'etc' %}
                     <a class="nav-link" href="{% url 'accounts:logout' %}">로그아웃</a>
                     {% else %}
                     <a class="nav-link" href="{% url 'accounts:login' %}">로그인</a>
@@ -36,7 +38,7 @@
 
                 </li>
                 <li class="nav-item">
-                    {% if login_session %}
+                    {% if login_session == 'insung' %}
 
                     {% else %}
                     <a class="nav-link" href="{% url 'accounts:register' %}">회원가입</a>
@@ -44,14 +46,33 @@
                     {% endif %}
                 </li>
                 <li class="nav-item">
-                    {% if user.status == 1 %}
-
+                    {% if login_session == 'insung' %}
+                        <a class="nav-link" href="{% url 'company:cinsert' %}">업체 등록</a>
                     {% else %}
-                    <a class="nav-link" href="{% url 'company:cinsert' %}">업체 등록</a>
+
                     {% endif %}
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'company:clist' %}">업체 조회</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'isscm:sheet_insert' %}">견적 문의</a>
+                </li>
+                   <li class="nav-item">
+                    <a class="nav-link" href="{% url 'isscm:sheet_list' %}">견적 목록</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'company:clist' %}">발주 관리</a>
+                </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'accounts:register' %}">이력 관리</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'company:clist' %}">AS 접수</a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="{% url 'company:clist' %}">기타 문의</a>
                 </li>
             </ul>
         </div>

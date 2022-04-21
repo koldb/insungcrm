@@ -28,7 +28,8 @@ from django.db import transaction
 
 def register(request):
     register_form = RegisterForm()
-    context = {'forms': register_form}
+    login_session = request.session.get('login_session')
+    context = {'forms': register_form, 'login_session': login_session}
 
     if request.method == 'GET':
         return render(request, 'accounts/register.html', context)
@@ -43,7 +44,9 @@ def register(request):
                 user_email=register_form.user_email
             )
             user.save()
-            return redirect('/estimate/')
+            login_session = request.session.get('login_session')
+            context = {'forms': register_form, 'login_session': login_session}
+            return render(request, 'isscm/index.html', context)
         else:
             context['forms'] = register_form
             if register_form.errors:
@@ -54,7 +57,8 @@ def register(request):
 
 def login(request):
     loginform = LoginForm()
-    context = { 'forms': loginform }
+    login_session = request.session.get('login_session')
+    context = { 'forms': loginform, 'login_session': login_session }
 
     if request.method == 'GET':
         return render(request, 'accounts/login.html', context)
@@ -67,13 +71,13 @@ def login(request):
             context = {}
             login_session = request.session.get('login_session', '')
 
-            if login_session == '':
-                print("False")
-                context['login_session'] = False
-            else:
-                print("True")
-                context['login_session'] = True
+            if login_session == 'insung':
+                context['login_session'] = 'insung'
                 return render(request, 'estimate/index.html', context)
+            else:
+                login_session = request.session.get('login_session')
+                context = {'forms': loginform, 'login_session': login_session}
+                return render(request, 'isscm/index.html', context)
             #return redirect('/estimate/')
         else:
             context['forms'] = loginform
@@ -84,5 +88,5 @@ def login(request):
 
 def logout(request):
     request.session.flush()
-    return redirect('/estimate/')
+    return redirect('/isscm/')
 

@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'accounts',
     'estimate',
     'isscm',
+    'django_summernote',
+
 
     # 'django.contrib.sites',
     # 'allauth',
@@ -189,6 +191,17 @@ LOGIN_URL = '/login/'
 LOGOUT_REDIRECT_URL = '/estimate/'
 # 회원가입 후 이동 URL
 ACCOUNT_SIGNUP_REDIRECT_URL = '/estimate/'
+
+
+#업로드 경로
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+#클릭 재킹 방지
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+# #date 입력 포멧
+# DATE_INPUT_FORMATS = ['%d-%m-%Y']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

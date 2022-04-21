@@ -1,3 +1,4 @@
+import requests
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -52,7 +53,7 @@ class RegisterForm(forms.ModelForm):
     )
     cname = forms.CharField(
         label='업체명',
-        required=True,
+        required=False,
         widget=forms.TextInput(
             attrs={
                 'class': 'cname',
@@ -183,3 +184,4 @@ class LoginForm(forms.Form):
             except exceptions.VerifyMismatchError:
                 return self.add_error('user_pw', '비밀번호가 다릅니다.')
             self.login_session = user.cname
+

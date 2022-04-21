@@ -3,6 +3,7 @@ from django.conf.urls import include
 from . import views
 from . import models
 
+
 app_name = 'company'
 
 urlpatterns = [

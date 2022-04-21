@@ -17,6 +17,8 @@ import os
 
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,8 +26,15 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('isscm/', include('isscm.urls')),
 
+
     # path('bookmark/', include('bookmark.urls')),
     # path('accounts/', include('accounts.urls')),
     # path('', include('allauth.urls')),
 
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root = settings.MEDIA_ROOT
+    )

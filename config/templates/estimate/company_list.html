@@ -1,0 +1,56 @@
+{% extends "base/base.html" %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+
+
+<table class="board">
+    <thead>
+    <tr class="header">
+        <th style="width:10%;">순번</th>
+        <th style="width:10%">업체명</th>
+        <th style="width:10%">업체담당자</th>
+        <th style="width:10%">영업담당자</th>
+        <th style="width:10%">연락처</th>
+        <th style="width:10%">이메일</th>
+        <th style="width:10%">주소</th>
+        <th style="width:10%">홈페이지</th>
+        <th style="width:10%">등록일자</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% if company_list %}
+    {% for cLists in company_list %}
+    <tr class="{% if forloop.counter|divisibleby:2 %}even_bgcolor{% endif %}" style="text-align:center;">
+        <td>{{ cLists.no }}</td>
+        <td>{{ cLists.cname }}</td>
+        <td>{{ cLists.cmanager }}</td>
+        <td>{{ cLists.smanager }}</td>
+        <td>{{ cLists.phone }}</td>
+        <td>{{ cLists.email }}</td>
+        <td>{{ cLists.adress }}</td>
+        <td>{{ cLists.homepage }}</td>
+        <td>{{ cLists.date|date:'Y-m-d' }}</td>
+    </tr>
+    {% endfor %}
+    {% else %}
+    <tr>
+        <td>작성된 게시글이 없습니다.</td>
+    </tr>
+    {% endif %}
+
+
+    </tbody>
+
+</table>
+
+</body>
+</html>
+{% endblock %}

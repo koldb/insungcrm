@@ -1,0 +1,21 @@
+{% extends "base/base2.html" %}
+{% block content %}
+<div>로그인 페이지</div>
+
+<form action="" method="POST">
+    {% csrf_token %}
+
+    {% for form in forms %}
+    <div>
+        <label>{{ form.label }}</label>
+        {{ form }}
+    </div>
+    {% endfor %}
+
+    {% if error %}
+    {{ error }}
+    {% endif %}
+    <button type="submit" name="login" value="login">로그인</button>
+</form>
+{% endblock %}
+

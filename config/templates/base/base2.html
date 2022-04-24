@@ -1,0 +1,91 @@
+{% load static %}
+<!doctype html>
+<html lang="ko">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="../static/css/uikit.min.css" />
+    <script src="../static/js/uikit.min.js"></script>
+    <script src="../static/js/uikit-icons.min.js"></script>
+    <title>prototype</title>
+</head>
+
+<style>
+textarea.autosize { min-height: 50px; }
+</style>
+
+<script>
+function resize(obj) {
+  obj.style.height = "1px";
+  obj.style.height = (12+obj.scrollHeight)+"px";
+}
+</script>
+
+
+<body>
+<!-- 네비게이션바 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'isscm:index' %}">Main</a>
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    {% if login_session == 'insung' %}
+                    <a class="nav-link" href="{% url 'accounts:logout' %}">로그아웃</a>
+                    {% elif login_session %}
+                    <a class="nav-link" href="{% url 'accounts:logout' %}">로그아웃</a>
+                    {% else %}
+                    <a class="nav-link" href="{% url 'accounts:login' %}">로그인</a>
+
+                    {% endif %}
+                </li>
+                 <li class="nav-item">
+                    {% if login_session %}
+
+                    {% else %}
+                    <a class="nav-link" href="{% url 'accounts:register' %}">회원가입</a>
+
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'isscm:sheet_insert' %}">견적 문의</a>
+                </li>
+                   <li class="nav-item">
+                    <a class="nav-link" href="{% url 'isscm:sheet_list' %}">견적 목록</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'company:clist' %}">발주 관리</a>
+                </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'accounts:register' %}">이력 관리</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'company:clist' %}">AS 접수</a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="{% url 'company:clist' %}">기타 문의</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- 기본 템플릿 안에 삽입될 내용 Start -->
+{% block content %}
+{% endblock %}
+<!-- 기본 템플릿 안에 삽입될 내용 End -->
+</body>
+</html>

@@ -1,0 +1,109 @@
+{% extends "base/base2.html" %}
+{% block content %}
+<style>
+  table {
+    width: 100%;
+    border: 1px solid #dcdcdc;
+    border-collapse: collapse;
+  }
+  th, td {
+    border: 1px solid #dcdcdc;
+    text-align: center;
+  }
+  textarea {
+    width: 100%;
+    height: 15em;
+  }
+
+
+</style>
+
+<div class="container my-3">
+    <form method="post" action="#">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <div>
+            <tr>고객 접수 일자 : {{ detailView.rg_date | date:'Y-m-d' }} </tr>
+            </div>
+            <div>
+            <tr>회신 완료 일자 : {{ detailView.rp_date }} </tr>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="product_name">제품명</label>
+            <input type="text" class="form-control" name="product_name" id="product_name" value="{{ detailView.product_name }}" readonly>
+        </div>
+
+        <table>
+            <tr>
+                <th>수량</th>
+                <th>개당 단가</th>
+                <th>총 금액</th>
+            </tr>
+            <tr>
+                <td>{{ detailView.quantity }}</td>
+                <td>{{ detailView.per_price }}</td>
+                <td>{{ detailView.total_price }}</td>
+            </tr>
+         </table>
+
+        <br>
+        <div class="mb-3">
+            <label for="new_old">구분</label>
+            <select name="new_old" id="new_old">
+                {% if detailView.new_old %}
+                <option value="{{ detailView.new_old }}">{{ detailView.new_old }}</option>
+                {% else %}
+                <option value="신규" selected>신규</option>
+                <option value="기존">기존</option>
+                {% endif %}
+            </select>
+
+        </div>
+
+        <div class="mb-3">
+            <label for="cname">업체명</label>
+            <input type="text" class="form-control" name="cname" id="cname" value="{{ detailView.cname }}" readonly>
+        </div>
+
+
+        <div class="mb-3">
+            <label for="memo">비고</label>
+            <textarea class="form-control" name="memo" id="memo"  readonly>{{ detailView.memo }}</textarea>
+        </div>
+
+
+        <div class="mb-3">
+            <label for="option">의견</label>
+            {% if detailView.option == None %}
+            <textarea class="form-control" style="resize: none;" name="option" readonly> </textarea>
+            {% else %}
+            <textarea class="form-control" style="resize: none;" name="option" id="option"  readonly>{{ detailView.option }}</textarea>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label for="finish">종결 여부</label>
+               <select name="finish" id="finish">
+                {% if detailView.finish == '' %}
+                   <option value="" selected> </option>
+                   <option value="진행 중" hidden>진행 중</option>
+                   <option value="종료" hidden>종료</option>
+                {% else %}
+                <option value="{{ detailView.finish }}">{{ detailView.finish }}</option>
+                {% endif %}
+            </select>
+        </div>
+
+         <div class="mb-3">
+            <!--<input type="button" class="btn btn-primary" onclick="location.href='uploadFile/'" value="파일 업로드">-->
+            <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:uploadFile' detailView.no %}'" value="파일 업로드">
+        </div>
+        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:sheet_modify' detailView.no %}'" value="수정">
+        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:sheet_delete' detailView.no %}'" value="삭제">
+    </form>
+</div>
+
+{% endblock %}

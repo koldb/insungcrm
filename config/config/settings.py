@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -36,7 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts',
-    #'django.contrib.sites',
+    'estimate',
+    'isscm',
+    'django_summernote',
+
+
+
+
+    # 'django.contrib.sites',
     # 'allauth',
     # 'allauth.account',
     # 'allauth.socialaccount',
@@ -61,10 +69,13 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
+# 템플릿 경로 지정
+# DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# TEMPLATE_DIR = os.path.join(DIR, 'templates')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -78,7 +89,6 @@ TEMPLATES = [
 ]
 
 # AUTH_USER_MODEL = 'accounts.User'
-
 
 
 WSGI_APPLICATION = 'config.wsgi.application'
@@ -144,6 +154,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 4,
+        }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -162,7 +175,7 @@ TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
@@ -170,7 +183,27 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
-]
+    ]
+
+# 로그인 성공후 이동하는 URL
+LOGIN_REDIRECT_URL = '/estimate/'
+#로그인 실패시 redirect 경로
+LOGIN_URL = '/login/'
+#로그아웃 후 redirect 경로
+LOGOUT_REDIRECT_URL = '/estimate/'
+# 회원가입 후 이동 URL
+ACCOUNT_SIGNUP_REDIRECT_URL = '/estimate/'
+
+
+#업로드 경로
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+#클릭 재킹 방지
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+# #date 입력 포멧
+# DATE_INPUT_FORMATS = ['%d-%m-%Y']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

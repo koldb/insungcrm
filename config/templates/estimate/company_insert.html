@@ -1,0 +1,38 @@
+{% extends "base/base.html" %}
+{% block content %}
+<div class="container my-3">
+    <form method="post" action="{% url 'company:cinsert' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="cname">업체명</label>
+            <input type="text" class="form-control" name="cname" id="cname" placeholder="필수 입력">
+        </div>
+        <div class="mb-3">
+            <label for="cmanager">업체 담당자</label>
+            <input type="text" class="form-control" name="cmanager" id="cmanager" placeholder="필수 입력">
+        </div>
+        <div class="mb-3">
+            <label for="smanager">영업 담당자</label>
+            <input type="text" class="form-control" name="smanager" id="smanager">
+        </div>
+        <div class="mb-3">
+            <label for="phone">연락처</label>
+            <input type="text" class="form-control" name="phone" id="phone" placeholder="000-0000-0000">
+        </div>
+        <div class="mb-3">
+            <label for="email">Email</label>
+            <input type="text" class="form-control" name="email" id="email">
+        </div>
+        <div class="mb-3">
+            <label for="adress">주소</label>
+            <input type="text" class="form-control" name="adress" id="adress">
+        </div>
+           <div class="mb-3">
+            <label for="homepage">웹 사이트</label>
+            <input type="text" class="form-control" name="homepage" id="homepage">
+        </div>
+
+        <button type="submit" class="btn btn-primary">생성하기</button>
+    </form>
+</div>
+{% endblock %}

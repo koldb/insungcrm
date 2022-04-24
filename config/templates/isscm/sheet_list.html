@@ -1,0 +1,79 @@
+{% extends "base/base2.html" %}
+{% block content %}
+
+
+<div>
+    <table class="board">
+        <thead>
+        {% if company_sheet %}
+        <tr class="header" style="text-align:center;">
+            <th style="width:5%;">순번</th>
+            <th style="width:9%">고객 접수 일자</th>
+            <th style="width:9%">회신 완료 일자</th>
+            <th style="width:10%">제품명</th>
+            <th style="width:5%">수량</th>
+            <th style="width:6%">개당 단가</th>
+            <th style="width:9%">총 금액</th>
+            <th style="width:5%">구분</th>
+
+            <th style="width:10%">업체명</th>
+            <th style="width:15%">비고</th>
+
+            <th style="width:5%">종료 여부</th>
+            <th style="width:5%">파일 업로드</th>
+
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for list in company_sheet %}
+
+        <tr style="text-align:center;">
+
+            <td>{{ forloop.counter }}</td>
+            <td>{{ list.rg_date|date:'Y-m-d' }}</td>
+            {% if list.rp_date == None %}
+            <td> </td>
+            {% else %}
+            <td>{{ list.rp_date }}</td>
+            {% endif %}
+            <td><a href="{% url 'isscm:sheet_detail' list.no %}">{{ list.product_name }}</a></td>
+            <td>{{ list.quantity }}</td>
+            {% if list.per_price == none %}
+            <td>0</td>
+            {% else %}
+            <td>{{ list.per_price }}</td>
+            {% endif %}
+
+            <td>{{ list.total_price }}</td>
+            <td>{{ list.new_old }}</td>
+
+            <td>{{ list.cname }}</td>
+            <td>{{ list.memo | truncatewords:10}}</td>
+
+            {% if list.finish == None %}
+            <td> </td>
+            {% else %}
+            <td>{{ list.finish }}</td>
+            {% endif %}
+
+
+            <td>{{ list.fileck }} </td>
+
+
+        </tr>
+        {% endfor %}
+
+
+        {% else %}
+        <tr>
+        <tr><h1>접수 된 견적 글이 없습니다.</h1></tr>
+        </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+
+
+{% include 'isscm/pagination.html' %}
+{% endblock %}

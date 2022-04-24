@@ -48,7 +48,7 @@
     </form>
     <table>
         <tr>
-            <!--<th>NO</th>-->
+
             <th>Title</th>
             <th>Upload Date & Time</th>
             <th>Download</th>
@@ -58,9 +58,9 @@
 
 
      {% for file in files %}
-        {% if file.sheet_no == detailView.no  and file.cname == detailView.cname %}
+        {% if file.sheet_no == detailView.no  and file.cname == detailView.cname or file.sheet_no == detailView.no and file.cname == 'insung' %}
             <tr>
-            <!--<td>{{ forloop.counter }}</td>-->
+
             <td>{{ file.title }}</td>
             <td>{{ file.dateTimeOfUpload }}</td>
             <td><a href="{{ file.uploadedFile.url }}">DOWN</a></td>

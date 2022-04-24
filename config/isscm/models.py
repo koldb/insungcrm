@@ -19,6 +19,7 @@ class EstimateSheet(models.Model):
     memo = models.TextField(verbose_name='비고', null=True, blank=True)
     option = models.TextField(verbose_name='의견', null=True, blank=True)
     finish = models.CharField(max_length=10, null=True, blank=True)
+    fileck = models.IntegerField(null=True, blank=True)
 
 
     def __str__(self):

@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'django_summernote',
 
 
+
+
     # 'django.contrib.sites',
     # 'allauth',
     # 'allauth.account',

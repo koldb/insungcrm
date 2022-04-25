@@ -1,11 +1,27 @@
 {% extends "base/base2.html" %}
 {% block content %}
+<style>
+    #paging{
+        width:350px;
+        margin:0 auto;
+    }
+</style>
 
 
 <div>
+    <form action="{% url 'isscm:searchResult' %}" method="GET">
+        {% csrf_token %}
+        <input type="search" placeholder="제품명 / 구분 / 업체명 / 종료 여부 검색 가능" class="form-control mr-sm-2" name="q" value="{{ query }}">
+        <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
+    </form>
+</div>
+
+
+{% if login_session == 'insung' %}
+<div>
     <table class="board">
         <thead>
-        {% if company_sheet %}
+        {% if page_obj %}
         <tr class="header" style="text-align:center;">
             <th style="width:5%;">순번</th>
             <th style="width:9%">고객 접수 일자</th>
@@ -15,21 +31,16 @@
             <th style="width:6%">개당 단가</th>
             <th style="width:9%">총 금액</th>
             <th style="width:5%">구분</th>
-
             <th style="width:10%">업체명</th>
             <th style="width:15%">비고</th>
-
             <th style="width:5%">종료 여부</th>
-            <th style="width:5%">파일 업로드</th>
-
         </tr>
         </thead>
         <tbody>
 
-        {% for list in company_sheet %}
+        {% for list in page_obj %}
 
         <tr style="text-align:center;">
-
             <td>{{ forloop.counter }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
             {% if list.rp_date == None %}
@@ -44,36 +55,112 @@
             {% else %}
             <td>{{ list.per_price }}</td>
             {% endif %}
-
             <td>{{ list.total_price }}</td>
             <td>{{ list.new_old }}</td>
-
             <td>{{ list.cname }}</td>
             <td>{{ list.memo | truncatewords:10}}</td>
-
             {% if list.finish == None %}
             <td> </td>
             {% else %}
             <td>{{ list.finish }}</td>
             {% endif %}
-
-
-            <td>{{ list.fileck }} </td>
-
-
         </tr>
         {% endfor %}
 
-
         {% else %}
         <tr>
-        <tr><h1>접수 된 견적 글이 없습니다.</h1></tr>
+        <tr><h2>등록 된 견적 글이 없습니다.</h2></tr>
         </tr>
         {% endif %}
         </tbody>
     </table>
 </div>
 
+<br>
 
-{% include 'isscm/pagination.html' %}
+{% else %}
+<div>
+    <table class="board">
+        <thead>
+        {% if page_obj %}
+        <tr class="header" style="text-align:center;">
+            <th style="width:5%;">순번</th>
+            <th style="width:9%">고객 접수 일자</th>
+            <th style="width:9%">회신 완료 일자</th>
+            <th style="width:10%">제품명</th>
+            <th style="width:5%">수량</th>
+            <th style="width:6%">개당 단가</th>
+            <th style="width:9%">총 금액</th>
+            <th style="width:5%">구분</th>
+            <th style="width:10%">업체명</th>
+            <th style="width:15%">비고</th>
+            <th style="width:5%">종료 여부</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for list in page_obj %}
+        {% if list.cname == login_session %}
+        <tr style="text-align:center;">
+            <td>{{ forloop.counter }}</td>
+            <td>{{ list.rg_date|date:'Y-m-d' }}</td>
+            {% if list.rp_date == None %}
+            <td> </td>
+            {% else %}
+            <td>{{ list.rp_date }}</td>
+            {% endif %}
+            <td><a href="{% url 'isscm:sheet_detail' list.no %}">{{ list.product_name }}</a></td>
+            <td>{{ list.quantity }}</td>
+            {% if list.per_price == none %}
+            <td>0</td>
+            {% else %}
+            <td>{{ list.per_price }}</td>
+            {% endif %}
+            <td>{{ list.total_price }}</td>
+            <td>{{ list.new_old }}</td>
+            <td>{{ list.cname }}</td>
+            <td>{{ list.memo | truncatewords:10}}</td>
+            {% if list.finish == None %}
+            <td> </td>
+            {% else %}
+            <td>{{ list.finish }}</td>
+            {% endif %}
+        </tr>
+        {% endif %}
+        {% endfor %}
+
+        {% else %}
+        <tr>
+        <tr><h2>등록 된 견적 글이 없습니다.</h2></tr>
+        </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<br>
+{% endif %}
+
+<div class = "container" id="paging">
+    {#first previous#}
+    {% if page_obj.has_previous %}
+    <a href="?query={{ query }}&page_obj={{ page_obj }}&page=1">First</a>
+    <a href="?query={{ query }}&page_obj={{ page_obj }}&page={{page_obj.previous_page_number}}">Previous</a>
+    {% endif %}
+    {# 3of4 #}
+    <span>{{page_obj.number}}</span>
+    <span>of</span>
+    <span>{{page_obj.paginator.num_pages}}</span>
+    {# Next Last #}
+    {% if page_obj.has_next %}
+    <a href="?query={{ query }}&page_obj={{ page_obj }}&page={{page_obj.next_page_number}}">Next</a>
+    <a href="?query={{ query }}&page_obj={{ page_obj }}&page={{page_obj.paginator.num_pages}}">Last</a>
+    {%endif%}
+
+</div>
+
+
+
+
+
 {% endblock %}

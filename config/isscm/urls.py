@@ -13,6 +13,7 @@ urlpatterns = [
     path('sheet_detail/<int:pk>/', views.sheet_detail, name='sheet_detail'),
     path('sheet_modify/<int:pk>/', views.sheet_modify, name='sheet_modify'),
     path('sheet_delete/<int:pk>/', views.sheet_delete, name='sheet_delete'),
+    path('searchResult/', views.searchResult, name='searchResult'),
 
 ]
 

@@ -32,7 +32,7 @@ class EstimateSheet(models.Model):
         verbose_name_plural = '견적'
 
 
-
+# 파일 업로드, 다운로드 모델
 class UploadFile(models.Model):
     no = models.AutoField(primary_key=True)
     cname = models.CharField(max_length=100, null=True)

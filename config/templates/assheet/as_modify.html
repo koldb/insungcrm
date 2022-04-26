@@ -17,15 +17,21 @@
 </style>
 
 <div class="container my-3">
-    <form method="POST" action="{% url 'isscm:sheet_modify' detailView.no %}">
+    <form method="POST" action="{% url 'asregister:as_modify' detailView.no %}">
         {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="cname">업체명</label>
+            <input type="text" class="form-control" name="cname" id="cname" value="{{ detailView.cname }}" readonly>
+        </div>
+
         <div class="mb-3">
             <div>
                 <label for="rg_date">고객 접수 일자</label>
                 <tr id="rg_date">{{ detailView.rg_date | date:'Y-m-d' }} </tr>
             </div>
             <div>
-                <label for="rp_date">회신 완료 일자</label>
+                <label for="rp_date">처리 완료 일자</label>
                 {% if detailView.rp_date == None %}
                 <input type="date" value="{{ detailView.rp_date }}" name="rp_date" >
                 {% else %}
@@ -37,48 +43,6 @@
         <div class="mb-3">
             <label for="product_name">제품명</label>
             <input type="text" class="form-control" name="product_name" id="product_name" value="{{ detailView.product_name }}" >
-        </div>
-
-        <div>
-            <label for="quantity">수량</label>
-            <input type="text" name="quantity" id="quantity" value="{{ detailView.quantity }}">
-        </div>
-
-        <div>
-            <label for="per_price">개당 단가</label>
-            {% if detailView.per_price == none %}
-            <input type="text" name="per_price" value="0">
-            {% else %}
-            <input type="text" name="per_price" id="per_price" value="{{ detailView.per_price }}">
-            {% endif %}
-        </div>
-
-        <div>
-            <label for="total_price">총 금액</label>
-             {% if detailView.total_price == none %}
-            <input type="text" name="total_price" value="0">
-             {% else %}
-            <input type="text" name="total_price" id="total_price" value="{{ detailView.total_price }}">
-            {% endif %}
-        </div>
-
-        <br>
-        <div class="mb-3">
-              <label for="new_old">구분</label>
-                <select name="new_old" id="new_old">
-                {% if detailView.new_old == "신규"%}
-                <option value="{{ detailView.new_old }}">{{ detailView.new_old }}</option>
-                <option value="기존">기존</option>
-                {% else %}
-                <option value="신규" >신규</option>
-                <option value="{{ detailView.new_old }}" selected>{{ detailView.new_old }}</option>
-                {% endif %}
-                </select>
-        </div>
-
-        <div class="mb-3">
-            <label for="cname">업체명</label>
-            <input type="text" class="form-control" name="cname" id="cname" value="{{ detailView.cname }}" readonly>
         </div>
 
         <div class="mb-3">

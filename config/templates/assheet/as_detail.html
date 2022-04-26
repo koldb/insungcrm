@@ -22,12 +22,18 @@
     <form method="post" action="#">
         {% csrf_token %}
 
+
+        <div class="mb-3">
+            <label for="cname">업체명</label>
+            <input type="text" class="form-control" name="cname" id="cname" value="{{ detailView.cname }}" readonly>
+        </div>
+
         <div class="mb-3">
             <div>
             <tr>고객 접수 일자 : {{ detailView.rg_date | date:'Y-m-d' }} </tr>
             </div>
             <div>
-            <tr>회신 완료 일자 : {{ detailView.rp_date }} </tr>
+            <tr>처리 완료 일자 : {{ detailView.rp_date }} </tr>
             </div>
         </div>
 
@@ -36,45 +42,10 @@
             <input type="text" class="form-control" name="product_name" id="product_name" value="{{ detailView.product_name }}" readonly>
         </div>
 
-        <table>
-            <tr>
-                <th>수량</th>
-                <th>개당 단가</th>
-                <th>총 금액</th>
-            </tr>
-            <tr>
-                <td>{{ detailView.quantity }}</td>
-                <td>{{ detailView.per_price }}</td>
-                <!--<td>{{ detailView.total_price }}</td>-->
-                <td>{% widthratio detailView.quantity 1 detailView.per_price %}</td>
-            </tr>
-         </table>
-
-        <br>
-        <div class="mb-3">
-            <label for="new_old">구분</label>
-            <select name="new_old" id="new_old">
-                {% if detailView.new_old %}
-                <option value="{{ detailView.new_old }}">{{ detailView.new_old }}</option>
-                {% else %}
-                <option value="신규" selected>신규</option>
-                <option value="기존">기존</option>
-                {% endif %}
-            </select>
-
-        </div>
-
-        <div class="mb-3">
-            <label for="cname">업체명</label>
-            <input type="text" class="form-control" name="cname" id="cname" value="{{ detailView.cname }}" readonly>
-        </div>
-
-
         <div class="mb-3">
             <label for="memo">비고</label>
             <textarea class="form-control" name="memo" id="memo"  readonly>{{ detailView.memo }}</textarea>
         </div>
-
 
         <div class="mb-3">
             <label for="option">의견</label>
@@ -99,10 +70,10 @@
         </div>
 
          <div class="mb-3">
-            <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:uploadFile' detailView.no %}'" value="파일 업로드">
+            <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:AsUploadFile' detailView.no %}'" value="파일 업로드">
          </div>
-        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:sheet_modify' detailView.no %}'" value="수정">
-        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:sheet_delete' detailView.no %}'" value="삭제">
+        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_modify' detailView.no %}'" value="수정">
+        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_delete' detailView.no %}'" value="삭제">
     </form>
 </div>
 

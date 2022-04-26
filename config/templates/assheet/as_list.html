@@ -9,9 +9,9 @@
 
 <!--검색창 부분-->
 <div>
-    <form action="{% url 'isscm:searchResult' %}" method="GET">
+    <form action="{% url 'asregister:assearchResult' %}" method="GET">
         {% csrf_token %}
-        <input type="search" placeholder="제품명 / 구분 / 업체명 / 종료 여부 검색 가능" class="form-control mr-sm-2" name="q" value="{{ query }}">
+        <input type="search" placeholder="업체명 / 제품명 / 비고 / 종료 여부 검색 가능" class="form-control mr-sm-2" name="q" value="{{ query }}">
         <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
     </form>
 </div>
@@ -24,16 +24,12 @@
         {% if page_obj %}
         <tr class="header" style="text-align:center;">
             <th style="width:5%;">순번</th>
+            <th style="width:10%">업체명</th>
             <th style="width:9%">고객 접수 일자</th>
             <th style="width:9%">회신 완료 일자</th>
             <th style="width:10%">제품명</th>
-            <th style="width:5%">수량</th>
-            <th style="width:6%">개당 단가</th>
-            <th style="width:9%">총 금액</th>
-            <th style="width:5%">구분</th>
-            <th style="width:10%">업체명</th>
             <th style="width:15%">비고</th>
-            <th style="width:5%">종료 여부</th>
+            <th style="width:5%">완료 여부</th>
         </tr>
         </thead>
         <tbody>
@@ -42,22 +38,14 @@
 
         <tr style="text-align:center;">
             <td>{{ forloop.counter }}</td>
+            <td>{{ list.cname }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
             {% if list.rp_date == None %}
             <td> </td>
             {% else %}
             <td>{{ list.rp_date }}</td>
             {% endif %}
-            <td><a href="{% url 'isscm:sheet_detail' list.no %}">{{ list.product_name }}</a></td>
-            <td>{{ list.quantity }}</td>
-            {% if list.per_price == none %}
-            <td>0</td>
-            {% else %}
-            <td>{{ list.per_price }}</td>
-            {% endif %}
-            <td>{{ list.total_price }}</td>
-            <td>{{ list.new_old }}</td>
-            <td>{{ list.cname }}</td>
+            <td><a href="{% url 'asregister:as_detail' list.no %}">{{ list.product_name }}</a></td>
             <td>{{ list.memo | truncatewords:10}}</td>
             {% if list.finish == None %}
             <td> </td>
@@ -84,18 +72,14 @@
     <table class="board">
         <thead>
         {% if page_obj %}
-        <tr class="header" style="text-align:center;">
+       <tr class="header" style="text-align:center;">
             <th style="width:5%;">순번</th>
+            <th style="width:10%">업체명</th>
             <th style="width:9%">고객 접수 일자</th>
             <th style="width:9%">회신 완료 일자</th>
             <th style="width:10%">제품명</th>
-            <th style="width:5%">수량</th>
-            <th style="width:6%">개당 단가</th>
-            <th style="width:9%">총 금액</th>
-            <th style="width:5%">구분</th>
-            <th style="width:10%">업체명</th>
             <th style="width:15%">비고</th>
-            <th style="width:5%">종료 여부</th>
+            <th style="width:5%">완료 여부</th>
         </tr>
         </thead>
         <tbody>
@@ -104,22 +88,14 @@
         {% if list.cname == login_session %}
         <tr style="text-align:center;">
             <td>{{ forloop.counter }}</td>
+            <td>{{ list.cname }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
             {% if list.rp_date == None %}
             <td> </td>
             {% else %}
             <td>{{ list.rp_date }}</td>
             {% endif %}
-            <td><a href="{% url 'isscm:sheet_detail' list.no %}">{{ list.product_name }}</a></td>
-            <td>{{ list.quantity }}</td>
-            {% if list.per_price == none %}
-            <td>0</td>
-            {% else %}
-            <td>{{ list.per_price }}</td>
-            {% endif %}
-            <td>{{ list.total_price }}</td>
-            <td>{{ list.new_old }}</td>
-            <td>{{ list.cname }}</td>
+            <td><a href="{% url 'asregister:as_detail' list.no %}">{{ list.product_name }}</a></td>
             <td>{{ list.memo | truncatewords:10}}</td>
             {% if list.finish == None %}
             <td> </td>

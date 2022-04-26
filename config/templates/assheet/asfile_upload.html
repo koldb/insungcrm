@@ -33,7 +33,7 @@
 </head>
 <body>
     {% if login_session %}
-    <form action="{% url 'isscm:uploadFile' detailView.no %}" method="POST" enctype="multipart/form-data">
+    <form action="{% url 'asregister:AsUploadFile' detailView.no %}" method="POST" enctype="multipart/form-data">
         <input type="text" name="fileTitle" placeholder="Enter a title">
         <input type="file" name="uploadedFile">
         <input type="hidden" name="cname" value="{{ login_session }}">

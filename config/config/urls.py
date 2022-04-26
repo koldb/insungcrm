@@ -26,6 +26,7 @@ urlpatterns = [
     path('estimate/', include('estimate.urls')),
     path('accounts/', include('accounts.urls'), name='accounts'),
     path('isscm/', include('isscm.urls')),
+    path('asregister/', include('asregister.urls')),
 
 
     # path('bookmark/', include('bookmark.urls')),

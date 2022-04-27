@@ -9,20 +9,16 @@
     <title>Django File Upload</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
-
         * {
             font-family: "Roboto";
         }
-
         body {
             background-color: #F5F5F5;
         }
-
         form {
             background-color: #FFFFFF;
             padding: 25px;
         }
-
         table {
             width: 100%;
             text-align: center;
@@ -30,7 +26,6 @@
             padding: 25px;
             background-color: #FFFFFF;
         }
-
         table tr td {
             padding-top: 15px;
         }
@@ -48,31 +43,21 @@
     </form>
     <table>
         <tr>
-
             <th>Title</th>
             <th>Upload Date & Time</th>
             <th>Download</th>
         </tr>
 
-
-
-
      {% for file in files %}
         {% if file.sheet_no == detailView.no  and file.cname == detailView.cname or file.sheet_no == detailView.no and file.cname == 'insung' %}
             <tr>
-
             <td>{{ file.title }}</td>
             <td>{{ file.dateTimeOfUpload }}</td>
             <td><a href="{{ file.uploadedFile.url }}">DOWN</a></td>
             </tr>
-
         {% else %}
-
-
         {% endif %}
      {% endfor %}
-
-
     </table>
 </body>
 </html>

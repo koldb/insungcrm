@@ -1,0 +1,25 @@
+{% extends "base/base2.html" %}
+{% block content %}
+
+<!--견적서 등록 페이지-->
+<div class="container my-3">
+    <form method="post" action="{% url 'asregister:as_insert' %}">
+        {% csrf_token %}
+          <div class="mb-3">
+            <label for="cname">업체명</label>
+            <input type="text" class="form-control" name="cname" id="cname" value="{{ login_session }}" readonly>
+        </div>
+        <div class="mb-3">
+            <label for="product_name">제품명</label>
+            <input type="text" class="form-control" name="product_name" id="product_name" placeholder="필수 입력">
+        </div>
+        <div class="mb-3">
+            <label for="memo">비고</label>
+            <textarea class="form-control" onkeydown="resize(this)" onkeyup="resize(this)" name="memo" id="memo"> </textarea>
+        </div>
+
+
+        <button type="submit" class="btn btn-primary" onclick="alert('입력 완료')">제출</button>
+    </form>
+</div>
+{% endblock %}

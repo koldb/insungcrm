@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     'estimate',
     'isscm',
     'django_summernote',
+    'mathfilters',
+    'asregister',
+
 
 
 

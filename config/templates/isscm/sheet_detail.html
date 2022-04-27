@@ -45,7 +45,8 @@
             <tr>
                 <td>{{ detailView.quantity }}</td>
                 <td>{{ detailView.per_price }}</td>
-                <td>{{ detailView.total_price }}</td>
+                <!--<td>{{ detailView.total_price }}</td>-->
+                <td>{% widthratio detailView.quantity 1 detailView.per_price %}</td>
             </tr>
          </table>
 
@@ -98,9 +99,8 @@
         </div>
 
          <div class="mb-3">
-            <!--<input type="button" class="btn btn-primary" onclick="location.href='uploadFile/'" value="파일 업로드">-->
             <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:uploadFile' detailView.no %}'" value="파일 업로드">
-        </div>
+         </div>
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:sheet_modify' detailView.no %}'" value="수정">
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:sheet_delete' detailView.no %}'" value="삭제">
     </form>

@@ -15,6 +15,7 @@ class User(models.Model):
     user_email = models.EmailField(max_length=100, blank=True, null=True, unique=True, verbose_name='이메일')
     user_date = models.DateTimeField(auto_now_add=True)  # 입력시 현재 시간 날짜 삽입
     user_status = models.IntegerField(default=1)
+    user_dept = models.CharField(null=True, blank=True, max_length=20, verbose_name='부서명')
 
     def __str__(self):
         return self.user_id

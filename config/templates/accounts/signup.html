@@ -24,7 +24,12 @@
             <input type="text" class="form-control" name="email" id="email"
                    value="{{ form.email.value|default_if_none:'' }}">
         </div>
-        <button type="submit" class="btn btn-primary">생성하기</button>
+        <div class="mb-3">
+            <label for="user_dept">부서명</label>
+            <input type="text" class="form-control" name="user_dept" id="user_dept"
+                   value="{{ form.user_dept.value|default_if_none:'' }}">
+        </div>
+        <button type="submit" class="btn btn-primary">회원가입</button>
     </form>
 </div>
 {% endblock %}

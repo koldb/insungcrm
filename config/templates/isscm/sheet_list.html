@@ -2,9 +2,14 @@
 {% block content %}
 <style>
     #paging{
-        width:350px;
+        width:150px;
         margin:0 auto;
     }
+    tr, td, th{
+        border : 1px solid #dcdcdc;
+        width : 350px;
+        margin: 0 auto;
+        }
 </style>
 
 <!--검색창 부분-->
@@ -34,6 +39,7 @@
             <th style="width:10%">업체명</th>
             <th style="width:15%">비고</th>
             <th style="width:5%">종료 여부</th>
+            <th style="width:5%">담당 팀</th>
         </tr>
         </thead>
         <tbody>
@@ -59,11 +65,14 @@
             <td>{{ list.new_old }}</td>
             <td>{{ list.cname }}</td>
             <td>{{ list.memo | truncatewords:10}}</td>
-            {% if list.finish == None %}
+            {% if list.finish == None or list.user_dept == None %}
             <td> </td>
             {% else %}
             <td>{{ list.finish }}</td>
+            <td>{{ list.user_dept }} </td>
             {% endif %}
+
+
         </tr>
         {% endfor %}
 
@@ -126,6 +135,7 @@
             {% else %}
             <td>{{ list.finish }}</td>
             {% endif %}
+
         </tr>
         {% endif %}
         {% endfor %}
@@ -159,5 +169,43 @@
     <a href="?query={{ query }}&page_obj={{ page_obj }}&page={{page_obj.paginator.num_pages}}">Last</a>
     {%endif%}
 </div>
+
+<br>
+<br>
+
+{% if login_session == 'insung' %}
+<div class="access-chart__card">
+  <div class="card__title">
+    <h4 style="text-align : center">팀별 처리 현황</h4>
+  </div>
+  <div class="card__chartWrapper">
+    <canvas id="sheet_chart" width="800" height="200"></canvas>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script>
+  var sheet_chart = {{sheet_chart}}
+
+
+  var sheet = document.getElementById('sheet_chart').getContext('2d');
+var sheet_chart = new Chart(sheet, {
+    type: 'pie',
+    data:{
+        labels: [ '영업1팀', '영업2팀' ],
+        datasets: [{
+            data: sheet_chart,
+            backgroundColor: [
+                "#f7323f",
+                "#673ba7"
+            ],
+            borderWidth: 0
+        }]
+    }
+
+});
+</script>
+
+{% endif %}
 
 {% endblock %}

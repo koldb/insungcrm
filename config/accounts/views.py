@@ -25,7 +25,8 @@ def register(request):
                 cname=register_form.cname,
                 user_pw=register_form.user_pw,
                 user_phone=register_form.user_phone,
-                user_email=register_form.user_email
+                user_email=register_form.user_email,
+                user_dept=register_form.user_dept
             )
             user.save()
             login_session = request.session.get('login_session')
@@ -52,18 +53,19 @@ def login(request):
             # 로그인 폼 검증
         if loginform.is_valid():
             request.session['login_session']= loginform.login_session
+            request.session['user_dept']= loginform.user_dept
             request.session.set_expiry(0)
             context = {}
             login_session = request.session.get('login_session', '')
 
             if login_session == 'insung':
                 context['login_session'] = 'insung'
-                return render(request, 'estimate/index.html', context)
+                context['user_dept'] = request.session.get('user_dept')
+                return render(request, 'isscm/index.html', context)
             else:
                 login_session = request.session.get('login_session')
                 context = {'forms': loginform, 'login_session': login_session}
                 return render(request, 'isscm/index.html', context)
-            #return redirect('/estimate/')
         else:
             context['forms'] = loginform
             if loginform.errors:

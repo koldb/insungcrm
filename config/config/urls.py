@@ -29,9 +29,6 @@ urlpatterns = [
     path('asregister/', include('asregister.urls')),
 
 
-    # path('bookmark/', include('bookmark.urls')),
-    # path('accounts/', include('accounts.urls')),
-    # path('', include('allauth.urls')),
 
 ]
 

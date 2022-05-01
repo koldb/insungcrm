@@ -66,21 +66,26 @@ function resize(obj) {
                    <li class="nav-item">
                     <a class="nav-link" href="{% url 'isscm:sheet_list' %}">견적 목록</a>
                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="{% url 'asregister:as_insert' %}">AS 접수</a>
+                </li>
+                   <li class="nav-item">
+                    <a class="nav-link" href="{% url 'asregister:as_list' %}">AS 접수 목록</a>
+                </li>
+                {% if login_session != '' %}
+
+                {% else %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'company:clist' %}">발주 관리</a>
                 </li>
                   <li class="nav-item">
                     <a class="nav-link" href="{% url 'accounts:register' %}">이력 관리</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'asregister:as_insert' %}">AS 접수</a>
-                </li>
-                   <li class="nav-item">
-                    <a class="nav-link" href="{% url 'asregister:as_list' %}">AS 접수 목록</a>
-                </li>
+
                  <li class="nav-item">
                     <a class="nav-link" href="{% url 'company:clist' %}">기타 문의</a>
                 </li>
+                {% endif %}
             </ul>
         </div>
     </div>

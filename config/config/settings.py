@@ -15,7 +15,7 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+ROOT_DIR = os.path.dirname(BASE_DIR)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
@@ -183,8 +183,15 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-    ]
+        BASE_DIR / 'static',
+        ]
+
+#collect 했을때 경로-보류
+# STATIC_DIR = os.path.join(BASE_DIR, 'static')
+# STATICFILES_DIRS = [
+#         STATIC_DIR,
+# ]
+# STATIC_ROOT = os.path.join(ROOT_DIR, '.static_root')
 
 # 로그인 성공후 이동하는 URL
 LOGIN_REDIRECT_URL = '/estimate/'

@@ -1,0 +1,34 @@
+{% extends "base/base2.html" %}
+{% block content %}
+
+
+<div>
+<h2>테스트 페이지</h2>
+
+
+</div>
+
+<form action="{% url 'bla' %}" method='POST'>
+    {% csrf_token %}
+    {% for test in tests %}
+        <input type="text" name='test1' value="{{test}}"><br>
+    {% endfor %}
+    <input type="hidden" name='test[]' id='test_list' value=''>
+    <input type="submit" onclick='getlist()'>
+</form>
+
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script type="text/javascript">
+    function getlist() {
+        var list = new Array();
+        $("input[name=test1]").each(function(index, item){
+              list.push($(item).val());                        <!-- input의 value들을 배열 list에 넣는다. -->
+        });
+        $("#test_list").val(list);                            <!-- hidden type에 value값으로 넣어준다. -->
+    }
+</script>
+
+{% endblock %}
+
+
+

@@ -185,7 +185,7 @@ class LoginForm(forms.Form):
             try:
                 user = User.objects.get(user_id=user_id)
             except User.DoesNotExist:
-                return self.add_error('user_id', '아이디가 존재 합니다.')
+                return self.add_error('user_id', '아이디가 다릅니다.')
 
             try:
                 PasswordHasher().verify(user.user_pw, user_pw)

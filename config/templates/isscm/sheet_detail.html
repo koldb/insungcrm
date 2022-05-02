@@ -87,8 +87,8 @@
 
         <div class="mb-3">
             <label for="finish">종결 여부</label>
-               <select name="finish" id="finish">
-                {% if detailView.finish == '' %}
+               <select name="finish" id="finish" disabled>
+                {% if detailView.finish == None %}
                    <option value="" selected> </option>
                    <option value="진행 중" hidden>진행 중</option>
                    <option value="종료" hidden>종료</option>

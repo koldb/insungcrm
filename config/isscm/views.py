@@ -7,6 +7,7 @@ from .models import EstimateSheet, UploadFile
 from . import models
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
@@ -259,3 +260,12 @@ def sheet_delete(request, pk):
     else:
         return redirect(f'/isscm/sheet_detail/{pk}')
 
+
+#테스트
+@csrf_exempt
+def bla(request):
+    if request.method == 'POST':
+        test = request.POST['test[]']
+        return print(type(test))
+    else:
+        return print("안됨")

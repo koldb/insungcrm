@@ -61,11 +61,16 @@
 
           <div class="mb-3">
             <label for="finish">종결 여부</label>
-               <select name="finish" id="finish">
+
+                {% if login_session == 'insung' %}
+                <select name="finish" id="finish">
+                {% else %}
+                <select name="finish" disabled>
+                {% endif %}
                 {% if detailView.finish == "진행 중" %}
                     <option value="{{ detailView.finish }}">{{ detailView.finish }}</option>
                     <option value="종료">종료</option>
-                {% elif detailView.finish == '' %}
+                {% elif detailView.finish == None %}
                     <option value="" selected> </option>
                     <option value="진행 중" >진행 중</option>
                     <option value="종료">종료</option>
@@ -77,7 +82,7 @@
         </div>
 
         <input type="submit" class="btn btn-primary" value="저장">
-        <input type="button" class="btn btn-primary" onclick="location.href='uploadFile/'" value="취소">
+        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_detail' detailView.no %}'" value="취소">
     </form>
 </div>
 

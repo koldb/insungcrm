@@ -74,8 +74,8 @@
             </div>
             <div>
                 <label for="rp_date">회신 완료 일자</label>
-                {% if detailView.rp_date == None %}
-                <input type="date" value="{{ detailView.rp_date }}" name="rp_date" >
+                {% if detailView.finish == '종료' %}
+                <input type="date" value="{{ detailView.rp_date }}" name="rp_date" id="rp_date" readonly>
                 {% else %}
                 <input type="date" value="{{ detailView.rp_date }}" name="rp_date" id="rp_date" >
                 {% endif %}
@@ -132,8 +132,8 @@
         {% if login_session != 'insung' %}
         {% else %}
         <div class="mb-3">
-              <label for="new_old">구분</label>
-                <select name="new_old" id="new_old">
+            <label for="new_old">구분</label>
+            <select name="new_old" id="new_old">
                 {% if detailView.new_old == "신규"%}
                 <option value="{{ detailView.new_old }}">{{ detailView.new_old }}</option>
                 <option value="기존">기존</option>
@@ -141,7 +141,7 @@
                 <option value="신규" >신규</option>
                 <option value="{{ detailView.new_old }}" selected>{{ detailView.new_old }}</option>
                 {% endif %}
-                </select>
+            </select>
         </div>
         {% endif %}
 
@@ -150,10 +150,24 @@
             <input type="text" class="form-control" name="cname" id="cname" value="{{ detailView.cname }}" readonly>
         </div>
 
+        {% if login_session == 'insung' %}
         <div class="mb-3">
             <label for="memo">비고</label>
             <textarea class="form-control" name="memo" id="memo"  readonly>{{ detailView.memo }}</textarea>
         </div>
+        {% else %}
+        {% if detailView.finish == '종료' %}
+        <div class="mb-3">
+            <label for="memo">비고</label>
+            <textarea class="form-control" name="memo" id="memo"  readonly>{{ detailView.memo }}</textarea>
+        </div>
+        {% else %}
+        <div class="mb-3">
+            <label for="memo">비고</label>
+            <textarea class="form-control" name="memo" id="memo">{{ detailView.memo }}</textarea>
+        </div>
+        {% endif %}
+        {% endif %}
 
         {% if login_session == 'insung' %}
         <div class="mb-3">
@@ -165,7 +179,7 @@
             {% endif %}
         </div>
         {% else %}
-          <div class="mb-3">
+        <div class="mb-3">
             <label for="option">의견</label>
             {% if detailView.option == None %}
             <textarea class="form-control" style="resize: none;" name="option" readonly> </textarea>
@@ -176,26 +190,26 @@
         {% endif %}
 
 
-          <div class="mb-3">
+        <div class="mb-3">
             <label for="finish">종결 여부</label>
-                {% if login_session == 'insung' %}
-                <select name="finish" id="finish">
+            {% if login_session == 'insung' %}
+            <select name="finish" id="finish">
                 {% else %}
                 <select name="finish" onFocus="this.initialSelect = this.selectedIndex;" onChange="this.selectedIndex = this.initialSelect;">
-                {% endif %}
-                {% if detailView.finish == "진행 중" %}
+                    {% endif %}
+                    {% if detailView.finish == "진행 중" %}
                     <option value="{{ detailView.finish }}" >{{ detailView.finish }}</option>
                     <option value="종료">종료</option>
-                {% elif detailView.finish == None %}
+                    {% elif detailView.finish == None %}
                     <option value="" selected> </option>
                     <option value="진행 중" >진행 중</option>
                     <option value="종료">종료</option>
-                {% else %}
+                    {% else %}
                     <option value="진행 중" >진행 중</option>
                     <option value="종료" selected>종료</option>
-                {% endif %}
+                    {% endif %}
                 </select>
-                </select>
+            </select>
         </div>
         <input type="hidden" value="{{ user_dept }}" name="user_dept" id="user_dept">
         <input type="submit" class="btn btn-primary" value="저장">

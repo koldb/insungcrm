@@ -50,7 +50,11 @@
             {% if login_session == 'insung' %}
             <textarea class="form-control" name="memo" id="memo"  readonly>{{ detailView.memo }}</textarea>
             {% else %}
-            <textarea class="form-control" name="memo" id="memo" >{{ detailView.memo }}</textarea>
+                {% if detailView.finish == '종료' %}
+                <textarea class="form-control" name="memo" id="memo" readonly>{{ detailView.memo }}</textarea>
+                {% else %}
+                <textarea class="form-control" name="memo" id="memo" >{{ detailView.memo }}</textarea>
+                {% endif %}
             {% endif %}
         </div>
 

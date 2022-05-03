@@ -1,5 +1,6 @@
 {% extends "base/base2.html" %}
 {% block content %}
+{% load humanize %}
 <style>
   table {
     width: 100%;
@@ -43,14 +44,18 @@
                 <th>총 금액</th>
             </tr>
             <tr>
-                <td>{{ detailView.quantity }}</td>
-                <td>{{ detailView.per_price }}</td>
+                <td>{{ detailView.quantity|intcomma }}</td>
+                <!--<td>{{  detailView.per_price }}</td>-->
+                <td>{{ detailView.per_price|intcomma }}</td>
                 <!--<td>{{ detailView.total_price }}</td>-->
-                <td>{% widthratio detailView.quantity 1 detailView.per_price %}</td>
+                <td>{{ detailView.total_price|intcomma }}</td>
             </tr>
          </table>
 
         <br>
+        {% if login_session != 'insung' %}
+
+        {% else %}
         <div class="mb-3">
             <label for="new_old">구분</label>
             <select name="new_old" id="new_old">
@@ -61,8 +66,8 @@
                 <option value="기존">기존</option>
                 {% endif %}
             </select>
-
         </div>
+        {% endif %}
 
         <div class="mb-3">
             <label for="cname">업체명</label>

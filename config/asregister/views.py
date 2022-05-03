@@ -54,21 +54,49 @@ def as_list(request):
 
     if request.method == 'GET':
         if login_session == 'insung':
-            company_sheet = ASsheet.objects.all().order_by('rg_date')
+            sort = request.GET.get('sort', '')
+            if sort == 'rg_date':
+                company_sheet = ASsheet.objects.all().order_by('rg_date')
+            elif sort == 'rp_date':
+                company_sheet = ASsheet.objects.all().order_by('rp_date')
+            elif sort == 'product_name':
+                company_sheet = ASsheet.objects.all().order_by('product_name')
+            elif sort == 'finish':
+                company_sheet = ASsheet.objects.all().order_by('finish')
+            elif sort == 'cname':
+                company_sheet = ASsheet.objects.all().order_by('cname')
+            elif sort == 'all':
+                company_sheet = ASsheet.objects.all().order_by('cname', 'rg_date', 'finish')
+            else:
+                company_sheet = ASsheet.objects.all().order_by('rg_date', 'finish')
 
+            #company_sheet = ASsheet.objects.all().order_by('rg_date')
             page = request.GET.get('page', '1')
             paginator = Paginator(company_sheet, 5)
             page_obj = paginator.get_page(page)
-            print("페이징 끝")
+            print("insung GET 페이징 끝")
 
         else:
-            company_sheet = ASsheet.objects.filter(cname=login_session).order_by('rg_date')
+            sort = request.GET.get('sort', '')
+            if sort == 'rg_date':
+                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('rg_date')
+            elif sort == 'rp_date':
+                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('rp_date')
+            elif sort == 'product_name':
+                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('product_name')
+            elif sort == 'finish':
+                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('finish')
+            elif sort == 'all':
+                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('rg_date', 'finish')
+            else:
+                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('rg_date', 'finish')
+            #company_sheet = ASsheet.objects.filter(cname=login_session).order_by('rg_date')
             page = request.GET.get('page', '1')
             paginator = Paginator(company_sheet, 5)
             page_obj = paginator.get_page(page)
-            print("페이징 끝")
+            print("GET 페이징 끝")
 
-        context = {'login_session': login_session, 'company_sheet': company_sheet, 'page_obj': page_obj}
+        context = {'login_session': login_session, 'company_sheet': company_sheet, 'page_obj': page_obj, 'sort': sort}
         print('끝')
         return render(request, 'assheet/as_list.html', context)
     elif request.method == 'POST':
@@ -78,13 +106,13 @@ def as_list(request):
             page = request.GET.get('page', '1')
             paginator = Paginator(company_sheet, 5)
             page_obj = paginator.get_page(page)
-            print("페이징 끝")
+            print("insung POST 페이징 끝")
         else:
             company_sheet = ASsheet.objects.filter(cname=login_session).order_by('rg_date')
             page = request.GET.get('page', '1')
             paginator = Paginator(company_sheet, 5)
             page_obj = paginator.get_page(page)
-            print("페이징 끝")
+            print("POST 페이징 끝")
         context = {'company_sheet': company_sheet, 'login_session': login_session, 'page_obj': page_obj}
         print("리스트 끝")
         return render(request, 'assheet/as_list.html', context)

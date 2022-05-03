@@ -1,6 +1,7 @@
 {% extends "base/base2.html" %}
 {% block content %}
-<style>
+{% load humanize %}
+<style xmlns="http://www.w3.org/1999/html">
   table {
     width: 100%;
     border: 1px solid #dcdcdc;
@@ -16,8 +17,55 @@
   }
 </style>
 
+<script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        $('#quantity, #per_price').on('change', function() {
+        let tprice = $('#total_price').val( $('#quantity').val().replace(/[^\d]+/g, '') * $('#per_price').val().replace(/[^\d]+/g, '') );
+        return tprice;
+
+        });
+
+    });
+
+    function nocomma(obj){
+        return obj.replace(/[^\d]+/g, '');
+    }
+
+
+    function comma(str) {
+        str = String(str);
+        return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+    }
+
+    function uncomma(str) {
+        str = String(str);
+        return str.replace(/[^\d]+/g, '');
+    }
+
+    function inputNumberFormat(obj) {
+        obj.value = comma(uncomma(obj.value));
+    }
+
+    function inputOnlyNumberFormat(obj) {
+        obj.value = onlynumber(uncomma(obj.value));
+    }
+
+    function onlynumber(str) {
+	    str = String(str);
+	    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g,'$1');
+	}
+
+
+
+</script>
+
+
+
 <div class="container my-3">
-    <form method="POST" action="{% url 'isscm:sheet_modify' detailView.no %}">
+    <form method="POST" action="{% url 'isscm:sheet_modify' detailView.no %}" onsubmit="nocomma()">
         {% csrf_token %}
         <div class="mb-3">
             <div>
@@ -41,28 +89,48 @@
 
         <div>
             <label for="quantity">수량</label>
-            <input type="text" name="quantity" id="quantity" value="{{ detailView.quantity }}">
+            <input type="text" name="quantity" id="quantity" value="{{ detailView.quantity|intcomma }}" onkeyup="inputNumberFormat(this)" su>
         </div>
 
+        {% if login_session == 'insung' %}
         <div>
             <label for="per_price">개당 단가</label>
-            {% if detailView.per_price == none %}
-            <input type="text" name="per_price" value="0">
+            {% if detailView.per_price == 0 %}
+            <input type="text" name="per_price" id="per_price" value="0" onkeyup="inputNumberFormat(this)">
             {% else %}
-            <input type="text" name="per_price" id="per_price" value="{{ detailView.per_price }}">
+            <input type="text" name="per_price" id="per_price" value="{{ detailView.per_price|intcomma }}" onkeyup="inputNumberFormat(this)">
             {% endif %}
         </div>
 
         <div>
             <label for="total_price">총 금액</label>
-             {% if detailView.total_price == none %}
-            <input type="text" name="total_price" value="0">
-             {% else %}
-            <input type="text" name="total_price" id="total_price" value="{{ detailView.total_price }}">
+            {% if total_price != 0 %}
+            <input type="text" id="total_price" name="total_price" value="{{ detailView.total_price|intcomma }}" onchange="inputNumberFormat(this)">
+            {% else %}
+            <input type="text" id="total_price" name="total_price" value="0" onchange="inputNumberFormat(this)">
             {% endif %}
         </div>
+        {% else %}
+        <div>
+            <label for="per_price">개당 단가</label>
+            {% if detailView.per_price == 0 %}
+            <input type="number" name="per_price" id="per_price" value="0" readonly>
+            {% else %}
+            <input type="number" name="per_price" id="per_price" value="{{ detailView.per_price|intcomma }}" readonly>
+            {% endif %}
+        </div>
+        <div>
+            <label for="total_price">총 금액</label>
+            {% if total_price != 0 %}
+            <input type="number" id="total_price" name="total_price" value="{{ detailView.total_price|intcomma }}"readonly>
+            {% else %}
+            {% endif %}
+        </div>
+        {% endif %}
 
         <br>
+        {% if login_session != 'insung' %}
+        {% else %}
         <div class="mb-3">
               <label for="new_old">구분</label>
                 <select name="new_old" id="new_old">
@@ -75,6 +143,7 @@
                 {% endif %}
                 </select>
         </div>
+        {% endif %}
 
         <div class="mb-3">
             <label for="cname">업체명</label>
@@ -86,6 +155,7 @@
             <textarea class="form-control" name="memo" id="memo"  readonly>{{ detailView.memo }}</textarea>
         </div>
 
+        {% if login_session == 'insung' %}
         <div class="mb-3">
             <label for="option">의견</label>
             {% if detailView.option == None %}
@@ -94,6 +164,16 @@
             <textarea class="form-control" style="resize: none;" name="option" id="option"  >{{ detailView.option }}</textarea>
             {% endif %}
         </div>
+        {% else %}
+          <div class="mb-3">
+            <label for="option">의견</label>
+            {% if detailView.option == None %}
+            <textarea class="form-control" style="resize: none;" name="option" readonly> </textarea>
+            {% else %}
+            <textarea class="form-control" style="resize: none;" name="option" id="option" readonly>{{ detailView.option }}</textarea>
+            {% endif %}
+        </div>
+        {% endif %}
 
 
           <div class="mb-3">
@@ -101,7 +181,7 @@
                 {% if login_session == 'insung' %}
                 <select name="finish" id="finish">
                 {% else %}
-                <select name="finish" disabled>
+                <select name="finish" onFocus="this.initialSelect = this.selectedIndex;" onChange="this.selectedIndex = this.initialSelect;">
                 {% endif %}
                 {% if detailView.finish == "진행 중" %}
                     <option value="{{ detailView.finish }}" >{{ detailView.finish }}</option>
@@ -114,6 +194,7 @@
                     <option value="진행 중" >진행 중</option>
                     <option value="종료" selected>종료</option>
                 {% endif %}
+                </select>
                 </select>
         </div>
         <input type="hidden" value="{{ user_dept }}" name="user_dept" id="user_dept">

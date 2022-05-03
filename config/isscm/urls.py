@@ -1,8 +1,6 @@
 from django.urls import path
 from . import views
 
-
-
 app_name = 'isscm'
 
 urlpatterns = [
@@ -15,7 +13,6 @@ urlpatterns = [
     path('sheet_modify/<int:pk>/', views.sheet_modify, name='sheet_modify'),
     path('sheet_delete/<int:pk>/', views.sheet_delete, name='sheet_delete'),
     path('searchResult/', views.searchResult, name='searchResult'),
-    path('bla', views.bla, name='bla'),
 
 ]
 

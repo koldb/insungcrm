@@ -23,7 +23,7 @@ ROOT_DIR = os.path.dirname(BASE_DIR)
 SECRET_KEY = 'django-insecure-lhg(8$sl)0=zsgc3wsu#mumkj1#k*wk_v=%-4p8-$225kz_fk8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'estimate',
     'isscm',
     'asregister',
+    'django.contrib.humanize',
 
 
 

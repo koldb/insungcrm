@@ -65,8 +65,6 @@
                <select name="finish" id="finish" disabled>
                 {% if detailView.finish == None %}
                    <option value="" selected> </option>
-                   <option value="진행 중" hidden>진행 중</option>
-                   <option value="종료" hidden>종료</option>
                 {% else %}
                 <option value="{{ detailView.finish }}">{{ detailView.finish }}</option>
                 {% endif %}

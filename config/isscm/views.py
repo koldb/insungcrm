@@ -285,11 +285,11 @@ def sheet_modify(request, pk):
 def sheet_delete(request, pk):
     login_session = request.session.get('login_session')
     detailView = get_object_or_404(EstimateSheet, no=pk)
-    context = {'login_session': login_session}
-    if detailView.cname == login_session:
+    if detailView.cname == login_session or login_session == 'insung':
         detailView.delete()
         print('삭제완료')
         return redirect('isscm:sheet_list')
     else:
-        return redirect(f'/isscm/sheet_detail/{pk}')
+        print("삭제 됨?")
+        return redirect('isscm:sheet_list')
 

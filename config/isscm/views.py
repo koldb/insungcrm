@@ -78,7 +78,23 @@ def sheet_list(request):
     
     if request.method == 'GET':
         if login_session == 'insung':
-            company_sheet = EstimateSheet.objects.all().order_by('user_dept', 'rg_date', 'rp_date')
+            sort = request.GET.get('sort', '')
+            if sort == 'rg_date':
+                company_sheet = EstimateSheet.objects.all().order_by('rg_date')
+            elif sort == 'rp_date':
+                company_sheet = EstimateSheet.objects.all().order_by('rp_date')
+            elif sort == 'product_name':
+                company_sheet = EstimateSheet.objects.all().order_by('product_name')
+            elif sort == 'new_old':
+                company_sheet = EstimateSheet.objects.all().order_by('new_old')
+            elif sort == 'cname':
+                company_sheet = EstimateSheet.objects.all().order_by('cname')
+            elif sort == 'finish':
+                company_sheet = EstimateSheet.objects.all().order_by('finish')
+            elif sort == 'user_dept':
+                company_sheet = EstimateSheet.objects.all().order_by('-user_dept')
+            else:
+                company_sheet = EstimateSheet.objects.all().order_by('user_dept', 'rg_date', 'rp_date')
 
             page = request.GET.get('page', '1')
             paginator = Paginator(company_sheet, 7)
@@ -93,15 +109,32 @@ def sheet_list(request):
             dept_2 = sheet_chart_data.filter(user_dept="영업2팀").count()
             print(dept_2)
             sheet_chart = [dept_1, dept_2]
-            context = {'login_session': login_session, 'page_obj': page_obj, 'sheet_chart': sheet_chart}
+            context = {'login_session': login_session, 'page_obj': page_obj, 'sheet_chart': sheet_chart, 'sort': sort}
 
         else:
-            company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('rg_date', 'rp_date')
+            sort = request.GET.get('sort', '')
+            if sort == 'rg_date':
+                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('rg_date')
+            elif sort == 'rp_date':
+                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('rp_date')
+            elif sort == 'product_name':
+                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('product_name')
+            elif sort == 'new_old':
+                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('new_old')
+            elif sort == 'cname':
+                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('cname')
+            elif sort == 'finish':
+                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('finish')
+            elif sort == 'all':
+                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('rg_date', 'rp_date', 'finish')
+            else:
+                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('user_dept', 'rg_date', 'rp_date')
+            #company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('rg_date', 'rp_date')
             page = request.GET.get('page', '1')
             paginator = Paginator(company_sheet, 7)
             page_obj = paginator.get_page(page)
             print("일반 GET 페이징 끝")
-            context = {'login_session': login_session, 'page_obj': page_obj}
+            context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort}
 
         print('끝')
         return render(request, 'isscm/sheet_list.html', context)
@@ -228,9 +261,9 @@ def sheet_modify(request, pk):
         # 수정 내용 저장
         detailView.rp_date = request.POST['rp_date']
         detailView.product_name = request.POST['product_name']
-        detailView.quantity = request.POST['quantity']
-        detailView.per_price = request.POST.get('per_price', None)
-        detailView.total_price = request.POST.get('total_price', None)
+        detailView.quantity = request.POST['quantity'].replace(",", "")
+        detailView.per_price = request.POST.get('per_price', None).replace(",", "")
+        detailView.total_price = request.POST.get('total_price', None).replace(",", "")
         detailView.new_old = request.POST['new_old']
         detailView.cname = request.POST['cname']
         detailView.memo = request.POST['memo']
@@ -260,12 +293,3 @@ def sheet_delete(request, pk):
     else:
         return redirect(f'/isscm/sheet_detail/{pk}')
 
-
-#테스트
-@csrf_exempt
-def bla(request):
-    if request.method == 'POST':
-        test = request.POST['test[]']
-        return print(type(test))
-    else:
-        return print("안됨")

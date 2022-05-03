@@ -1,15 +1,5 @@
 {% extends "base/base2.html" %}
 {% block content %}
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<script type="text/javascript">
-    function getlist() {
-        var list = new Array();
-        $("input[name=test1]").each(function(index, item){
-              list.push($(item).val());                        <!-- input의 value들을 배열 list에 넣는다. -->
-        });
-        $("#test_list").val(list);                            <!-- hidden type에 value값으로 넣어준다. -->
-    }
-</script>
 <!--견적서 등록 페이지-->
 <div class="container my-3">
     <form method="post" action="{% url 'isscm:sheet_insert' %}">
@@ -33,7 +23,6 @@
 
         <button type="submit" class="btn btn-primary" onclick="alert('입력 완료')">제출</button>
     </form>
-
 
 
 

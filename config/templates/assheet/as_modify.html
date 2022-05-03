@@ -47,15 +47,29 @@
 
         <div class="mb-3">
             <label for="memo">비고</label>
+            {% if login_session == 'insung' %}
             <textarea class="form-control" name="memo" id="memo"  readonly>{{ detailView.memo }}</textarea>
+            {% else %}
+            <textarea class="form-control" name="memo" id="memo" >{{ detailView.memo }}</textarea>
+            {% endif %}
         </div>
 
         <div class="mb-3">
+            {% if login_session == 'insung' %}
             <label for="option">의견</label>
             {% if detailView.option == None %}
             <textarea class="form-control" style="resize: none;" name="option"> </textarea>
             {% else %}
             <textarea class="form-control" style="resize: none;" name="option" id="option"  >{{ detailView.option }}</textarea>
+            {% endif %}
+
+            {% else %}
+             <label for="option">의견</label>
+            {% if detailView.option == None %}
+            <textarea class="form-control" style="resize: none;" name="option" readonly> </textarea>
+            {% else %}
+            <textarea class="form-control" style="resize: none;" name="option" id="option"  readonly>{{ detailView.option }}</textarea>
+            {% endif %}
             {% endif %}
         </div>
 
@@ -65,7 +79,7 @@
                 {% if login_session == 'insung' %}
                 <select name="finish" id="finish">
                 {% else %}
-                <select name="finish" disabled>
+                <select name="finish" onFocus="this.initialSelect = this.selectedIndex;" onChange="this.selectedIndex = this.initialSelect;">
                 {% endif %}
                 {% if detailView.finish == "진행 중" %}
                     <option value="{{ detailView.finish }}">{{ detailView.finish }}</option>

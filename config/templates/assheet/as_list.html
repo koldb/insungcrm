@@ -72,7 +72,7 @@
     <table class="board">
         <thead>
         {% if page_obj %}
-       <tr class="header" style="text-align:center;">
+        <tr class="header" style="text-align:center;">
             <th style="width:5%;">순번</th>
             <th style="width:10%">업체명</th>
             <th style="width:9%">고객 접수 일자</th>
@@ -122,8 +122,8 @@
 <div class = "container" id="paging">
     {#first previous#}
     {% if page_obj.has_previous %}
-    <a href="?query={{ query }}&page_obj={{ page_obj }}&page=1">First</a>
-    <a href="?query={{ query }}&page_obj={{ page_obj }}&page={{page_obj.previous_page_number}}">Previous</a>
+    <a href="?query={{ query }}&page_obj={{ page_obj }}&page=1&sort={{sort}}">First</a>
+    <a href="?query={{ query }}&page_obj={{ page_obj }}&page={{page_obj.previous_page_number}}&sort={{sort}}">Previous</a>
     {% endif %}
     {# 3of4 #}
     <span>{{page_obj.number}}</span>
@@ -131,9 +131,27 @@
     <span>{{page_obj.paginator.num_pages}}</span>
     {# Next Last #}
     {% if page_obj.has_next %}
-    <a href="?query={{ query }}&page_obj={{ page_obj }}&page={{page_obj.next_page_number}}">Next</a>
-    <a href="?query={{ query }}&page_obj={{ page_obj }}&page={{page_obj.paginator.num_pages}}">Last</a>
+    <a href="?query={{ query }}&page_obj={{ page_obj }}&page={{page_obj.next_page_number}}&sort={{sort}}">Next</a>
+    <a href="?query={{ query }}&page_obj={{ page_obj }}&page={{page_obj.paginator.num_pages}}&sort={{sort}}">Last</a>
     {%endif%}
 </div>
+
+<!--정렬-->
+<div class="col-4">
+    <form method="GET" action="{% url 'asregister:as_list' %}">
+            <select name="sort" id="sort">
+                {% if login_session == 'insung' %}
+                <option value="cname" id="cname">업체명</option>
+                {% endif %}
+                <option value="rg_date" id="rg_date">고객 접수 일자</option>
+                <option value="rp_date" id="rp_date">회신 완료 일자</option>
+                <option value="product_name" id="product_name">제품명</option>
+                <option value="finish" id="finish">완료 여부</option>
+                <option value="all" id="all">전체</option>
+            </select>
+            <button class="btn btn-primary" type="submit" value="">정렬</button>
+    </form>
+</div>
+
 
 {% endblock %}

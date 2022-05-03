@@ -6,7 +6,6 @@ app_name = 'isscm'
 urlpatterns = [
     path('', views.index, name='index'),
     path('sheet_insert', views.sheet_insert, name='sheet_insert'),
-    path('ex_insert', views.ex_insert, name='ex_insert'),
     path('sheet_list', views.sheet_list, name='sheet_list'),
     path('uploadFile/<int:pk>/', views.uploadFile, name='uploadFile'),
     path('sheet_detail/<int:pk>/', views.sheet_detail, name='sheet_detail'),

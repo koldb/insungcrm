@@ -7,7 +7,7 @@ from .models import EstimateSheet, UploadFile
 from . import models
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.views.decorators.csrf import csrf_exempt
+import json
 
 # Create your views here.
 
@@ -17,30 +17,6 @@ from django.views.decorators.csrf import csrf_exempt
 def index(request):
     login_session = request.session.get('login_session')
     return render(request, 'isscm/index.html', {'login_session': login_session})
-
-# ex_견적 입력
-def ex_insert(request):
-    print("가입력")
-    login_session = request.session.get('login_session')
-    if request.method == 'GET':
-        print('가입력 겟 도달')
-        # render context로 넘길때 key:value 로 넘겨야 넘어가고 받아진다
-        context = {'login_session': login_session}
-        print('가입력 겟 끝나 나감')
-        return render(request, 'isscm/sheet_insert.html', context)
-    elif request.method == 'POST':
-        print("가입력 입력 시작")
-
-        product_name = request.POST['ex_product_name']
-        quantity = request.POST['ex_quantity']
-        cname = request.POST['ex_cname']
-        memo = request.POST['ex_memo']
-
-        insert = {'product_name': product_name, 'quantity': quantity, 'cname': cname, 'memo': memo}
-        login_session = request.session.get('login_session')
-        context = {'login_session': login_session, 'insert': insert}
-        print('가입력 입력 끝나 나감')
-        return render(request, 'isscm/sheet_insert.html', context)
 
 # 견적 입력
 @login_required
@@ -58,8 +34,15 @@ def sheet_insert(request):
     elif request.method == 'POST':
         print("입력 시작")
         insert = EstimateSheet()
+        insert.estitle = request.POST['estitle']
         insert.product_name = request.POST['product_name']
+        print(insert.product_name)
+        # qu_str= request.POST.getlist('quantity')
+        # #qu_map= map(int, qu_str)
+        # insert.quantity = json.dumps(qu_str)
+        # print(insert.quantity)
         insert.quantity = request.POST['quantity']
+        print(insert.quantity)
         insert.cname = request.POST['cname']
         insert.memo = request.POST['memo']
 
@@ -83,8 +66,8 @@ def sheet_list(request):
                 company_sheet = EstimateSheet.objects.all().order_by('rg_date')
             elif sort == 'rp_date':
                 company_sheet = EstimateSheet.objects.all().order_by('rp_date')
-            elif sort == 'product_name':
-                company_sheet = EstimateSheet.objects.all().order_by('product_name')
+            elif sort == 'estitle':
+                company_sheet = EstimateSheet.objects.all().order_by('estitle')
             elif sort == 'new_old':
                 company_sheet = EstimateSheet.objects.all().order_by('new_old')
             elif sort == 'cname':
@@ -96,17 +79,18 @@ def sheet_list(request):
             else:
                 company_sheet = EstimateSheet.objects.all().order_by('user_dept', 'rg_date', 'rp_date')
 
+            #페이징
             page = request.GET.get('page', '1')
             paginator = Paginator(company_sheet, 7)
             page_obj = paginator.get_page(page)
             print("insung GET 페이징 끝")
 
-            # chart data
+            #차트 데이터
             sheet_chart = []
             sheet_chart_data = EstimateSheet.objects.all()
-            dept_1 = sheet_chart_data.filter(user_dept="영업1팀").count()
+            dept_1 = sheet_chart_data.filter(user_dept="영업1팀", finish="종료").count()
             print(dept_1)
-            dept_2 = sheet_chart_data.filter(user_dept="영업2팀").count()
+            dept_2 = sheet_chart_data.filter(user_dept="영업2팀", finish="종료").count()
             print(dept_2)
             sheet_chart = [dept_1, dept_2]
             context = {'login_session': login_session, 'page_obj': page_obj, 'sheet_chart': sheet_chart, 'sort': sort}
@@ -117,8 +101,8 @@ def sheet_list(request):
                 company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('rg_date')
             elif sort == 'rp_date':
                 company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('rp_date')
-            elif sort == 'product_name':
-                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('product_name')
+            elif sort == 'estitle':
+                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('estitle')
             elif sort == 'new_old':
                 company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('new_old')
             elif sort == 'cname':
@@ -291,5 +275,5 @@ def sheet_delete(request, pk):
         return redirect('isscm:sheet_list')
     else:
         print("삭제 됨?")
-        return redirect('isscm:sheet_list')
+        return redirect(f'/isscm/sheet_detail/{pk}')
 

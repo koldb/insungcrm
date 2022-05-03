@@ -236,8 +236,7 @@ def as_modify(request, pk):
 def as_delete(request, pk):
     login_session = request.session.get('login_session')
     detailView = get_object_or_404(ASsheet, no=pk)
-    context = {'login_session': login_session}
-    if detailView.cname == login_session:
+    if detailView.cname == login_session or login_session == 'insung':
         detailView.delete()
         print('삭제완료')
         return redirect('asregister:as_list')

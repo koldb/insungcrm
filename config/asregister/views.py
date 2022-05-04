@@ -164,13 +164,15 @@ def AsUploadFile(request, pk):
                 fileTitle = request.POST["fileTitle"]
                 uploadedFile = request.FILES.get('uploadedFile')
                 sheet_no = pk
+                menu = request.POST["menu"]
 
                 # DB에 저장
                 uploadfile = models.AsUploadFile(
                     cname=cname,
                     title=fileTitle,
                     uploadedFile=uploadedFile,
-                    sheet_no=sheet_no
+                    sheet_no=sheet_no,
+                    menu = menu
                 )
                 uploadfile.save()
     else:

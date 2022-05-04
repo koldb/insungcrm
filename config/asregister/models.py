@@ -1,5 +1,5 @@
 from django.db import models
-
+from isscm.utils import rename_file_to_uuid
 
 # Create your models here.
 
@@ -30,9 +30,10 @@ class AsUploadFile(models.Model):
     no = models.AutoField(primary_key=True)
     cname = models.CharField(max_length=100, null=True)
     title = models.CharField(max_length=200, null=True)
-    uploadedFile = models.FileField(upload_to = "Uploaded Files/", blank=True)
+    uploadedFile = models.FileField(upload_to =rename_file_to_uuid, blank=True)
     dateTimeOfUpload = models.DateTimeField(auto_now = True)
     sheet_no = models.IntegerField(null=True)
+    menu = models.TextField(null=True, blank=True)
 
     class Meta:
         managed = True

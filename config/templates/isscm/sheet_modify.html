@@ -75,7 +75,7 @@
             <div>
                 <label for="rp_date">회신 완료 일자</label>
                 {% if detailView.finish == '종료' %}
-                <input type="date" value="{{ detailView.rp_date }}" name="rp_date" id="rp_date" readonly>
+                <input type="date" value="{{ detailView.rp_date }}" name="rp_date" id="rp_date">
                 {% else %}
                 <input type="date" value="{{ detailView.rp_date }}" name="rp_date" id="rp_date" >
                 {% endif %}
@@ -216,7 +216,9 @@
             </select>
         </div>
         <input type="hidden" value="{{ user_dept }}" name="user_dept" id="user_dept">
+
         <input type="submit" class="btn btn-primary" value="저장">
+
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:sheet_detail' detailView.no %}'" value="취소">
     </form>
 </div>

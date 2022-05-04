@@ -1,0 +1,114 @@
+{% extends "base/base2.html" %}
+{% block content %}
+{% load humanize %}
+<style>
+    #paging{
+        width:150px;
+        margin:0 auto;
+    }
+    tr, td, th{
+        border : 1px solid #dcdcdc;
+        width : 350px;
+        margin: 0 auto;
+        }
+</style>
+
+<!--검색창 부분-->
+<div>
+    <form action="{% url 'isscm:ordersearchResult' %}" method="GET">
+        {% csrf_token %}
+        <input type="search" placeholder="발주명 / 제품명 / 구분 / 업체명 / 담당 팀 검색 가능" class="form-control mr-sm-2" name="q" value="{{ query }}">
+        <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
+    </form>
+</div>
+
+<div>
+    <table class="board">
+        <thead>
+        {% if page_obj %}
+        <tr class="header" style="text-align:center;">
+            <th style="width:5%">순번</th>
+            <th style="width:9%">완료 일자</th>
+            <th style="width:10%">발주 명</th>
+            <th style="width:10%">제품명</th>
+            <th style="width:5%">수량</th>
+            <th style="width:6%">개당 단가</th>
+            <th style="width:9%">총 금액</th>
+            <th style="width:5%">구분</th>
+            <th style="width:10%">업체명</th>
+            <th style="width:15%">의견</th>
+            <th style="width:5%">담당 팀</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for list in page_obj %}
+
+        <tr style="text-align:center;">
+            <td>{{ forloop.counter }}</td>
+            {% if list.rp_date == None %}
+            <td> </td>
+            {% else %}
+            <td>{{ list.rp_date }}</td>
+            {% endif %}
+            <td><a href="{% url 'isscm:order_modify' list.no %}">{{ list.odtitle }}</a></td>
+            <td>{{ list.product_name }}</td>
+            <td>{{ list.quantity|intcomma }}</td>
+            <td>{{ list.per_price|intcomma }}</td>
+            <td>{{ list.total_price|intcomma }}</td>
+            <td>{{ list.new_old }}</td>
+            <td>{{ list.cname }}</td>
+            <td>{{ list.option | truncatewords:10}}</td>
+            <td>{{ list.user_dept }} </td>
+
+
+        </tr>
+        {% endfor %}
+
+        {% else %}
+        <tr>
+        <tr><h2>등록 된 글이 없습니다.</h2></tr>
+        </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<br>
+
+
+<!--페이징 부분-->
+<div class = "container" id="paging">
+    {#first previous#}
+    {% if page_obj.has_previous %}
+    <a href="?query={{ query }}&page_obj={{ page_obj }}&page=1&sort={{sort}}">First</a>
+    <a href="?query={{ query }}&page_obj={{ page_obj }}&page={{page_obj.previous_page_number}}&sort={{sort}}">Previous</a>
+    {% endif %}
+    {# 3of4 #}
+    <span>{{page_obj.number}}</span>
+    <span>of</span>
+    <span>{{page_obj.paginator.num_pages}}</span>
+    {# Next Last #}
+    {% if page_obj.has_next %}
+    <a href="?query={{ query }}&page_obj={{ page_obj }}&page={{page_obj.next_page_number}}&sort={{sort}}">Next</a>
+    <a href="?query={{ query }}&page_obj={{ page_obj }}&page={{page_obj.paginator.num_pages}}&sort={{sort}}">Last</a>
+    {%endif%}
+</div>
+
+<!--정렬-->
+<div class="col-4">
+    <form method="GET" action="{% url 'isscm:order_list' %}">
+        <select name="sort" id="sort">
+            <option value="rp_date" id="rp_date">완료 일자</option>
+            <option value="odtitle" id="odtitle">발주명</option>
+            <option value="product_name" id="product_name">제품명</option>
+            <option value="new_old" id="new_old">구분</option>
+            <option value="cname" id="cname">업체명</option>
+            <option value="finish" id="finish">종결 여부</option>
+            <option value="user_dept" id="user_dept">부서명</option>
+            <option value="all" id="all">전체</option>
+        </select>
+        <button class="btn btn-primary" type="submit" value="">정렬</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,6 +1,5 @@
 from django.db import models
-from uuid import uuid4
-from datetime import datetime
+from .utils import rename_file_to_uuid
 
 # Create your models here.
 
@@ -36,9 +35,10 @@ class UploadFile(models.Model):
     no = models.AutoField(primary_key=True)
     cname = models.CharField(max_length=100, null=True)
     title = models.CharField(max_length=200, null=True)
-    uploadedFile = models.FileField(upload_to = "Uploaded Files/", blank=True)
+    uploadedFile = models.FileField(upload_to = rename_file_to_uuid, blank=True)
     dateTimeOfUpload = models.DateTimeField(auto_now = True)
     sheet_no = models.IntegerField(null=True)
+    menu = models.TextField(null=True, blank=True)
 
     class Meta:
         managed = True
@@ -75,15 +75,17 @@ class OrderUploadFile(models.Model):
     no = models.AutoField(primary_key=True)
     cname = models.CharField(max_length=100, null=True)
     title = models.CharField(max_length=200, null=True)
-    uploadedFile = models.FileField(upload_to="Uploaded Files/", blank=True, null=True)
+    uploadedFile = models.FileField(upload_to=rename_file_to_uuid, blank=True, null=True)
     dateTimeOfUpload = models.DateTimeField(auto_now=True)
     sheet_no = models.IntegerField(null=True)
+    menu = models.TextField(null=True, blank=True)
 
     class Meta:
         managed = True
         db_table = 'Orderuploadfile'
         verbose_name = 'Order file 업로드'
         verbose_name_plural = 'Order file 업로드'
+
 
 
 

@@ -187,13 +187,15 @@ def uploadFile(request, pk):
                 uploadedFile = request.FILES.get('uploadedFile')
                 # uploadedFile = request.FILES["uploadedFile"]
                 sheet_no = pk
+                menu = request.POST["menu"]
 
                 # DB에 저장
                 uploadfile = models.UploadFile(
                     cname=cname,
                     title=fileTitle,
                     uploadedFile=uploadedFile,
-                    sheet_no=sheet_no
+                    sheet_no=sheet_no,
+                    menu = menu
                 )
                 uploadfile.save()
     else:
@@ -507,13 +509,16 @@ def order_uploadFile(request, pk):
                 fileTitle = request.POST["fileTitle"]
                 uploadedFile = request.FILES.get('uploadedFile')
                 sheet_no = pk
+                menu = request.POST["menu"]
 
                 # DB에 저장
                 uploadfile = models.OrderUploadFile(
                     cname=cname,
                     title=fileTitle,
                     uploadedFile=uploadedFile,
-                    sheet_no=sheet_no
+                    sheet_no=sheet_no,
+                    menu=menu
+
                 )
                 uploadfile.save()
     else:

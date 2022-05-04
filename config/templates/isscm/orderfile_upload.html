@@ -22,7 +22,15 @@
         table tr td {
             padding-top: 15px;
         }
-    </style>
+</style>
+
+<script type="text/javaScript">
+    function download(){
+        location.href = file.uploadedFile.url;
+    }
+</script>
+
+
 <body>
 {% if login_session %}
 <form action="{% url 'isscm:order_uploadFile' detailView.no %}" method="POST" enctype="multipart/form-data">

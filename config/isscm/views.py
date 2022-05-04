@@ -7,10 +7,13 @@ from .models import EstimateSheet, UploadFile, Ordersheet
 from . import models
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.core.exceptions import ObjectDoesNotExist
+import urllib
+import os
+from django.http import HttpResponse, Http404
+import mimetypes
+
+
 # Create your views here.
-
-
 
 # 임시 메인페이지
 def index(request):
@@ -529,3 +532,4 @@ def order_uploadFile(request, pk):
 
     return render(request, "isscm/orderfile_upload.html", context={
         "files": uploadfile, "login_session": login_session, 'detailView': detailView})
+

@@ -1,5 +1,6 @@
 from django.db import models
-
+from uuid import uuid4
+from datetime import datetime
 
 # Create your models here.
 
@@ -20,7 +21,6 @@ class EstimateSheet(models.Model):
     option = models.TextField(verbose_name='의견', null=True, blank=True)
     finish = models.CharField(max_length=10, null=True, blank=True)
     user_dept = models.CharField(null=True, blank=True, max_length=20, verbose_name='부서명')
-
 
     def __str__(self):
         return self.no
@@ -69,13 +69,14 @@ class Ordersheet(models.Model):
         verbose_name = '발주 입력'
         verbose_name_plural = '발주 입력'
 
+
 # 발주 파일 업로드, 다운로드 모델
 class OrderUploadFile(models.Model):
     no = models.AutoField(primary_key=True)
     cname = models.CharField(max_length=100, null=True)
     title = models.CharField(max_length=200, null=True)
-    uploadedFile = models.FileField(upload_to = "Uploaded Files/", blank=True)
-    dateTimeOfUpload = models.DateTimeField(auto_now = True)
+    uploadedFile = models.FileField(upload_to="Uploaded Files/", blank=True, null=True)
+    dateTimeOfUpload = models.DateTimeField(auto_now=True)
     sheet_no = models.IntegerField(null=True)
 
     class Meta:
@@ -83,3 +84,8 @@ class OrderUploadFile(models.Model):
         db_table = 'Orderuploadfile'
         verbose_name = 'Order file 업로드'
         verbose_name_plural = 'Order file 업로드'
+
+
+
+
+

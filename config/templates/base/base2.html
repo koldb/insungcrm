@@ -52,12 +52,10 @@ function resize(obj) {
 
                     {% endif %}
                 </li>
-                 <li class="nav-item">
+                <li class="nav-item">
                     {% if login_session %}
-
                     {% else %}
                     <a class="nav-link" href="{% url 'accounts:register' %}">회원가입</a>
-
                     {% endif %}
                 </li>
                 <li class="nav-item">
@@ -72,13 +70,17 @@ function resize(obj) {
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'asregister:as_list' %}">AS 접수 목록</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'isscm:order_insert' %}">발주 입력</a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="{% url 'isscm:order_list' %}">발주 목록</a>
+                </li>
 
                 {% if login_session != '' %}
 
                 {% else %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'company:clist' %}">발주 관리</a>
-                </li>
+
                   <li class="nav-item">
                     <a class="nav-link" href="{% url 'accounts:register' %}">이력 관리</a>
                 </li>

@@ -1,0 +1,98 @@
+{% extends "base/base2.html" %}
+{% load humanize %}
+{% block content %}
+<!--수량*개당 단가 / 콤마 추가 jquery 부분-->
+<script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        $('#quantity, #per_price').on('change', function() {
+        let tprice = $('#total_price').val( $('#quantity').val().replace(/[^\d]+/g, '') * $('#per_price').val().replace(/[^\d]+/g, '') );
+        return tprice;
+        });
+    });
+
+    function nocomma(obj){
+        return obj.replace(/[^\d]+/g, '');
+    }
+
+    function comma(str) {
+        str = String(str);
+        return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+    }
+
+    function uncomma(str) {
+        str = String(str);
+        return str.replace(/[^\d]+/g, '');
+    }
+
+    function inputNumberFormat(obj) {
+        obj.value = comma(uncomma(obj.value));
+    }
+
+    function inputOnlyNumberFormat(obj) {
+        obj.value = onlynumber(uncomma(obj.value));
+    }
+
+    function onlynumber(str) {
+	    str = String(str);
+	    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g,'$1');
+	}
+</script>
+
+
+<!--발주 입력 페이지-->
+<div class="container my-3">
+    <form method="post" action="{% url 'isscm:order_insert' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="cname">업체명</label>
+            <input type="text" class="form-control" name="cname" id="cname" autofocus>
+        </div>
+        <div>
+            <label for="rp_date">완료 일자</label>
+            <input type="date" value="{{ detailView.rp_date }}" name="rp_date" id="rp_date">
+        </div>
+        <div class="mb-3">
+            <label for="odtitle">발주명</label>
+            <input type="text" class="form-control" name="odtitle" id="odtitle">
+        </div>
+        <div class="mb-3">
+            <label for="product_name">제품명</label>
+            <input type="text" class="form-control" name="product_name" id="product_name">
+        </div>
+        <div class="mb-3">
+            <label for="quantity">수량</label>
+            <input type="text" class="form-control" name="quantity" id="quantity" onkeyup="inputNumberFormat(this)">
+        </div>
+        <div class="mb-3">
+            <label for="per_price">개당 단가</label>
+            <input type="text" class="form-control" name="per_price" id="per_price" onkeyup="inputNumberFormat(this)">
+        </div>
+        <div class="mb-3">
+            <label for="total_price">총 금액</label>
+            <input type="text" class="form-control" name="total_price" id="total_price" onkeyup="inputNumberFormat(this)">
+        </div>
+        <div class="mb-3">
+            <label for="new_old">구분</label>
+            <select name="new_old" id="new_old">
+                <option value="신규">신규</option>
+                <option value="기존">기존</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="option">의견</label>
+            <textarea class="form-control" style="resize: none;" name="option" id="option"> </textarea>
+        </div>
+        <div>
+            <input type="hidden" name="user_dept" id="user_dept" value="{{ user_dept }}">
+        </div>
+
+        <div >
+            <button type="submit" class="btn btn-primary" onclick="alert('입력 완료')">제출</button>
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}

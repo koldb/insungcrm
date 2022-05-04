@@ -66,7 +66,7 @@
         {% csrf_token %}
         <div class="mb-3">
             <label for="estitle">견적명</label>
-            <input type="text" class="form-control" name="estitle" id="estitle">
+            <input type="text" class="form-control" name="estitle" id="estitle" autofocus>
         </div>
         <div class="mb-3">
             <label for="product_name">제품명</label>
@@ -82,7 +82,7 @@
         </div>
         <div class="mb-3">
             <label for="memo">비고</label>
-            <textarea class="form-control" onkeydown="resize(this)" onkeyup="resize(this)" name="memo" id="memo" autofocus> </textarea>
+            <textarea class="form-control" onkeydown="resize(this)" onkeyup="resize(this)" name="memo" id="memo"> </textarea>
         </div>
 
 

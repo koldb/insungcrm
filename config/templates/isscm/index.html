@@ -9,6 +9,13 @@
 <body>
 <table>
     <h2>임시 SCM 페이지 입니다.</h2>
+    <div>
+    {% if messages %}
+    {% for message in messages %}
+    {{ message.message }}
+    {% endfor %}
+    {% endif %}
+    </div>
 </table>
 </body>
 </html>

@@ -15,6 +15,26 @@
     height: 15em;
   }
 </style>
+<script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+
+<script>
+     document.addEventListener('keydown', function(event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+        };
+    }, true);
+
+    $(function () {
+      $("#product_name").autocomplete({
+          source: '{% url 'isscm:searchData' %}',
+          minLength: 1
+       });
+    });
+
+</script>
 
 <div class="container my-3">
     <form method="POST" action="{% url 'asregister:as_modify' detailView.no %}">

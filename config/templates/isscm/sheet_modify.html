@@ -58,14 +58,18 @@
 	    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g,'$1');
 	}
 
-
+    document.addEventListener('keydown', function(event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+        };
+    }, true);
 
 </script>
 
 
-
+<!--리스트 표출-->
 <div class="container my-3">
-    <form method="POST" action="{% url 'isscm:sheet_modify' detailView.no %}" onsubmit="nocomma()">
+    <form method="POST" action="{% url 'isscm:sheet_modify' detailView.no %}">
         {% csrf_token %}
         <div class="mb-3">
             <div>
@@ -91,48 +95,37 @@
             <input type="text" class="form-control" name="product_name" id="product_name" value="{{ detailView.product_name }}" >
         </div>
 
-        <div>
-            <label for="quantity">수량</label>
-            <input type="text" name="quantity" id="quantity" value="{{ detailView.quantity|intcomma }}" onkeyup="inputNumberFormat(this)" su>
-        </div>
+        <table>
+            <tr>
+                <th>수량</th>
+                <th>개당 단가</th>
+                <th>총 금액</th>
+            </tr>
+            <!--insung 일때-->
+            {% if login_session == 'insung' %}
+            <tr>
+                <td><input type="text" name="quantity" id="quantity" value="{{ detailView.quantity|intcomma }}" onkeyup="inputNumberFormat(this)"></td>
+                <!--<td>{{  detailView.per_price }}</td>-->
+                <td><input type="text" name="per_price" id="per_price" value="{{ detailView.per_price|intcomma }}" onkeyup="inputNumberFormat(this)"></td>
+                <!--<td>{{ detailView.total_price }}</td>-->
+                <td><input type="text" name="total_price" id="total_price" value="{{ detailView.total_price|intcomma }}" onkeyup="inputNumberFormat(this)"></td>
+            </tr>
+            {% else %}
+            <tr>
+                <td><input type="text" name="quantity" id="quantity" value="{{ detailView.quantity|intcomma }}" onkeyup="inputNumberFormat(this)"></td>
+                <!--<td>{{  detailView.per_price }}</td>-->
+                <td><input type="text" name="per_price" id="per_price" value="{{ detailView.per_price|intcomma }}" onkeyup="inputNumberFormat(this)" readonly></td>
+                <!--<td>{{ detailView.total_price }}</td>-->
+                <td><input type="text" name="total_price" id="total_price" value="{{ detailView.total_price|intcomma }}" onkeyup="inputNumberFormat(this)" readonly></td>
+            </tr>
+            {% endif %}
+        </table>
 
-        {% if login_session == 'insung' %}
-        <div>
-            <label for="per_price">개당 단가</label>
-            {% if detailView.per_price == 0 %}
-            <input type="text" name="per_price" id="per_price" value="0" onkeyup="inputNumberFormat(this)">
-            {% else %}
-            <input type="text" name="per_price" id="per_price" value="{{ detailView.per_price|intcomma }}" onkeyup="inputNumberFormat(this)">
-            {% endif %}
-        </div>
 
-        <div>
-            <label for="total_price">총 금액</label>
-            {% if total_price != 0 %}
-            <input type="text" id="total_price" name="total_price" value="{{ detailView.total_price|intcomma }}" onchange="inputNumberFormat(this)">
-            {% else %}
-            <input type="text" id="total_price" name="total_price" value="0" onchange="inputNumberFormat(this)">
-            {% endif %}
-        </div>
-        {% else %}
-        <div>
-            <label for="per_price">개당 단가</label>
-            {% if detailView.per_price == 0 %}
-            <input type="number" name="per_price" id="per_price" value="0" readonly>
-            {% else %}
-            <input type="number" name="per_price" id="per_price" value="{{ detailView.per_price|intcomma }}" readonly>
-            {% endif %}
-        </div>
-        <div>
-            <label for="total_price">총 금액</label>
-            {% if total_price != 0 %}
-            <input type="number" id="total_price" name="total_price" value="{{ detailView.total_price|intcomma }}"readonly>
-            {% else %}
-            {% endif %}
-        </div>
-        {% endif %}
+
 
         <br>
+        <!--일반 업체 일때-->
         {% if login_session != 'insung' %}
         {% else %}
         <div class="mb-3">

@@ -1,16 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404, reverse
 from .decorators import login_required, login_ok
 import sys
+
 sys.path.append('..')
 from accounts.models import User
-from .models import EstimateSheet, UploadFile, Ordersheet
+from .models import EstimateSheet, UploadFile, Ordersheet, ProductDb, OrderUploadFile
 from . import models
 from django.core.paginator import Paginator
 from django.db.models import Q
-import urllib
-import os
 from django.http import HttpResponse, Http404
-import mimetypes
+import json
+from django.http import JsonResponse
 
 
 # Create your views here.
@@ -19,6 +19,7 @@ import mimetypes
 def index(request):
     login_session = request.session.get('login_session')
     return render(request, 'isscm/index.html', {'login_session': login_session})
+
 
 # 견적 입력
 @login_required
@@ -55,6 +56,7 @@ def sheet_insert(request):
         print('입력 끝나 나감')
         return render(request, 'isscm/sheet_insert.html', context)
 
+
 # 견적 접수건 리스트
 @login_required
 def sheet_list(request):
@@ -81,13 +83,13 @@ def sheet_list(request):
             else:
                 company_sheet = EstimateSheet.objects.all().order_by('user_dept', 'rg_date', 'rp_date')
 
-            #페이징
+            # 페이징
             page = request.GET.get('page', '1')
             paginator = Paginator(company_sheet, 7)
             page_obj = paginator.get_page(page)
             print("insung GET 페이징 끝")
 
-            #차트 데이터
+            # 차트 데이터
             sheet_chart = []
             sheet_chart_data = EstimateSheet.objects.all()
             dept_1 = sheet_chart_data.filter(user_dept="영업1팀", finish="종료").count()
@@ -112,10 +114,12 @@ def sheet_list(request):
             elif sort == 'finish':
                 company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('finish')
             elif sort == 'all':
-                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('rg_date', 'rp_date', 'finish')
+                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('rg_date', 'rp_date',
+                                                                                           'finish')
             else:
-                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('user_dept', 'rg_date', 'rp_date')
-            #company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('rg_date', 'rp_date')
+                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('user_dept', 'rg_date',
+                                                                                           'rp_date')
+            # company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('rg_date', 'rp_date')
             page = request.GET.get('page', '1')
             paginator = Paginator(company_sheet, 7)
             page_obj = paginator.get_page(page)
@@ -151,24 +155,30 @@ def searchResult(request):
     if 'q' in request.GET:
         query = request.GET.get('q')
         print('get?')
-        searchlist = EstimateSheet.objects.all().filter(Q(product_name__icontains=query) | Q(new_old__icontains=query) | Q(cname__icontains=query) | Q(finish__icontains=query))
+        searchlist = EstimateSheet.objects.all().filter(
+            Q(product_name__icontains=query) | Q(new_old__icontains=query) | Q(cname__icontains=query) | Q(
+                finish__icontains=query))
         print("여기 왓나")
         page = request.GET.get('page', '1')
         paginator = Paginator(searchlist, 5)
         page_obj = paginator.get_page(page)
         print("지나갓나")
-        return render(request, 'isscm/sheet_list.html', {'query': query, 'page_obj': page_obj, 'login_session': login_session})
+        return render(request, 'isscm/sheet_list.html',
+                      {'query': query, 'page_obj': page_obj, 'login_session': login_session})
     else:
         print('post로 왓나')
         query = request.GET.get('query')
         print(query)
-        searchlist = EstimateSheet.objects.all().filter(Q(product_name__icontains=query) | Q(new_old__icontains=query) | Q(cname__icontains=query) | Q(finish__icontains=query))
+        searchlist = EstimateSheet.objects.all().filter(
+            Q(product_name__icontains=query) | Q(new_old__icontains=query) | Q(cname__icontains=query) | Q(
+                finish__icontains=query))
         page = request.GET.get('page', '1')
         paginator = Paginator(searchlist, 5)
         page_obj = paginator.get_page(page)
         context = {'query': query, 'page_obj': page_obj, 'login_session': login_session}
         print('포스트 나갓나')
     return render(request, 'isscm/sheet_list.html', context)
+
 
 # 견적 파일 업로드/다운로드
 def uploadFile(request, pk):
@@ -185,8 +195,7 @@ def uploadFile(request, pk):
                 cname = login_session
                 fileTitle = request.POST["fileTitle"]
                 uploadedFile = request.FILES.get('uploadedFile')
-                # uploadedFile = request.FILES["uploadedFile"]
-                sheet_no = pk
+                sheet_no = EstimateSheet.objects.get(no=pk)
                 menu = request.POST["menu"]
 
                 # DB에 저장
@@ -195,7 +204,7 @@ def uploadFile(request, pk):
                     title=fileTitle,
                     uploadedFile=uploadedFile,
                     sheet_no=sheet_no,
-                    menu = menu
+                    menu=menu
                 )
                 uploadfile.save()
     else:
@@ -203,8 +212,8 @@ def uploadFile(request, pk):
         login_session = request.session.get('login_session')
         detailView = get_object_or_404(EstimateSheet, no=pk)
         uploadfile = models.UploadFile.objects.all()
+        print(uploadfile.values())
         no = pk
-
         context = {'login_session': login_session, 'no': no, 'detailView': detailView, 'files': uploadfile}
         print("겟 다 나갓나")
         return render(request, "isscm/file_upload.html", context)
@@ -215,12 +224,25 @@ def uploadFile(request, pk):
     return render(request, "isscm/file_upload.html", context={
         "files": uploadfile, "login_session": login_session, 'detailView': detailView})
 
+# 견적 파일 업로드 삭제
+def sheetfile_delete(request, pk):
+    login_session = request.session.get('login_session')
+    sheetfile = get_object_or_404(UploadFile, no=pk)
+    page_no = sheetfile.sheet_no_id
+    if sheetfile.cname == login_session or login_session == 'insung':
+        sheetfile.delete()
+        print('삭제완료')
+        return redirect(f'/isscm/uploadFile/{page_no}')
+    else:
+        print("삭제 됨?")
+        return redirect(f'/isscm/sheet_detail/{pk}')
+
+
 # 견적서 상세 뷰
 def sheet_detail(request, pk):
     if request.method == 'GET':
         login_session = request.session.get('login_session')
         detailView = get_object_or_404(EstimateSheet, no=pk)
-        # detailView = EstimateSheet.objects.filter(no=pk)
         context = {'detailView': detailView, 'login_session': login_session}
     else:
         print("설마 포스트")
@@ -311,6 +333,7 @@ def sheet_delete(request, pk):
         print("삭제 됨?")
         return redirect(f'/isscm/sheet_detail/{pk}')
 
+
 # 발주 입력
 @login_ok
 def order_insert(request):
@@ -344,6 +367,7 @@ def order_insert(request):
         print('입력 끝나 나감')
         return render(request, 'isscm/order_insert.html', context)
 
+
 # 발주건 리스트
 @login_ok
 def order_list(request):
@@ -367,37 +391,12 @@ def order_list(request):
         else:
             ordersheet = Ordersheet.objects.all().order_by('user_dept', 'rp_date')
 
-        #페이징
+        # 페이징
         page = request.GET.get('page', '1')
         paginator = Paginator(ordersheet, 7)
         page_obj = paginator.get_page(page)
         print("insung GET 페이징 끝")
         context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort}
-        # 일반 업체는 못 들어오도록
-        # else:
-        #     sort = request.GET.get('sort', '')
-        #     if sort == 'rg_date':
-        #         company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('rg_date')
-        #     elif sort == 'rp_date':
-        #         company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('rp_date')
-        #     elif sort == 'estitle':
-        #         company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('estitle')
-        #     elif sort == 'new_old':
-        #         company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('new_old')
-        #     elif sort == 'cname':
-        #         company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('cname')
-        #     elif sort == 'finish':
-        #         company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('finish')
-        #     elif sort == 'all':
-        #         company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('rg_date', 'rp_date', 'finish')
-        #     else:
-        #         company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('user_dept', 'rg_date', 'rp_date')
-        #     #company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('rg_date', 'rp_date')
-        #     page = request.GET.get('page', '1')
-        #     paginator = Paginator(company_sheet, 7)
-        #     page_obj = paginator.get_page(page)
-        #     print("일반 GET 페이징 끝")
-        #     context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort}
 
         print('끝')
         return render(request, 'isscm/order_list.html', context)
@@ -428,24 +427,30 @@ def ordersearchResult(request):
     if 'q' in request.GET:
         query = request.GET.get('q')
         print('get?')
-        searchlist = EstimateSheet.objects.all().filter(Q(product_name__icontains=query) | Q(new_old__icontains=query) | Q(cname__icontains=query) | Q(finish__icontains=query))
+        searchlist = EstimateSheet.objects.all().filter(
+            Q(product_name__icontains=query) | Q(new_old__icontains=query) | Q(cname__icontains=query) | Q(
+                finish__icontains=query))
         print("여기 왓나")
         page = request.GET.get('page', '1')
         paginator = Paginator(searchlist, 5)
         page_obj = paginator.get_page(page)
         print("지나갓나")
-        return render(request, 'isscm/sheet_list.html', {'query': query, 'page_obj': page_obj, 'login_session': login_session})
+        return render(request, 'isscm/sheet_list.html',
+                      {'query': query, 'page_obj': page_obj, 'login_session': login_session})
     else:
         print('post로 왓나')
         query = request.GET.get('query')
         print(query)
-        searchlist = EstimateSheet.objects.all().filter(Q(product_name__icontains=query) | Q(new_old__icontains=query) | Q(cname__icontains=query) | Q(finish__icontains=query))
+        searchlist = EstimateSheet.objects.all().filter(
+            Q(product_name__icontains=query) | Q(new_old__icontains=query) | Q(cname__icontains=query) | Q(
+                finish__icontains=query))
         page = request.GET.get('page', '1')
         paginator = Paginator(searchlist, 5)
         page_obj = paginator.get_page(page)
         context = {'query': query, 'page_obj': page_obj, 'login_session': login_session}
         print('포스트 나갓나')
     return render(request, 'isscm/sheet_list.html', context)
+
 
 # 발주건 수정/저장 한번에
 def order_modify(request, pk):
@@ -494,7 +499,8 @@ def order_delete(request, pk):
         print("삭제 됨?")
         return redirect(f'/isscm/order_modify/{pk}')
 
-# 견적 파일 업로드/다운로드
+
+# 발주 파일 업로드/다운로드
 def order_uploadFile(request, pk):
     print("오나요")
     login_session = request.session.get('login_session')
@@ -508,7 +514,7 @@ def order_uploadFile(request, pk):
                 cname = request.POST["cname"]
                 fileTitle = request.POST["fileTitle"]
                 uploadedFile = request.FILES.get('uploadedFile')
-                sheet_no = pk
+                sheet_no = Ordersheet.objects.get(no=pk)
                 menu = request.POST["menu"]
 
                 # DB에 저장
@@ -538,3 +544,27 @@ def order_uploadFile(request, pk):
     return render(request, "isscm/orderfile_upload.html", context={
         "files": uploadfile, "login_session": login_session, 'detailView': detailView})
 
+# 발주 파일 업로드 삭제
+def orderfile_delete(request, pk):
+    orderfile = get_object_or_404(OrderUploadFile, no=pk)
+    page_no = orderfile.sheet_no_id
+    if request.method == 'GET':
+        orderfile.delete()
+        print('삭제완료')
+        return redirect(f'/isscm/order_uploadFile/{page_no}')
+    else:
+        print("삭제 됨?")
+        return redirect(f'/isscm/order_modify/{pk}')
+
+
+
+# 검색 자동완성 테스트
+
+def searchData(request):
+    if 'term' in request.GET:
+        qs = ProductDb.objects.filter(product_name__icontains=request.GET.get('term'))
+        pname = list()
+        for product in qs:
+            pname.append(product.product_name)
+        return JsonResponse(pname, safe=False)
+    return render(request, 'isscm/index.html')

@@ -26,13 +26,13 @@ class ASsheet(models.Model):
 
 
 # 파일 업로드, 다운로드 모델
-class AsUploadFile(models.Model):
+class ASUploadFile(models.Model):
     no = models.AutoField(primary_key=True)
     cname = models.CharField(max_length=100, null=True)
     title = models.CharField(max_length=200, null=True)
     uploadedFile = models.FileField(upload_to =rename_file_to_uuid, blank=True)
     dateTimeOfUpload = models.DateTimeField(auto_now = True)
-    sheet_no = models.IntegerField(null=True)
+    sheet_no = models.ForeignKey(ASsheet, on_delete=models.CASCADE, null=True, db_column="sheet_no")
     menu = models.TextField(null=True, blank=True)
 
     class Meta:

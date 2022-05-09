@@ -1,12 +1,5 @@
-<!DOCTYPE html>
 {% extends "base/base2.html" %}
 {% block content %}
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Django File Upload</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
         * {
@@ -30,7 +23,15 @@
             padding-top: 15px;
         }
     </style>
-</head>
+
+<script>
+     document.addEventListener('keydown', function(event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+        };
+    }, true);
+</script>
+
 <body>
     {% if login_session %}
     <form action="{% url 'asregister:AsUploadFile' detailView.no %}" method="POST" enctype="multipart/form-data">
@@ -47,19 +48,20 @@
             <th>Title</th>
             <th>Upload Date & Time</th>
             <th>Download</th>
+            <th>Delete</th>
         </tr>
 
      {% for file in files %}
-        {% if file.sheet_no == detailView.no  and file.cname == detailView.cname or file.sheet_no == detailView.no and file.cname == 'insung' %}
+        {% if file.sheet_no_id == detailView.no  and file.cname == detailView.cname or file.sheet_no_id == detailView.no and file.cname == 'insung' %}
             <tr>
             <td>{{ file.title }}</td>
             <td>{{ file.dateTimeOfUpload }}</td>
             <td><a href="{{ file.uploadedFile.url }}">DOWN</a></td>
+            <td><input type="button" onclick="location.href='{% url 'asregister:ASfile_delete' file.no %}'" value="Delete"></td>
             </tr>
         {% else %}
         {% endif %}
      {% endfor %}
     </table>
 </body>
-</html>
 {% endblock %}

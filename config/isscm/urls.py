@@ -10,7 +10,9 @@ urlpatterns = [
     path('sheet_list', views.sheet_list, name='sheet_list'),
     path('order_list', views.order_list, name='order_list'),
     path('uploadFile/<int:pk>/', views.uploadFile, name='uploadFile'),
+    path('sheetfile_delete/<int:pk>/', views.sheetfile_delete, name='sheetfile_delete'),
     path('order_uploadFile/<int:pk>/', views.order_uploadFile, name='order_uploadFile'),
+    path('orderfile_delete/<int:pk>/', views.orderfile_delete, name='orderfile_delete'),
     path('sheet_detail/<int:pk>/', views.sheet_detail, name='sheet_detail'),
     path('order_delete/<int:pk>/', views.order_delete, name='order_delete'),
     path('order_modify/<int:pk>/', views.order_modify, name='order_modify'),
@@ -18,6 +20,7 @@ urlpatterns = [
     path('sheet_delete/<int:pk>/', views.sheet_delete, name='sheet_delete'),
     path('searchResult/', views.searchResult, name='searchResult'),
     path('ordersearchResult/', views.ordersearchResult, name='ordersearchResult'),
+    path('searchData/', views.searchData, name='searchData')
 
 ]
 

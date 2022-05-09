@@ -22,7 +22,16 @@
         table tr td {
             padding-top: 15px;
         }
-    </style>
+</style>
+
+<script>
+     document.addEventListener('keydown', function(event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+        };
+    }, true);
+</script>
+
 <body>
 {% if login_session %}
 <form action="{% url 'isscm:uploadFile' detailView.no %}" method="POST" enctype="multipart/form-data">
@@ -39,14 +48,16 @@
         <th>Title</th>
         <th>Upload Date & Time</th>
         <th>Download</th>
+        <th>Delete</th>
     </tr>
 
     {% for file in files %}
-    {% if file.sheet_no == detailView.no  and file.cname == detailView.cname or file.sheet_no == detailView.no and file.cname == 'insung' %}
+    {% if file.sheet_no_id == detailView.no  and file.cname == detailView.cname or file.sheet_no_id == detailView.no and file.cname == 'insung' %}
     <tr>
         <td>{{ file.title }}</td>
         <td>{{ file.dateTimeOfUpload }}</td>
         <td><a href="{{ file.uploadedFile.url }}">DOWN</a></td>
+        <td><input type="button" onclick="location.href='{% url 'isscm:sheetfile_delete' file.no %}'" value="Delete"></td>
     </tr>
     {% else %}
     {% endif %}

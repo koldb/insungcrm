@@ -1,5 +1,7 @@
 from django.db import models
 from .utils import rename_file_to_uuid
+from config import settings
+import os
 
 # Create your models here.
 
@@ -30,6 +32,7 @@ class EstimateSheet(models.Model):
         verbose_name = '견적'
         verbose_name_plural = '견적'
 
+
 # 파일 업로드, 다운로드 모델
 class UploadFile(models.Model):
     no = models.AutoField(primary_key=True)
@@ -37,7 +40,7 @@ class UploadFile(models.Model):
     title = models.CharField(max_length=200, null=True)
     uploadedFile = models.FileField(upload_to = rename_file_to_uuid, blank=True)
     dateTimeOfUpload = models.DateTimeField(auto_now = True)
-    sheet_no = models.IntegerField(null=True)
+    sheet_no = models.ForeignKey(EstimateSheet, on_delete=models.CASCADE, null=True, db_column="sheet_no")
     menu = models.TextField(null=True, blank=True)
 
     class Meta:
@@ -70,6 +73,7 @@ class Ordersheet(models.Model):
         verbose_name_plural = '발주 입력'
 
 
+
 # 발주 파일 업로드, 다운로드 모델
 class OrderUploadFile(models.Model):
     no = models.AutoField(primary_key=True)
@@ -77,7 +81,7 @@ class OrderUploadFile(models.Model):
     title = models.CharField(max_length=200, null=True)
     uploadedFile = models.FileField(upload_to=rename_file_to_uuid, blank=True, null=True)
     dateTimeOfUpload = models.DateTimeField(auto_now=True)
-    sheet_no = models.IntegerField(null=True)
+    sheet_no = models.ForeignKey(Ordersheet, on_delete=models.CASCADE, null=True, db_column="sheet_no")
     menu = models.TextField(null=True, blank=True)
 
     class Meta:
@@ -86,8 +90,23 @@ class OrderUploadFile(models.Model):
         verbose_name = 'Order file 업로드'
         verbose_name_plural = 'Order file 업로드'
 
+#제품명 db 테스트
+class ProductDb(models.Model):
+    no = models.IntegerField(auto_created=True, primary_key=True)
+    center_code = models.TextField(blank=True, null=True)
+    center = models.TextField(blank=True, null=True)
+    warehouse_code = models.TextField(blank=True, null=True)
+    warehouse_name = models.TextField(blank=True, null=True)
+    location = models.TextField(blank=True, null=True)
+    product_code = models.TextField(blank=True, null=True)
+    product_num = models.TextField(blank=True, null=True)
+    scan_code = models.TextField(blank=True, null=True)
+    product_name = models.TextField(blank=True, null=True)
+    account_code = models.TextField(blank=True, null=True)
+    delivery_date = models.TextField(blank=True, null=True)
 
-
-
+    class Meta:
+        managed = False
+        db_table = 'product_db'
 
 

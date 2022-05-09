@@ -1,5 +1,13 @@
 {% extends "base/base2.html" %}
 {% block content %}
+<script>
+     document.addEventListener('keydown', function(event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+        };
+    }, true);
+</script>
+
 <div class="container my-3">
     <form method="post" action="{% url 'accounts:signup' %}">
         {% csrf_token %}

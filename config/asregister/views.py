@@ -4,7 +4,7 @@ sys.path.append('..')
 
 from isscm.decorators import login_required
 from . import models
-from .models import ASsheet, AsUploadFile
+from .models import ASsheet, ASUploadFile
 from django.core.paginator import Paginator
 from django.db.models import Q
 
@@ -16,7 +16,7 @@ def index(request):
     return render(request, 'isscm/index.html')
 
 
-# 견적 입력
+# AS 입력
 @login_required
 def as_insert(request):
     print('as 입력 도달')
@@ -46,7 +46,7 @@ def as_insert(request):
         return render(request, 'assheet/as_insert.html', context)
 
 
-# 견적 접수건 리스트
+# AS 접수건 리스트
 @login_required
 def as_list(request):
     print("리스트 시작")
@@ -151,7 +151,7 @@ def assearchResult(request):
     return render(request, 'assheet/as_list.html', context)
 
 
-# 파일 업로드/다운로드
+# AS 파일 업로드/다운로드
 def AsUploadFile(request, pk):
     login_session = request.session.get('login_session')
 
@@ -163,11 +163,11 @@ def AsUploadFile(request, pk):
                 cname = login_session
                 fileTitle = request.POST["fileTitle"]
                 uploadedFile = request.FILES.get('uploadedFile')
-                sheet_no = pk
+                sheet_no = ASsheet.objects.get(no=pk)
                 menu = request.POST["menu"]
 
                 # DB에 저장
-                uploadfile = models.AsUploadFile(
+                uploadfile = models.ASUploadFile(
                     cname=cname,
                     title=fileTitle,
                     uploadedFile=uploadedFile,
@@ -178,20 +178,38 @@ def AsUploadFile(request, pk):
     else:
         login_session = request.session.get('login_session')
         detailView = get_object_or_404(ASsheet, no=pk)
-        uploadfile = models.AsUploadFile.objects.all()
+        uploadfile = models.ASUploadFile.objects.all()
         no = pk
 
         context = {'login_session': login_session, 'no': no, 'detailView': detailView, 'files': uploadfile}
         return render(request, "assheet/asfile_upload.html", context)
 
-    uploadfile = models.AsUploadFile.objects.all()
+    uploadfile = models.ASUploadFile.objects.all()
     detailView = get_object_or_404(ASsheet, no=pk)
 
     return render(request, "assheet/asfile_upload.html", context={
         "files": uploadfile, "login_session": login_session, 'detailView': detailView})
 
+# as 파일 삭제
+def ASfile_delete(request, pk):
+    login_session = request.session.get('login_session')
+    if request.method == 'GET':
+        print("get 으로 옴")
+        as_file = get_object_or_404(ASUploadFile, no=pk)
+        page_no = as_file.sheet_no_id
+        if as_file.cname == login_session or login_session == 'insung':
+            as_file.delete()
+            print('삭제완료')
+            return redirect(f'/asregister/AsUploadFile/{page_no}')
+        else:
+            print("삭제 됨?")
+            return redirect('/asregister/as_list/')
+    else:
+        print('post로 옴')
 
-# 견적서 상세 뷰
+
+
+# AS 접수서 상세 뷰
 def as_detail(request, pk):
     if request.method == 'GET':
         login_session = request.session.get('login_session')
@@ -202,7 +220,7 @@ def as_detail(request, pk):
     return render(request, 'assheet/as_detail.html', context)
 
 
-# 견적 접수건 응대 / 업데이트
+# AS 접수건 응대 / 업데이트
 def as_modify(request, pk):
     login_session = request.session.get('login_session')
     # render context로 넘길때 key:value 로 넘겨야 넘어가고 받아진다
@@ -234,7 +252,7 @@ def as_modify(request, pk):
         return render(request, 'assheet/as_detail.html', context)
 
 
-# 견적 접수건 삭제
+# AS 접수건 삭제
 def as_delete(request, pk):
     login_session = request.session.get('login_session')
     detailView = get_object_or_404(ASsheet, no=pk)

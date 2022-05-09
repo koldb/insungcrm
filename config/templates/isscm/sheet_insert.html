@@ -1,68 +1,36 @@
 {% extends "base/base2.html" %}
 {% block content %}
 
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en">
 <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
-<!--
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
 
 <script>
+    document.addEventListener('keydown', function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+            };
+        }, true);
 
-    $(document).ready(function() {
-
-         let adddiv = $('.adddiv')
-         let index = 0;
-
-        $('#addbtn').click(function() {
-            var newDiv = document.createElement("div")
-            newDiv.setAttribute("class", "newDiv")
-
-            var newInput1 = document.createElement("input")
-            newInput1.setAttribute("type", "text")
-            newInput1.setAttribute("name", "product_name[]")
-            newInput1.setAttribute("id", "product_name")
-            newInput1.setAttribute("class", "product")
-            newInput1.setAttribute("placeholder", "제품명")
-
-            var newInput2 = document.createElement("input")
-            newInput2.setAttribute("type", "number")
-            newInput2.setAttribute("name", "quantity[]")
-            newInput2.setAttribute("id", "quantity")
-            newInput2.setAttribute("class", "quan")
-            newInput2.setAttribute("placeholder", "수량")
-
-            var removeInput = document.createElement("input")
-            removeInput.setAttribute("type", "button")
-            removeInput.setAttribute("class", "removeInput")
-            removeInput.setAttribute("value", "삭제")
-
-            newDiv.append(newInput1)
-            newDiv.append(newInput2)
-            newDiv.append(removeInput)
-            adddiv.append(newDiv)
-
-            index += 1;
-            $("#showIndex").text(index)
-
-
-             $('.removeInput').click(function() {
-              $(this).prev().remove (); //제품명 삭제
-              $(this).prev().remove (); //수량 삭제
-              $(this).next().remove (); // remove the <br>
-              $(this).unwrap(); //div 삭제
-              $(this).remove(); //삭제 버튼 삭제
-
-            });
-        });
-
-
+    $(function () {
+      $("#product_name").autocomplete({
+          source: '{% url 'isscm:searchData' %}',
+          minLength: 1
+       });
     });
 
-</script>-->
+
+
+
+</script>
+
 
 
 <!--견적서 등록 페이지-->
 <div class="container my-3">
-    <form method="post" action="{% url 'isscm:sheet_insert' %}">
+    <form method="post" action="{% url 'isscm:sheet_insert' %}" name="myform" >
         {% csrf_token %}
         <div class="mb-3">
             <label for="estitle">견적명</label>
@@ -73,7 +41,8 @@
             <input type="text" class="form-control" name="product_name" id="product_name" placeholder="필수 입력">
         </div>
         <div class="mb-3">
-            <label for="quantity">수량</label>            <input type="number" class="form-control" name="quantity" id="quantity" placeholder="필수 입력">
+            <label for="quantity">수량</label>
+            <input type="number" class="form-control" name="quantity" id="quantity" placeholder="필수 입력">
         </div>
 
         <div class="mb-3">
@@ -87,14 +56,8 @@
 
 
         <div >
-            <!--<input type="button" class="btn btn-primary" value="제품 추가" id="addbtn">-->
             <button type="submit" class="btn btn-primary" onclick="alert('입력 완료')">제출</button>
         </div>
-
-        <!--<div class="adddiv">
-
-        </div>-->
-
 
     </form>
 </div>

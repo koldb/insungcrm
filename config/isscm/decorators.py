@@ -28,3 +28,5 @@ def login_ok(func):
             return redirect('/isscm/')
         return func(request, *args, **kwargs)
     return wrapper
+
+

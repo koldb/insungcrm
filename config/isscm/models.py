@@ -106,7 +106,7 @@ class ProductDb(models.Model):
     delivery_date = models.TextField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'product_db'
 
 

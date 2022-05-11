@@ -1,0 +1,49 @@
+{% extends "base/base2.html" %}
+{% block content %}
+
+<script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+
+<script>
+     document.addEventListener('keydown', function(event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+        };
+    }, true);
+
+</script>
+
+<!--문의글 등록 페이지-->
+<div class="container my-3">
+    <form method="post" action="{% url 'question:que_insert' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="cname">제목</label>
+            <input type="text" class="form-control" name="title" id="title" placeholder="필수 입력">
+        </div>
+        <div class="mb-3">
+            <label for="cname">업체명</label>
+            <input type="text" class="form-control" name="cname" id="cname" value="{{ login_session }}" readonly>
+        </div>
+        <div class="mb-3">
+            <label for="type">유형</label>
+            <select name="type" id="type">
+                <option value="단순상담">단순상담</option>
+                <option value="기술문의">기술문의</option>
+                <option value="AS">AS</option>
+                <option value="기타">기타</option>
+            </select>
+
+        </div>
+        <div class="mb-3">
+            <label for="content">내용</label>
+            <textarea class="form-control" onkeydown="resize(this)" onkeyup="resize(this)" name="content" id="content"> </textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary" onclick="alert('입력 완료')">제출</button>
+    </form>
+</div>
+
+{% endblock %}

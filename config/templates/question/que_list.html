@@ -16,9 +16,9 @@
 
 <!--검색창 부분-->
 <div>
-    <form action="{% url 'isscm:searchResult' %}" method="GET">
+    <form action="{% url 'question:searchResult' %}" method="GET">
         {% csrf_token %}
-        <input type="search" placeholder="견적명 / 제품명 / 구분 / 업체명 / 종료 여부 검색 가능" class="form-control mr-sm-2" name="q" value="{{ query }}">
+        <input type="search" placeholder="제품명 / 구분 / 업체명 / 종료 여부 검색 가능" class="form-control mr-sm-2" name="q" value="{{ query }}">
         <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
     </form>
 </div>
@@ -193,7 +193,7 @@
         </select>
         <button class="btn btn-primary" type="submit" value="">정렬</button>
         <!--엑셀 다운로드-->
-        <a href="{% url 'isscm:es_excel' %}?query={{ query | urlencode }}" style="color:white"><button type="button" class="btn btn-primary">EXCEL DOWN</button></a>
+        <a href="{% url 'isscm:es_excel' %}" style="color:white"><button type="button" class="btn btn-primary">EXCEL DOWN</button></a>
 
     </form>
 </div>

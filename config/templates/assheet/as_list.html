@@ -1,5 +1,6 @@
 {% extends "base/base2.html" %}
 {% block content %}
+{% load filter %}
 <style>
     #paging{
         width:150px;
@@ -41,7 +42,7 @@
 
         {% for list in page_obj %}
         <tr style="text-align:center;">
-            <td>{{ forloop.counter }}</td>
+            <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.cname }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
             {% if list.rp_date == None %}
@@ -95,7 +96,7 @@
 
 
         <tr style="text-align:center;">
-            <td>{{ forloop.counter }}</td>
+            <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.cname }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
             {% if list.rp_date == None %}
@@ -159,7 +160,7 @@
         </select>
         <button class="btn btn-primary" type="submit" value="">정렬</button>
         <!--엑셀 다운로드-->
-        <a href="{% url 'asregister:AS_downloadfile' %}" style="color:white"><button type="button" class="btn btn-primary">EXCEL DOWN</button></a>
+        <a href="{% url 'asregister:AS_excel' %}?query={{ query | urlencode }}" style="color:white"><button type="button" class="btn btn-primary">EXCEL DOWN</button></a>
     </form>
 </div>
 

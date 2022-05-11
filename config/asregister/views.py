@@ -194,7 +194,7 @@ def AsUploadFile(request, pk):
         "files": uploadfile, "login_session": login_session, 'detailView': detailView})
 
 # AS 엑셀 다운로드
-def AS_downloadfile(request):
+def AS_excel(request):
     login_session = request.session.get('login_session')
 
     print("다운로드 시작")
@@ -222,12 +222,23 @@ def AS_downloadfile(request):
     # 첫번째 열에 들어갈 컬럼명 설정
     col_names = ['NO', '업체명', '고객 접수 일자', '회신 완료 일자', '제품명', '비고', '의견', '완료 여부']
 
-
-    if login_session == 'insung':
-        #엑셀에 쓸 데이터 리스트화
-        rows = ASsheet.objects.all().values_list('no', 'cname', 'rg_date', 'rp_date', 'product_name', 'memo', 'option', 'finish')
+    query = request.GET.get('query')
+    if query:
+        if login_session == 'insung':
+            #엑셀에 쓸 데이터 리스트화
+            rows = ASsheet.objects.all().filter(Q(product_name__icontains=query) | Q(memo__icontains=query) | Q(cname__icontains=query) | Q(
+                finish__icontains=query) | Q(option__icontains=query)).values_list('no', 'cname', 'rg_date', 'rp_date', 'product_name', 'memo', 'option', 'finish')
+        else:
+            rows = ASsheet.objects.filter(Q(product_name__icontains=query) | Q(memo__icontains=query) | Q(cname__icontains=query) | Q(
+                finish__icontains=query) | Q(option__icontains=query), cname=login_session).values_list('no', 'cname', 'rg_date', 'rp_date', 'product_name', 'memo', 'option', 'finish')
     else:
-        rows = ASsheet.objects.filter(cname=login_session).values_list('no', 'cname', 'rg_date', 'rp_date', 'product_name', 'memo', 'option', 'finish')
+        if login_session == 'insung':
+            # 엑셀에 쓸 데이터 리스트화
+            rows = ASsheet.objects.all().values_list('no', 'cname', 'rg_date', 'rp_date', 'product_name', 'memo',
+                                                     'option', 'finish')
+        else:
+            rows = ASsheet.objects.filter(cname=login_session).values_list('no', 'cname', 'rg_date', 'rp_date',
+                                                                           'product_name', 'memo', 'option', 'finish')
 
     # 첫번째 열: 설정한 컬럼명 순서대로 스타일 적용하여 생성
     print("다운 중간2")

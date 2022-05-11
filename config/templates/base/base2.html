@@ -1,4 +1,5 @@
 {% load static %}
+
 <!doctype html>
 <html lang="ko">
 <head>
@@ -43,10 +44,6 @@ textarea.autosize { min-height: 50px; }
                 aria-expanded="false"
                 aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent" name="navbarSupportedContent">
@@ -85,6 +82,12 @@ textarea.autosize { min-height: 50px; }
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'isscm:order_list' %}">발주 목록</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'question:que_insert' %}">기타 문의</a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="{% url 'question:que_detail' %}">기타 문의</a>
+                </li>
 
                 {% if login_session != '' %}
 
@@ -94,9 +97,7 @@ textarea.autosize { min-height: 50px; }
                     <a class="nav-link" href="{% url 'accounts:register' %}">이력 관리</a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'company:clist' %}">기타 문의</a>
-                </li>
+
                 {% endif %}
             </ul>
         </div>

@@ -19,7 +19,6 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib import messages
 from django.shortcuts import redirect
 
 urlpatterns = [
@@ -28,19 +27,11 @@ urlpatterns = [
     path('accounts/', include('accounts.urls'), name='accounts'),
     path('isscm/', include('isscm.urls')),
     path('asregister/', include('asregister.urls')),
+    path('question/', include('question.urls')),
 
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(
-        settings.MEDIA_URL,
-        document_root=settings.MEDIA_ROOT
-    )
-
-
 def protected_file(request, path, document_root=None):
-    messages.error(request, "접근 불가")
-    return redirect('/')
-
+    return redirect('/isscm')
 
 urlpatterns += static(settings.MEDIA_URL, protected_file, document_root=settings.MEDIA_ROOT)

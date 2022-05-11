@@ -43,7 +43,6 @@
         <tbody>
 
         {% for list in page_obj %}
-
         <tr style="text-align:center;">
             <td>{{ forloop.counter }}</td>
             {% if list.rp_date == None %}
@@ -59,7 +58,13 @@
             <td>{{ list.new_old }}</td>
             <td>{{ list.cname }}</td>
             <td>{{ list.option | truncatewords:10}}</td>
+            {% if list.user_dept == None %}
+            <td>  </td>
+            {% else %}
             <td>{{ list.user_dept }} </td>
+            {% endif %}
+
+
         </tr>
         {% endfor %}
 
@@ -107,6 +112,10 @@
             <option value="all" id="all">전체</option>
         </select>
         <button class="btn btn-primary" type="submit" value="">정렬</button>
+        <!--엑셀 다운로드-->
+        <button type="button" class="btn btn-primary">
+            <a href="{% url 'isscm:order_downloadfile' %}" style="color:white">엑셀 다운</a>
+        </button>
     </form>
 </div>
 {% endblock %}

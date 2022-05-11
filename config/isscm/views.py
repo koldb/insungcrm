@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404, reverse
 from .decorators import login_required, login_ok
 import sys
-
 sys.path.append('..')
 from accounts.models import User
 from .models import EstimateSheet, UploadFile, Ordersheet, ProductDb, OrderUploadFile
@@ -11,6 +10,12 @@ from django.db.models import Q
 from django.http import HttpResponse, Http404
 import json
 from django.http import JsonResponse
+import datetime
+import xlwt
+from django.http import HttpResponse
+
+
+
 
 
 # Create your views here.
@@ -97,6 +102,7 @@ def sheet_list(request):
             dept_2 = sheet_chart_data.filter(user_dept="영업2팀", finish="종료").count()
             print(dept_2)
             sheet_chart = [dept_1, dept_2]
+
             context = {'login_session': login_session, 'page_obj': page_obj, 'sheet_chart': sheet_chart, 'sort': sort}
 
         else:
@@ -224,7 +230,65 @@ def uploadFile(request, pk):
     return render(request, "isscm/file_upload.html", context={
         "files": uploadfile, "login_session": login_session, 'detailView': detailView})
 
-# 견적 파일 업로드 삭제
+# 견적 엑셀 다운로드
+def downloadfile(request):
+    login_session = request.session.get('login_session')
+
+    print("다운로드 시작")
+    #데이터 db에서 불러옴
+    data = EstimateSheet.objects.all()
+    response = HttpResponse(content_type="application/vnd.ms-excel")
+    # 다운로드 받을 때 생성될 파일명 설정
+    response["Content-Disposition"] = 'attachment; filename=' \
+                                      +str(datetime.date.today()) + '_estimate.xls'
+    print("다운 중간")
+    # 인코딩 설정
+    wb = xlwt.Workbook(encoding='utf-8')
+    # 생성될 시트명 설정
+    ws = wb.add_sheet('견적 내역')
+
+    # 엑셀 스타일: 첫번째 열(=title)과 나머지 열(=data) 구분 위한 설정
+    title_style = xlwt.easyxf(
+        'pattern: pattern solid, fore_color indigo; align: horizontal center; font: color_index white;')
+    data_style = xlwt.easyxf('align: horizontal right')
+    # 날짜 서식 결정
+    styles = {'datetime': xlwt.easyxf(num_format_str='yyyy-mm-dd hh:mm:ss'),
+              'date': xlwt.easyxf(num_format_str='yyyy-mm-dd'),
+              'time': xlwt.easyxf(num_format_str='hh:mm:ss'),
+              'default': xlwt.Style.default_style}
+    # 첫번째 열에 들어갈 컬럼명 설정
+    col_names = ['NO', '고객 접수 일자', '회신 완료 일자', '견적명', '제품명', '수량', '개당 단가', '총 금액', '구분', '사업자코드','업체명', '비고', '의견','종료 여부', '담당 팀']
+
+
+    if login_session == 'insung':
+        #엑셀에 쓸 데이터 리스트화
+        rows = EstimateSheet.objects.all().values_list('no', 'rg_date', 'rp_date', 'estitle', 'product_name', 'quantity',
+                                                       'per_price', 'total_price', 'new_old', 'business_number', 'cname','memo', 'option', 'finish', 'user_dept')
+    else:
+        rows = EstimateSheet.objects.filter(cname=login_session).values_list('no', 'rg_date', 'rp_date', 'estitle', 'product_name',
+                                                       'quantity','per_price', 'total_price', 'new_old', 'business_number', 'cname', 'memo', 'option', 'finish', 'user_dept')
+
+    # 첫번째 열: 설정한 컬럼명 순서대로 스타일 적용하여 생성
+    print("다운 중간2")
+    row_num = 0
+    for idx, col_name in enumerate(col_names):
+        ws.write(row_num, idx, col_name, title_style)
+
+    # 두번째 이후 열: 설정한 컬럼명에 맞춘 데이터 순서대로 스타일 적용하여 생성
+    for row in rows:
+        row_num += 1
+        for col_num, attr in enumerate(row):
+            if isinstance(attr, datetime.datetime):
+                cell_style = styles['date']
+            else:
+                cell_style = styles['default']
+            ws.write(row_num, col_num, attr, cell_style)
+
+    wb.save(response)
+    print("다운로드 끝")
+    return response
+
+# 견적 파일 삭제
 def sheetfile_delete(request, pk):
     login_session = request.session.get('login_session')
     sheetfile = get_object_or_404(UploadFile, no=pk)
@@ -243,7 +307,18 @@ def sheet_detail(request, pk):
     if request.method == 'GET':
         login_session = request.session.get('login_session')
         detailView = get_object_or_404(EstimateSheet, no=pk)
-        context = {'detailView': detailView, 'login_session': login_session}
+
+        #upfile = get_object_or_404(UploadFile, sheet_no_id=pk)
+        try:
+            upfile = UploadFile.objects.filter(sheet_no_id=pk)
+            context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile}
+            print("성공")
+        except:
+            context = {'detailView': detailView, 'login_session': login_session}
+            print("실패")
+
+
+        print("견적 상세 뷰 들어감")
     else:
         print("설마 포스트")
     return render(request, 'isscm/sheet_detail.html', context)
@@ -352,9 +427,9 @@ def order_insert(request):
         insert.rp_date = request.POST['rp_date']
         insert.odtitle = request.POST['odtitle']
         insert.product_name = request.POST['product_name']
-        insert.quantity = request.POST['quantity']
-        insert.per_price = request.POST['per_price']
-        insert.total_price = request.POST['total_price']
+        insert.quantity = request.POST['quantity'].replace(",", "")
+        insert.per_price = request.POST.get('per_price', None).replace(",", "")
+        insert.total_price = request.POST.get('total_price', None).replace(",", "")
         insert.new_old = request.POST['new_old']
         insert.cname = request.POST['cname']
         insert.option = request.POST['option']
@@ -396,8 +471,8 @@ def order_list(request):
         paginator = Paginator(ordersheet, 7)
         page_obj = paginator.get_page(page)
         print("insung GET 페이징 끝")
-        context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort}
 
+        context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort}
         print('끝')
         return render(request, 'isscm/order_list.html', context)
     elif request.method == 'POST':
@@ -408,12 +483,6 @@ def order_list(request):
             paginator = Paginator(ordersheet, 7)
             page_obj = paginator.get_page(page)
             print("페이징 끝")
-        # else:
-        #     company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('rg_date', 'rp_date')
-        #     page = request.GET.get('page', '1')
-        #     paginator = Paginator(company_sheet, 7)
-        #     page_obj = paginator.get_page(page)
-        #     print("페이징 끝")
         context = {'login_session': login_session, 'page_obj': page_obj}
     print("리스트 끝")
     return render(request, 'isscm/order_list.html', context)
@@ -461,7 +530,16 @@ def order_modify(request, pk):
     if request.method == 'GET':
         # get으로 오면 다시 수정페이지로 넘김
         detailView = get_object_or_404(Ordersheet, no=pk)
-        context = {'detailView': detailView, 'login_session': login_session, 'user_dept': user_dept}
+
+        try:
+            upfile = OrderUploadFile.objects.filter(sheet_no_id=pk)
+            context = {'detailView': detailView, 'login_session': login_session, 'user_dept': user_dept, 'upfile': upfile}
+            print("성공")
+        except:
+            context = {'detailView': detailView, 'login_session': login_session, 'user_dept': user_dept}
+            print("실패")
+
+
         print("겟으로 들어왓다 나감")
         return render(request, 'isscm/order_modify.html', context)
     elif request.method == 'POST':
@@ -544,7 +622,62 @@ def order_uploadFile(request, pk):
     return render(request, "isscm/orderfile_upload.html", context={
         "files": uploadfile, "login_session": login_session, 'detailView': detailView})
 
-# 발주 파일 업로드 삭제
+
+# 발주 엑셀 다운로드
+def order_downloadfile(request):
+
+    print("다운로드 시작")
+    #데이터 db에서 불러옴
+    data = EstimateSheet.objects.all()
+    response = HttpResponse(content_type="application/vnd.ms-excel")
+    # 다운로드 받을 때 생성될 파일명 설정
+    response["Content-Disposition"] = 'attachment; filename=' \
+                                      +str(datetime.date.today())+'_order.xls'
+    print("다운 중간")
+    # 인코딩 설정
+    wb = xlwt.Workbook(encoding='utf-8')
+    # 생성될 시트명 설정
+    ws = wb.add_sheet('견적 내역')
+
+    # 엑셀 스타일: 첫번째 열(=title)과 나머지 열(=data) 구분 위한 설정
+    title_style = xlwt.easyxf(
+        'pattern: pattern solid, fore_color indigo; align: horizontal center; font: color_index white;')
+    data_style = xlwt.easyxf('align: horizontal right')
+    # 날짜 서식 결정
+    styles = {'datetime': xlwt.easyxf(num_format_str='yyyy-mm-dd hh:mm:ss'),
+              'date': xlwt.easyxf(num_format_str='yyyy-mm-dd'),
+              'time': xlwt.easyxf(num_format_str='hh:mm:ss'),
+              'default': xlwt.Style.default_style}
+    # 첫번째 열에 들어갈 컬럼명 설정
+    col_names = ['NO', '완료 일자', '발주명', '제품명', '수량', '개당 단가', '총 금액', '구분', '사업자코드', '업체명', '비고', '의견', '담당 팀']
+
+
+    #엑셀에 쓸 데이터 리스트화
+    rows = Ordersheet.objects.all().values_list('no', 'rp_date', 'odtitle', 'product_name', 'quantity',
+                                                       'per_price', 'total_price', 'new_old', 'business_number', 'cname','memo', 'option', 'user_dept')
+
+    # 첫번째 열: 설정한 컬럼명 순서대로 스타일 적용하여 생성
+    print("다운 중간2")
+    row_num = 0
+    for idx, col_name in enumerate(col_names):
+        ws.write(row_num, idx, col_name, title_style)
+
+    # 두번째 이후 열: 설정한 컬럼명에 맞춘 데이터 순서대로 스타일 적용하여 생성
+    for row in rows:
+        row_num += 1
+        for col_num, attr in enumerate(row):
+            if isinstance(attr, datetime.datetime):
+                cell_style = styles['date']
+            else:
+                cell_style = styles['default']
+            ws.write(row_num, col_num, attr, cell_style)
+
+    wb.save(response)
+    print("다운로드 끝")
+    return response
+
+
+# 발주 파일 삭제
 def orderfile_delete(request, pk):
     orderfile = get_object_or_404(OrderUploadFile, no=pk)
     page_no = orderfile.sheet_no_id
@@ -557,9 +690,7 @@ def orderfile_delete(request, pk):
         return redirect(f'/isscm/order_modify/{pk}')
 
 
-
-# 검색 자동완성 테스트
-
+# 제품명 검색 자동완성
 def searchData(request):
     if 'term' in request.GET:
         qs = ProductDb.objects.filter(product_name__icontains=request.GET.get('term'))

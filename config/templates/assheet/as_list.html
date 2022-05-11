@@ -2,9 +2,14 @@
 {% block content %}
 <style>
     #paging{
-        width:350px;
+        width:150px;
         margin:0 auto;
     }
+    tr, td, th{
+        border : 1px solid #dcdcdc;
+        width : 350px;
+        margin: 0 auto;
+        }
 </style>
 
 <!--검색창 부분-->
@@ -35,7 +40,6 @@
         <tbody>
 
         {% for list in page_obj %}
-
         <tr style="text-align:center;">
             <td>{{ forloop.counter }}</td>
             <td>{{ list.cname }}</td>
@@ -84,8 +88,12 @@
         </thead>
         <tbody>
 
+
+
         {% for list in page_obj %}
         {% if list.cname == login_session %}
+
+
         <tr style="text-align:center;">
             <td>{{ forloop.counter }}</td>
             <td>{{ list.cname }}</td>
@@ -139,17 +147,22 @@
 <!--정렬-->
 <div class="col-4">
     <form method="GET" action="{% url 'asregister:as_list' %}">
-            <select name="sort" id="sort">
-                {% if login_session == 'insung' %}
-                <option value="cname" id="cname">업체명</option>
-                {% endif %}
-                <option value="rg_date" id="rg_date">고객 접수 일자</option>
-                <option value="rp_date" id="rp_date">회신 완료 일자</option>
-                <option value="product_name" id="product_name">제품명</option>
-                <option value="finish" id="finish">완료 여부</option>
-                <option value="all" id="all">전체</option>
-            </select>
-            <button class="btn btn-primary" type="submit" value="">정렬</button>
+        <select name="sort" id="sort">
+            {% if login_session == 'insung' %}
+            <option value="cname" id="cname">업체명</option>
+            {% endif %}
+            <option value="rg_date" id="rg_date">고객 접수 일자</option>
+            <option value="rp_date" id="rp_date">회신 완료 일자</option>
+            <option value="product_name" id="product_name">제품명</option>
+            <option value="finish" id="finish">완료 여부</option>
+            <option value="all" id="all">전체</option>
+        </select>
+        <button class="btn btn-primary" type="submit" value="">정렬</button>
+        <!--엑셀 다운로드-->
+        <button type="button" class="btn btn-primary">
+            <a href="{% url 'asregister:AS_downloadfile' %}" style="color:white">엑셀 다운</a>
+        </button>
+
     </form>
 </div>
 

@@ -15,4 +15,5 @@ urlpatterns = [
     path('as_modify/<int:pk>/', views.as_modify, name='as_modify'),
     path('as_delete/<int:pk>/', views.as_delete, name='as_delete'),
     path('assearchResult/', views.assearchResult, name='assearchResult'),
+    path('AS_downloadfile/', views.AS_downloadfile, name='AS_downloadfile'),
 ]

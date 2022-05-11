@@ -1,0 +1,66 @@
+{% extends "base/base2.html" %}
+{% block content %}
+{% load humanize %}
+<style>
+  table {
+    width: 100%;
+    border: 1px solid #dcdcdc;
+    border-collapse: collapse;
+  }
+  th, td {
+    border: 1px solid #dcdcdc;
+    text-align: center;
+  }
+  textarea {
+    width: 100%;
+    height: 15em;
+  }
+</style>
+
+<div class="container my-3">
+    <form method="post" action="#">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <div>
+                <tr>등록 일자 : {{ detailView.rg_date | date:'Y-m-d' }} </tr>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="title">제목</label>
+            <input type="text" class="form-control" name="title" id="title" value="{{ detailView.title }}" readonly>
+        </div>
+        <div class="mb-3">
+            <label for="cname">업체명</label>
+            <input type="text" class="form-control" name="cname" id="cname" value="{{ detailView.cname }}" readonly>
+        </div>
+        <div class="mb-3">
+            <label for="type">유형</label>
+            <input type="text" class="form-control" name="type" id="type" value="{{ detailView.type }}" readonly>
+        </div>
+        <div class="mb-3">
+            <label for="content">비고</label>
+            <textarea class="form-control" name="content" id="content"  readonly>{{ detailView.content }}</textarea>
+        </div>
+
+
+
+        <div class="mb-3">
+            <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:uploadFile' detailView.no %}'" value="파일 업로드">
+
+            {% if upfile %}
+            {% for file in upfile %}
+            <input type="button" value="{{ file.title }}" class="btn btn-primary" disabled >
+            {% endfor %}
+            {% else %}
+            <td>첨부 파일 없음</td>
+            {% endif %}
+
+        </div>
+        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:sheet_modify' detailView.no %}'" value="수정">
+        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:sheet_delete' detailView.no %}'" value="삭제">
+    </form>
+</div>
+
+{% endblock %}

@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404, reverse
 from .decorators import login_required, login_ok
 import sys
+
 sys.path.append('..')
 from accounts.models import User
 from .models import EstimateSheet, UploadFile, Ordersheet, ProductDb, OrderUploadFile
@@ -13,9 +14,9 @@ from django.http import JsonResponse
 import datetime
 import xlwt
 from django.http import HttpResponse
-
-
-
+import mimetypes
+import shutil
+from django.views import generic
 
 
 # Create your views here.
@@ -160,13 +161,13 @@ def searchResult(request):
     query = None
     if 'q' in request.GET:
         query = request.GET.get('q')
-        print('get?')
+        print('get? : ' + query[0])
         searchlist = EstimateSheet.objects.all().filter(
             Q(product_name__icontains=query) | Q(new_old__icontains=query) | Q(cname__icontains=query) | Q(
-                finish__icontains=query))
+                finish__icontains=query) | Q(estitle__icontains=query))
         print("여기 왓나")
         page = request.GET.get('page', '1')
-        paginator = Paginator(searchlist, 5)
+        paginator = Paginator(searchlist, 7)
         page_obj = paginator.get_page(page)
         print("지나갓나")
         return render(request, 'isscm/sheet_list.html',
@@ -177,9 +178,9 @@ def searchResult(request):
         print(query)
         searchlist = EstimateSheet.objects.all().filter(
             Q(product_name__icontains=query) | Q(new_old__icontains=query) | Q(cname__icontains=query) | Q(
-                finish__icontains=query))
+                finish__icontains=query) | Q(estitle__icontains=query))
         page = request.GET.get('page', '1')
-        paginator = Paginator(searchlist, 5)
+        paginator = Paginator(searchlist, 7)
         page_obj = paginator.get_page(page)
         context = {'query': query, 'page_obj': page_obj, 'login_session': login_session}
         print('포스트 나갓나')
@@ -230,17 +231,29 @@ def uploadFile(request, pk):
     return render(request, "isscm/file_upload.html", context={
         "files": uploadfile, "login_session": login_session, 'detailView': detailView})
 
+
+# 파일 다운로드
+def es_downloadfile(request, pk):
+    upload_file = get_object_or_404(UploadFile, no=pk)
+    file = upload_file.uploadedFile
+    name = file.name
+    response = HttpResponse(content_type=mimetypes.guess_type(name)[0] or 'application/octet-stream')
+    response['Content-Disposition'] = f'attachment; filename={name}'
+    shutil.copyfileobj(file, response)
+    return response
+
+
 # 견적 엑셀 다운로드
-def downloadfile(request):
+def es_excel(request):
     login_session = request.session.get('login_session')
 
     print("다운로드 시작")
-    #데이터 db에서 불러옴
-    data = EstimateSheet.objects.all()
+    # 데이터 db에서 불러옴
+    # data = EstimateSheet.objects.all()
     response = HttpResponse(content_type="application/vnd.ms-excel")
     # 다운로드 받을 때 생성될 파일명 설정
     response["Content-Disposition"] = 'attachment; filename=' \
-                                      +str(datetime.date.today()) + '_estimate.xls'
+                                      + str(datetime.date.today()) + '_estimate.xls'
     print("다운 중간")
     # 인코딩 설정
     wb = xlwt.Workbook(encoding='utf-8')
@@ -257,16 +270,50 @@ def downloadfile(request):
               'time': xlwt.easyxf(num_format_str='hh:mm:ss'),
               'default': xlwt.Style.default_style}
     # 첫번째 열에 들어갈 컬럼명 설정
-    col_names = ['NO', '고객 접수 일자', '회신 완료 일자', '견적명', '제품명', '수량', '개당 단가', '총 금액', '구분', '사업자코드','업체명', '비고', '의견','종료 여부', '담당 팀']
+    col_names = ['NO', '고객 접수 일자', '회신 완료 일자', '견적명', '제품명', '수량', '개당 단가', '총 금액', '구분', '사업자코드', '업체명', '비고', '의견',
+                 '종료 여부', '담당 팀']
 
-
-    if login_session == 'insung':
-        #엑셀에 쓸 데이터 리스트화
-        rows = EstimateSheet.objects.all().values_list('no', 'rg_date', 'rp_date', 'estitle', 'product_name', 'quantity',
-                                                       'per_price', 'total_price', 'new_old', 'business_number', 'cname','memo', 'option', 'finish', 'user_dept')
+    query = request.GET.get('query')
+    if query:
+        print('pk 성공')
+        if login_session == 'insung':
+            rows = EstimateSheet.objects.all().filter(
+                Q(product_name__icontains=query) | Q(new_old__icontains=query) | Q(cname__icontains=query) | Q(
+                    finish__icontains=query) | Q(estitle__icontains=query)).values_list('no', 'rg_date', 'rp_date',
+                                                                                        'estitle', 'product_name',
+                                                                                        'quantity',
+                                                                                        'per_price', 'total_price',
+                                                                                        'new_old', 'business_number',
+                                                                                        'cname', 'memo', 'option',
+                                                                                        'finish', 'user_dept')
+        else:
+            rows = EstimateSheet.objects.filter(
+                Q(product_name__icontains=query) | Q(new_old__icontains=query) | Q(
+                    cname__icontains=query) | Q(
+                    finish__icontains=query) | Q(estitle__icontains=query), cname=login_session ).values_list('no', 'rg_date', 'rp_date',
+                                                                                        'estitle', 'product_name',
+                                                                                        'quantity', 'per_price',
+                                                                                        'total_price',
+                                                                                        'new_old', 'business_number',
+                                                                                        'cname', 'memo', 'option',
+                                                                                        'finish', 'user_dept')
     else:
-        rows = EstimateSheet.objects.filter(cname=login_session).values_list('no', 'rg_date', 'rp_date', 'estitle', 'product_name',
-                                                       'quantity','per_price', 'total_price', 'new_old', 'business_number', 'cname', 'memo', 'option', 'finish', 'user_dept')
+        if login_session == 'insung':
+            rows = EstimateSheet.objects.all().values_list('no', 'rg_date', 'rp_date', 'estitle', 'product_name',
+                                                           'quantity',
+                                                           'per_price', 'total_price', 'new_old', 'business_number',
+                                                           'cname', 'memo', 'option', 'finish', 'user_dept')
+        else:
+            rows = EstimateSheet.objects.all().filter(cname=login_session).values_list('no', 'rg_date', 'rp_date',
+                                                                                       'estitle', 'product_name',
+                                                                                       'quantity',
+                                                                                       'per_price', 'total_price',
+                                                                                       'new_old', 'business_number',
+                                                                                       'cname', 'memo', 'option',
+                                                                                       'finish', 'user_dept')
+
+    # rows = EstimateSheet.objects.filter(cname=login_session).values_list('no', 'rg_date', 'rp_date', 'estitle', 'product_name',
+    #                                                                      'quantity','per_price', 'total_price', 'new_old', 'business_number', 'cname', 'memo', 'option', 'finish', 'user_dept')
 
     # 첫번째 열: 설정한 컬럼명 순서대로 스타일 적용하여 생성
     print("다운 중간2")
@@ -288,6 +335,7 @@ def downloadfile(request):
     print("다운로드 끝")
     return response
 
+
 # 견적 파일 삭제
 def sheetfile_delete(request, pk):
     login_session = request.session.get('login_session')
@@ -308,7 +356,7 @@ def sheet_detail(request, pk):
         login_session = request.session.get('login_session')
         detailView = get_object_or_404(EstimateSheet, no=pk)
 
-        #upfile = get_object_or_404(UploadFile, sheet_no_id=pk)
+        # upfile = get_object_or_404(UploadFile, sheet_no_id=pk)
         try:
             upfile = UploadFile.objects.filter(sheet_no_id=pk)
             context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile}
@@ -316,7 +364,6 @@ def sheet_detail(request, pk):
         except:
             context = {'detailView': detailView, 'login_session': login_session}
             print("실패")
-
 
         print("견적 상세 뷰 들어감")
     else:
@@ -495,30 +542,32 @@ def ordersearchResult(request):
     query = None
     if 'q' in request.GET:
         query = request.GET.get('q')
-        print('get?')
-        searchlist = EstimateSheet.objects.all().filter(
+        print('quer? : ' + query)
+        searchlist = Ordersheet.objects.all().filter(
             Q(product_name__icontains=query) | Q(new_old__icontains=query) | Q(cname__icontains=query) | Q(
-                finish__icontains=query))
+                odtitle__icontains=query) |
+            Q(user_dept__icontains=query))
         print("여기 왓나")
         page = request.GET.get('page', '1')
-        paginator = Paginator(searchlist, 5)
+        paginator = Paginator(searchlist, 7)
         page_obj = paginator.get_page(page)
         print("지나갓나")
-        return render(request, 'isscm/sheet_list.html',
+        return render(request, 'isscm/order_list.html',
                       {'query': query, 'page_obj': page_obj, 'login_session': login_session})
     else:
         print('post로 왓나')
         query = request.GET.get('query')
         print(query)
-        searchlist = EstimateSheet.objects.all().filter(
+        searchlist = Ordersheet.objects.all().filter(
             Q(product_name__icontains=query) | Q(new_old__icontains=query) | Q(cname__icontains=query) | Q(
-                finish__icontains=query))
+                odtitle__icontains=query) |
+            Q(user_dept__icontains=query))
         page = request.GET.get('page', '1')
-        paginator = Paginator(searchlist, 5)
+        paginator = Paginator(searchlist, 7)
         page_obj = paginator.get_page(page)
         context = {'query': query, 'page_obj': page_obj, 'login_session': login_session}
         print('포스트 나갓나')
-    return render(request, 'isscm/sheet_list.html', context)
+    return render(request, 'isscm/order_list.html', context)
 
 
 # 발주건 수정/저장 한번에
@@ -533,12 +582,12 @@ def order_modify(request, pk):
 
         try:
             upfile = OrderUploadFile.objects.filter(sheet_no_id=pk)
-            context = {'detailView': detailView, 'login_session': login_session, 'user_dept': user_dept, 'upfile': upfile}
+            context = {'detailView': detailView, 'login_session': login_session, 'user_dept': user_dept,
+                       'upfile': upfile}
             print("성공")
         except:
             context = {'detailView': detailView, 'login_session': login_session, 'user_dept': user_dept}
             print("실패")
-
 
         print("겟으로 들어왓다 나감")
         return render(request, 'isscm/order_modify.html', context)
@@ -623,16 +672,26 @@ def order_uploadFile(request, pk):
         "files": uploadfile, "login_session": login_session, 'detailView': detailView})
 
 
-# 발주 엑셀 다운로드
-def order_downloadfile(request):
+# 발주 파일 다운로드
+def order_downloadfile(request, pk):
+    upload_file = get_object_or_404(OrderUploadFile, no=pk)
+    file = upload_file.uploadedFile
+    name = file.name
+    response = HttpResponse(content_type=mimetypes.guess_type(name)[0] or 'application/octet-stream')
+    response['Content-Disposition'] = f'attachment; filename={name}'
+    shutil.copyfileobj(file, response)
+    return response
 
+
+# 발주 엑셀 다운로드
+def order_excel(request):
     print("다운로드 시작")
-    #데이터 db에서 불러옴
+    # 데이터 db에서 불러옴
     data = EstimateSheet.objects.all()
     response = HttpResponse(content_type="application/vnd.ms-excel")
     # 다운로드 받을 때 생성될 파일명 설정
     response["Content-Disposition"] = 'attachment; filename=' \
-                                      +str(datetime.date.today())+'_order.xls'
+                                      + str(datetime.date.today()) + '_order.xls'
     print("다운 중간")
     # 인코딩 설정
     wb = xlwt.Workbook(encoding='utf-8')
@@ -651,10 +710,25 @@ def order_downloadfile(request):
     # 첫번째 열에 들어갈 컬럼명 설정
     col_names = ['NO', '완료 일자', '발주명', '제품명', '수량', '개당 단가', '총 금액', '구분', '사업자코드', '업체명', '비고', '의견', '담당 팀']
 
+    query = request.GET.get('query')
+    print('query인가 : ' + str(query))
+    if query:
+        print('pk 성공')
 
-    #엑셀에 쓸 데이터 리스트화
-    rows = Ordersheet.objects.all().values_list('no', 'rp_date', 'odtitle', 'product_name', 'quantity',
-                                                       'per_price', 'total_price', 'new_old', 'business_number', 'cname','memo', 'option', 'user_dept')
+        rows = Ordersheet.objects.all().filter(
+            Q(product_name__icontains=query) | Q(new_old__icontains=query) | Q(cname__icontains=query) | Q(
+                odtitle__icontains=query) | Q(user_dept__icontains=query)).values_list('no', 'rp_date', 'odtitle',
+                                                                                       'product_name', 'quantity',
+                                                                                       'per_price', 'total_price',
+                                                                                       'new_old', 'business_number',
+                                                                                       'cname', 'memo', 'option',
+                                                                                       'user_dept')
+    else:
+        print('pk 실패')
+        ##엑셀에 쓸 데이터 리스트화
+        rows = Ordersheet.objects.all().values_list('no', 'rp_date', 'odtitle', 'product_name', 'quantity',
+                                                    'per_price', 'total_price', 'new_old', 'business_number', 'cname',
+                                                    'memo', 'option', 'user_dept')
 
     # 첫번째 열: 설정한 컬럼명 순서대로 스타일 적용하여 생성
     print("다운 중간2")

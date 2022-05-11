@@ -57,7 +57,7 @@
     <tr>
         <td>{{ file.title }}</td>
         <td>{{ file.dateTimeOfUpload }}</td>
-        <td><a href="{{ file.uploadedFile.url }}">DOWN</a></td>
+        <td><a href="{% url 'isscm:order_downloadfile' file.no %}">DOWN</td>
         <td><input type="button" onclick="location.href='{% url 'isscm:orderfile_delete' file.no %}'" value="Delete"></td>
     </tr>
     {% else %}

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'isscm',
     'asregister',
     'django.contrib.humanize',
+    'question',
 
 
 

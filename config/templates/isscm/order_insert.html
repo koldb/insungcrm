@@ -7,40 +7,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
 <script type="text/javascript">
-
-    $(document).ready(function() {
-        $('#quantity, #per_price').on('change', function() {
-        let tprice = $('#total_price').val( $('#quantity').val().replace(/[^\d]+/g, '') * $('#per_price').val().replace(/[^\d]+/g, '') );
-        return tprice;
-        });
-    });
-
-    function nocomma(obj){
-        return obj.replace(/[^\d]+/g, '');
-    }
-
-    function comma(str) {
-        str = String(str);
-        return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
-    }
-
-    function uncomma(str) {
-        str = String(str);
-        return str.replace(/[^\d]+/g, '');
-    }
-
-    function inputNumberFormat(obj) {
-        obj.value = comma(uncomma(obj.value));
-    }
-
-    function inputOnlyNumberFormat(obj) {
-        obj.value = onlynumber(uncomma(obj.value));
-    }
-
-    function onlynumber(str) {
-	    str = String(str);
-	    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g,'$1');
-	}
 	 document.addEventListener('keydown', function(event) {
         if (event.keyCode === 13) {
             event.preventDefault();
@@ -53,7 +19,27 @@
           minLength: 1
        });
     });
+ //콤마찍기
+    function comma(str) {
+        str = String(str);
+        return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+    }
+    //콤마풀기
+    function uncomma(str) {
+        str = String(str);
+        return str.replace(/[^\d]+/g, '');
+    }
+    function inputNumberFormat(obj) {
+        obj.value = comma(uncomma(obj.value));
+    }
 
+    //곱하기
+    function def(){
+        var quantity = document.getElementById('quantity');
+        var per_price = document.getElementById('per_price');
+        var total_price = document.getElementById('total_price');
+    total_price.value = comma(Number(uncomma(quantity.value))*Number(uncomma(per_price.value)));
+    }
 
 </script>
 
@@ -80,15 +66,15 @@
         </div>
         <div class="mb-3">
             <label for="quantity">수량</label>
-            <input type="text" class="form-control" name="quantity" id="quantity" onkeyup="inputNumberFormat(this)">
+            <input type="text" class="form-control" name="quantity" id="quantity" onkeyup="inputNumberFormat(this);def()">
         </div>
         <div class="mb-3">
             <label for="per_price">개당 단가</label>
-            <input type="text" class="form-control" name="per_price" id="per_price" onkeyup="inputNumberFormat(this)">
+            <input type="text" class="form-control" name="per_price" id="per_price" onkeyup="inputNumberFormat(this);def()">
         </div>
         <div class="mb-3">
             <label for="total_price">총 금액</label>
-            <input type="text" class="form-control" name="total_price" id="total_price" onkeyup="inputNumberFormat(this)">
+            <input type="text" class="form-control" name="total_price" id="total_price" onkeyup="inputNumberFormat(this);def()">
         </div>
         <div class="mb-3">
             <label for="new_old">구분</label>

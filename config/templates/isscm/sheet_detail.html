@@ -25,10 +25,14 @@
 
         <div class="mb-3">
             <div>
-            <tr>고객 접수 일자 : {{ detailView.rg_date | date:'Y-m-d' }} </tr>
+                <tr>고객 접수 일자 : {{ detailView.rg_date | date:'Y-m-d' }} </tr>
             </div>
             <div>
-            <tr>회신 완료 일자 : {{ detailView.rp_date }} </tr>
+                {% if detailView.rp_date == None %}
+                <tr>회신 완료 일자 : </tr>
+                {% else %}
+                <tr>회신 완료 일자 : {{ detailView.rp_date }} </tr>
+                {% endif %}
             </div>
         </div>
 
@@ -54,7 +58,7 @@
                 <!--<td>{{ detailView.total_price }}</td>-->
                 <td>{{ detailView.total_price|intcomma }}</td>
             </tr>
-         </table>
+        </table>
 
         <br>
         {% if login_session != 'insung' %}
@@ -96,20 +100,29 @@
 
         <div class="mb-3">
             <label for="finish">종결 여부</label>
-               <select name="finish" id="finish" disabled>
+            <select name="finish" id="finish" disabled>
                 {% if detailView.finish == None %}
-                   <option value="" selected> </option>
-                   <option value="진행 중" hidden>진행 중</option>
-                   <option value="종료" hidden>종료</option>
+                <option value="" selected> </option>
+                <option value="진행 중" hidden>진행 중</option>
+                <option value="종료" hidden>종료</option>
                 {% else %}
                 <option value="{{ detailView.finish }}">{{ detailView.finish }}</option>
                 {% endif %}
             </select>
         </div>
 
-         <div class="mb-3">
+        <div class="mb-3">
             <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:uploadFile' detailView.no %}'" value="파일 업로드">
-         </div>
+
+            {% if upfile %}
+            {% for file in upfile %}
+            <input type="button" value="{{ file.title }}" class="btn btn-primary" disabled >
+            {% endfor %}
+            {% else %}
+            <td>첨부 파일 없음</td>
+            {% endif %}
+
+        </div>
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:sheet_modify' detailView.no %}'" value="수정">
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:sheet_delete' detailView.no %}'" value="삭제">
     </form>

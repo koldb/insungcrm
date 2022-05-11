@@ -73,6 +73,13 @@
 
          <div class="mb-3">
             <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:AsUploadFile' detailView.no %}'" value="파일 업로드">
+            {% if upfile %}
+            {% for file in upfile %}
+            <input type="button" value="{{ file.title }}" class="btn btn-primary" disabled >
+            {% endfor %}
+            {% else %}
+            <td>첨부 파일 없음</td>
+            {% endif %}
          </div>
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_modify' detailView.no %}'" value="수정">
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_delete' detailView.no %}'" value="삭제">

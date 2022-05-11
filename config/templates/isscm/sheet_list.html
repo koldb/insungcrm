@@ -44,9 +44,7 @@
         </tr>
         </thead>
         <tbody>
-
         {% for list in page_obj %}
-
         <tr style="text-align:center;">
             <td>{{ forloop.counter }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
@@ -67,16 +65,14 @@
             <td>{{ list.cname }}</td>
             <td>{{ list.memo | truncatewords:10}}</td>
             {% if list.finish == None or list.user_dept == None %}
-            <td> </td>
+            <td>  </td>
+            <td>  </td>
             {% else %}
             <td>{{ list.finish }}</td>
             <td>{{ list.user_dept }} </td>
             {% endif %}
-
-
         </tr>
         {% endfor %}
-
         {% else %}
         <tr>
         <tr><h2>등록 된 글이 없습니다.</h2></tr>
@@ -115,6 +111,7 @@
 
         {% for list in page_obj %}
         {% if list.cname == login_session %}
+
         <tr style="text-align:center;">
             <td>{{ forloop.counter }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
@@ -145,13 +142,12 @@
             {% endif %}
 
         </tr>
+
         {% endif %}
         {% endfor %}
 
         {% else %}
-        <tr>
         <tr><h2>등록 된 견적 글이 없습니다.</h2></tr>
-        </tr>
         {% endif %}
         </tbody>
     </table>
@@ -195,14 +191,17 @@
             <option value="all" id="all">전체</option>
         </select>
         <button class="btn btn-primary" type="submit" value="">정렬</button>
+        <!--엑셀 다운로드-->
+        <button type="button" class="btn btn-primary">
+            <a href="{% url 'isscm:downloadfile' %}" style="color:white">엑셀 다운</a>
+        </button>
     </form>
 </div>
 
-
-
 <br>
 <br>
 
+<!--차트 부분-->
 {% if login_session == 'insung' %}
 <div class="access-chart__card">
     <div class="card__title">

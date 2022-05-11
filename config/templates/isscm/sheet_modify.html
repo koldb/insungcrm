@@ -21,48 +21,33 @@
 
 <script type="text/javascript">
 
-    $(document).ready(function() {
-        $('#quantity, #per_price').on('change', function() {
-        let tprice = $('#total_price').val( $('#quantity').val().replace(/[^\d]+/g, '') * $('#per_price').val().replace(/[^\d]+/g, '') );
-        return tprice;
-
-        });
-
-    });
-
-    function nocomma(obj){
-        return obj.replace(/[^\d]+/g, '');
-    }
-
-
-    function comma(str) {
-        str = String(str);
-        return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
-    }
-
-    function uncomma(str) {
-        str = String(str);
-        return str.replace(/[^\d]+/g, '');
-    }
-
-    function inputNumberFormat(obj) {
-        obj.value = comma(uncomma(obj.value));
-    }
-
-    function inputOnlyNumberFormat(obj) {
-        obj.value = onlynumber(uncomma(obj.value));
-    }
-
-    function onlynumber(str) {
-	    str = String(str);
-	    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g,'$1');
-	}
-
     document.addEventListener('keydown', function(event) {
         if (event.keyCode === 13) {
             event.preventDefault();
         };
     }, true);
+
+ //콤마찍기
+    function comma(str) {
+        str = String(str);
+        return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+    }
+    //콤마풀기
+    function uncomma(str) {
+        str = String(str);
+        return str.replace(/[^\d]+/g, '');
+    }
+    function inputNumberFormat(obj) {
+        obj.value = comma(uncomma(obj.value));
+    }
+
+    //곱하기
+    function def(){
+        var quantity = document.getElementById('quantity');
+        var per_price = document.getElementById('per_price');
+        var total_price = document.getElementById('total_price');
+    total_price.value = comma(Number(uncomma(quantity.value))*Number(uncomma(per_price.value)));
+    }
 
 </script>
 
@@ -104,19 +89,19 @@
             <!--insung 일때-->
             {% if login_session == 'insung' %}
             <tr>
-                <td><input type="text" name="quantity" id="quantity" value="{{ detailView.quantity|intcomma }}" onkeyup="inputNumberFormat(this)"></td>
+                <td><input type="text" name="quantity" id="quantity" value="{{ detailView.quantity|intcomma }}" onkeyup="inputNumberFormat(this);def()"></td>
                 <!--<td>{{  detailView.per_price }}</td>-->
-                <td><input type="text" name="per_price" id="per_price" value="{{ detailView.per_price|intcomma }}" onkeyup="inputNumberFormat(this)"></td>
+                <td><input type="text" name="per_price" id="per_price" value="{{ detailView.per_price|intcomma }}" onkeyup="inputNumberFormat(this);def()"></td>
                 <!--<td>{{ detailView.total_price }}</td>-->
-                <td><input type="text" name="total_price" id="total_price" value="{{ detailView.total_price|intcomma }}" onkeyup="inputNumberFormat(this)"></td>
+                <td><input type="text" name="total_price" id="total_price" value="{{ detailView.total_price|intcomma }}" onkeyup="inputNumberFormat(this);def()"></td>
             </tr>
             {% else %}
             <tr>
-                <td><input type="text" name="quantity" id="quantity" value="{{ detailView.quantity|intcomma }}" onkeyup="inputNumberFormat(this)"></td>
+                <td><input type="text" name="quantity" id="quantity" value="{{ detailView.quantity|intcomma }}" onkeyup="inputNumberFormat(this);def()"></td>
                 <!--<td>{{  detailView.per_price }}</td>-->
-                <td><input type="text" name="per_price" id="per_price" value="{{ detailView.per_price|intcomma }}" onkeyup="inputNumberFormat(this)" readonly></td>
+                <td><input type="text" name="per_price" id="per_price" value="{{ detailView.per_price|intcomma }}" onkeyup="inputNumberFormat(this);def()" readonly></td>
                 <!--<td>{{ detailView.total_price }}</td>-->
-                <td><input type="text" name="total_price" id="total_price" value="{{ detailView.total_price|intcomma }}" onkeyup="inputNumberFormat(this)" readonly></td>
+                <td><input type="text" name="total_price" id="total_price" value="{{ detailView.total_price|intcomma }}" onkeyup="inputNumberFormat(this);def()" readonly></td>
             </tr>
             {% endif %}
         </table>

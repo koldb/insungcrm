@@ -20,7 +20,9 @@ urlpatterns = [
     path('sheet_delete/<int:pk>/', views.sheet_delete, name='sheet_delete'),
     path('searchResult/', views.searchResult, name='searchResult'),
     path('ordersearchResult/', views.ordersearchResult, name='ordersearchResult'),
-    path('searchData/', views.searchData, name='searchData')
+    path('searchData/', views.searchData, name='searchData'),
+    path('downloadfile/', views.downloadfile, name='downloadfile'),
+    path('order_downloadfile/', views.order_downloadfile, name='order_downloadfile'),
 
 ]
 

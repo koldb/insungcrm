@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404, reverse
 import sys
 sys.path.append('..')
-
 from isscm.decorators import login_required
 from . import models
 from .models import ASsheet, ASUploadFile
 from django.core.paginator import Paginator
 from django.db.models import Q
+import datetime
+import xlwt
+from django.http import HttpResponse
 
 
 # Create your views here.
@@ -70,10 +72,10 @@ def as_list(request):
             else:
                 company_sheet = ASsheet.objects.all().order_by('rg_date', 'finish')
 
-            #company_sheet = ASsheet.objects.all().order_by('rg_date')
             page = request.GET.get('page', '1')
             paginator = Paginator(company_sheet, 5)
             page_obj = paginator.get_page(page)
+            upfile = ASUploadFile.objects.all()
             print("insung GET 페이징 끝")
 
         else:
@@ -113,6 +115,7 @@ def as_list(request):
             paginator = Paginator(company_sheet, 5)
             page_obj = paginator.get_page(page)
             print("POST 페이징 끝")
+
         context = {'company_sheet': company_sheet, 'login_session': login_session, 'page_obj': page_obj}
         print("리스트 끝")
         return render(request, 'assheet/as_list.html', context)
@@ -190,6 +193,64 @@ def AsUploadFile(request, pk):
     return render(request, "assheet/asfile_upload.html", context={
         "files": uploadfile, "login_session": login_session, 'detailView': detailView})
 
+# AS 엑셀 다운로드
+def AS_downloadfile(request):
+    login_session = request.session.get('login_session')
+
+    print("다운로드 시작")
+    #데이터 db에서 불러옴
+    data = ASsheet.objects.all()
+    response = HttpResponse(content_type="application/vnd.ms-excel")
+    # 다운로드 받을 때 생성될 파일명 설정
+    response["Content-Disposition"] = 'attachment; filename=' \
+                                      +str(datetime.date.today()) + '_AS.xls'
+    print("다운 중간")
+    # 인코딩 설정
+    wb = xlwt.Workbook(encoding='utf-8')
+    # 생성될 시트명 설정
+    ws = wb.add_sheet('견적 내역')
+
+    # 엑셀 스타일: 첫번째 열(=title)과 나머지 열(=data) 구분 위한 설정
+    title_style = xlwt.easyxf(
+        'pattern: pattern solid, fore_color indigo; align: horizontal center; font: color_index white;')
+    data_style = xlwt.easyxf('align: horizontal right')
+    # 날짜 서식 결정
+    styles = {'datetime': xlwt.easyxf(num_format_str='yyyy-mm-dd hh:mm:ss'),
+              'date': xlwt.easyxf(num_format_str='yyyy-mm-dd'),
+              'time': xlwt.easyxf(num_format_str='hh:mm:ss'),
+              'default': xlwt.Style.default_style}
+    # 첫번째 열에 들어갈 컬럼명 설정
+    col_names = ['NO', '업체명', '고객 접수 일자', '회신 완료 일자', '제품명', '비고', '의견', '완료 여부']
+
+
+    if login_session == 'insung':
+        #엑셀에 쓸 데이터 리스트화
+        rows = ASsheet.objects.all().values_list('no', 'cname', 'rg_date', 'rp_date', 'product_name', 'memo', 'option', 'finish')
+    else:
+        rows = ASsheet.objects.filter(cname=login_session).values_list('no', 'cname', 'rg_date', 'rp_date', 'product_name', 'memo', 'option', 'finish')
+
+    # 첫번째 열: 설정한 컬럼명 순서대로 스타일 적용하여 생성
+    print("다운 중간2")
+    row_num = 0
+    for idx, col_name in enumerate(col_names):
+        ws.write(row_num, idx, col_name, title_style)
+
+    # 두번째 이후 열: 설정한 컬럼명에 맞춘 데이터 순서대로 스타일 적용하여 생성
+    for row in rows:
+        row_num += 1
+        for col_num, attr in enumerate(row):
+            if isinstance(attr, datetime.datetime):
+                cell_style = styles['date']
+            else:
+                cell_style = styles['default']
+            ws.write(row_num, col_num, attr, cell_style)
+
+    wb.save(response)
+    print("다운로드 끝")
+    return response
+
+
+
 # as 파일 삭제
 def ASfile_delete(request, pk):
     login_session = request.session.get('login_session')
@@ -214,7 +275,15 @@ def as_detail(request, pk):
     if request.method == 'GET':
         login_session = request.session.get('login_session')
         detailView = get_object_or_404(ASsheet, no=pk)
-        context = {'detailView': detailView, 'login_session': login_session}
+
+        try:
+            upfile = ASUploadFile.objects.filter(sheet_no_id=pk)
+            context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile}
+            print("성공")
+        except:
+            context = {'detailView': detailView, 'login_session': login_session}
+            print("실패")
+
     else:
         print("설마 포스트")
     return render(request, 'assheet/as_detail.html', context)

@@ -8,25 +8,53 @@
     border-collapse: collapse;
   }
   th, td {
+    width: 5em;
     border: 1px solid #dcdcdc;
     text-align: center;
   }
   textarea {
     width: 100%;
-    height: 15em;
+    height: 10em;
+  }
+  hr {
+  border: solid 1px black;
   }
 </style>
 
+<script type="text/javascript">
+    $('#feed-create').submit((event) => {
+  event.preventDefault()
+
+  $.ajax({
+    url: '/feeds/',  // feed create을 POST 받는 url과, view함수는 "/feeds/"였습니다.
+    method: 'POST',
+    data: {  // 요청(request)로 함께 보낼 데이터 정의
+      title: $(`input#title`).val(),
+      content: $(`textarea#content-text`).val(),
+      csrfmiddlewaretoken: $(event.currentTarget).data('csrfmiddlewaretoken')   // 장고 security와 관련해서 아무나 feed를 생성하지 못하도록 form 액션을 할 때는, csrf_token이 필요
+    },
+    dataType: "json",  // json => "javascript object notation"
+    success(response) {
+      console.log(response)
+      window.location.href = '/feeds/'   //** redirect
+    },
+    error(response, status, error) {
+      console.log(response, status, error);
+    }
+  })
+})
+
+</script>
+
+
+
 <div class="container my-3">
-    <form method="post" action="#">
+    <form method="post" >
         {% csrf_token %}
 
         <div class="mb-3">
-            <div>
-                <tr>등록 일자 : {{ detailView.rg_date | date:'Y-m-d' }} </tr>
-            </div>
+            <tr>등록 일자 : {{ detailView.rg_date | date:'Y-m-d' }} </tr>
         </div>
-
         <div class="mb-3">
             <label for="title">제목</label>
             <input type="text" class="form-control" name="title" id="title" value="{{ detailView.title }}" readonly>
@@ -41,13 +69,13 @@
         </div>
         <div class="mb-3">
             <label for="content">비고</label>
-            <textarea class="form-control" name="content" id="content"  readonly>{{ detailView.content }}</textarea>
+            <textarea class="form-control" name="content" id="content" style="resize: none;" readonly>{{ detailView.content }}</textarea>
         </div>
 
 
 
         <div class="mb-3">
-            <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:uploadFile' detailView.no %}'" value="파일 업로드">
+            <input type="button" class="btn btn-primary" onclick="location.href='{% url 'question:que_uploadFile' detailView.no %}'" value="파일 업로드">
 
             {% if upfile %}
             {% for file in upfile %}
@@ -58,9 +86,84 @@
             {% endif %}
 
         </div>
-        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:sheet_modify' detailView.no %}'" value="수정">
+        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'question:que_modify' detailView.no %}'" value="수정">
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:sheet_delete' detailView.no %}'" value="삭제">
     </form>
+
+
+
+    {% for comment in comments %}
+    <br><br>
+    <div>
+        {% if comment.parent_comment %}
+        ↪ 답변 내용 :
+        {% else %}
+        내용 :
+        {% endif %}
+        <p style="font-size : 25px">{{ comment.content }}</p>
+        <div>
+            [ {{ comment.rg_date | date:'Y-m-d H:i:s' }} ] -  <b>{{ comment.register }}</b>
+
+            <input type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal" value="수정">
+            <input type="button" class="btn btn-primary"  onclick="location.href='{% url 'question:com_delete' detailView.no comment.no %}'" value="삭제">
+            <input type="button" class="btn btn-primary" value="답변">
+        </div>
+        <hr style="border: solid 1px black;">
+
+    </div>
+    {% endfor %}
+
+
+    <br><br>
+    <div class="mb-3">
+
+        <label for="comment">댓글 입력</label>
+        <form method="POST" id="comment" action="{% url 'question:comment_create' detailView.no %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="register">등록자 : </label>
+                {{ login_session }}
+                <input name="register" type="hidden" value="{{ login_session }}" id="register"  readonly>
+            </div>
+            <div class="mb-3">
+                <label for="content">내용 입력</label>
+                <textarea class="form-control" name="content" id="content" style="resize:none;" placeholder="내용을 입력하세요." ></textarea>
+            </div>
+            <input type="hidden" value="comments.parent_comment">
+            <input type="submit" class="btn btn-primary" value="댓글 등록">
+        </form>
+    </div>
+
 </div>
+
+
+
+<!--댓글 수정, 입력 모달창-->
+<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createModalLabel">댓글</h5>
+            </div>
+            <div class="modal-body">
+                <form id='com_insert' data-csrfmiddlewaretoken="{{ csrf_token }}">
+                    <div class="form-group">
+                        <label for="register" class="col-form-label">등록자:</label>
+                        <input type="text" class="form-control" id="register" value="{{ login_session }}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="content" class="col-form-label">내용:</label>
+                        <textarea class="form-control" id="content"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">등록</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 {% endblock %}

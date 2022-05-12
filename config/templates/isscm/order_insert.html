@@ -1,17 +1,30 @@
 {% extends "base/base2.html" %}
 {% load humanize %}
 {% block content %}
+
+<style xmlns="http://www.w3.org/1999/html">
+  table {
+    width: 100%;
+    border: 1px solid #dcdcdc;
+    border-collapse: collapse;
+  }
+  th, td {
+    border: 1px solid #dcdcdc;
+    text-align: center;
+  }
+  textarea {
+    width: 100%;
+    height: 10em;
+  }
+</style>
+
 <!--수량*개당 단가 / 콤마 추가 jquery 부분-->
-<script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
-<link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
 <script type="text/javascript">
-	 document.addEventListener('keydown', function(event) {
-        if (event.keyCode === 13) {
-            event.preventDefault();
-        };
-    }, true);
+
+    $(function() {
+    $("input:text").keydown(function(evt) {
+        if (evt.keyCode == 13) return false; });
+    });
 
         $(function () {
       $("#product_name").autocomplete({
@@ -19,6 +32,7 @@
           minLength: 1
        });
     });
+
  //콤마찍기
     function comma(str) {
         str = String(str);
@@ -46,7 +60,7 @@
 
 <!--발주 입력 페이지-->
 <div class="container my-3">
-    <form method="post" action="{% url 'isscm:order_insert' %}">
+    <form method="post" action="{% url 'isscm:order_insert' %}" name="mf">
         {% csrf_token %}
         <div class="mb-3">
             <label for="cname">업체명</label>
@@ -85,14 +99,14 @@
         </div>
         <div class="mb-3">
             <label for="option">의견</label>
-            <textarea class="form-control" style="resize: none;" name="option" id="option"> </textarea>
+            <textarea class="form-control" style="resize: none;" name="option" id="option" > </textarea>
         </div>
         <div>
             <input type="hidden" name="user_dept" id="user_dept" value="{{ user_dept }}">
         </div>
 
         <div >
-            <button type="submit" class="btn btn-primary" onclick="alert('입력 완료')">제출</button>
+            <button type="submit" class="btn btn-primary" onclick="alert('입력 완료')" name="fbtn">제출</button>
         </div>
     </form>
 </div>

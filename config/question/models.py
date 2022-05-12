@@ -22,6 +22,7 @@ class question_comment(models.Model):
     no = models.AutoField(primary_key=True)
     rg_date = models.DateTimeField(auto_now_add=True, verbose_name='등록일자')
     register = models.CharField(max_length=30, verbose_name='등록자', null=True, blank=True)
+    parent_comment = models.ForeignKey('self', on_delete=models.CASCADE, null=True, db_column="parent_comment")
     content = models.TextField(verbose_name='내용', null=True, blank=True)
     que_no = models.ForeignKey(question_sheet, on_delete=models.CASCADE, null=True, db_column="que_no")
 

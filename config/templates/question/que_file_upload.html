@@ -1,0 +1,68 @@
+{% extends "base/base2.html" %}
+{% block content %}
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+        * {
+            font-family: "Roboto";
+        }
+        body {
+            background-color: #F5F5F5;
+        }
+        form {
+            background-color: #FFFFFF;
+            padding: 25px;
+        }
+        table {
+            width: 100%;
+            text-align: center;
+            margin-top: 25px;
+            padding: 25px;
+            background-color: #FFFFFF;
+        }
+        table tr td {
+            padding-top: 15px;
+        }
+</style>
+
+<script type="text/javaScript">
+     document.addEventListener('keydown', function(event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+        };
+    }, true);
+</script>
+
+
+<body>
+{% if login_session %}
+<form action="{% url 'question:que_uploadFile' detailView.no %}" method="POST" enctype="multipart/form-data">
+    <input type="text" name="fileTitle" placeholder="Enter a title">
+    <input type="file" name="uploadedFile">
+    <input type="hidden" name="cname" value="{{ login_session }}">
+    <input type="hidden" name="menu" value="question">
+    {% csrf_token %}
+    <input type="submit" value="Upload">
+    {% endif %}
+</form>
+<table>
+    <tr>
+        <th>Title</th>
+        <th>Upload Date & Time</th>
+        <th>Download</th>
+        <th>Delete</th>
+    </tr>
+
+    {% for file in files %}
+    {% if file.que_no_id == detailView.no  and file.cname == detailView.cname or file.que_no_id == detailView.no and file.cname == 'insung' %}
+    <tr>
+        <td>{{ file.title }}</td>
+        <td>{{ file.dateTimeOfUpload }}</td>
+        <td><a href="{% url 'question:que_downloadfile' file.no %}">DOWN</a></td>
+        <td><input type="button" onclick="location.href='{% url 'question:que_file_delete' file.no %}'" value="Delete"></td>
+    </tr>
+    {% else %}
+    {% endif %}
+    {% endfor %}
+</table>
+</body>
+{% endblock %}

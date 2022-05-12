@@ -24,54 +24,30 @@
 </div>
 
 <!--회사 아이디 일때 리스트-->
-{% if login_session == 'insung' %}
+
 <div>
     <table class="board">
         <thead>
         {% if page_obj %}
         <tr class="header" style="text-align:center;">
             <th style="width:5%;">순번</th>
-            <th style="width:9%">고객 접수 일자</th>
-            <th style="width:9%">회신 완료 일자</th>
-            <th style="width:10%">견적명</th>
-            <th style="width:5%">수량</th>
-            <th style="width:6%">개당 단가</th>
-            <th style="width:9%">총 금액</th>
-            <th style="width:5%">구분</th>
-            <th style="width:10%">업체명</th>
-            <th style="width:15%">비고</th>
-            <th style="width:5%">종료 여부</th>
-            <th style="width:5%">담당 팀</th>
+            <th style="width:8%">등록 일자</th>
+            <th style="width:8%">업체명</th>
+            <th style="width:10%">제목</th>
+            <th style="width:5%">유형</th>
+            <th style="width:15%">내용</th>
         </tr>
         </thead>
         <tbody>
+        {% if login_session == 'insung' %}
         {% for list in page_obj %}
         <tr style="text-align:center;">
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
-            {% if list.rp_date == None %}
-            <td> </td>
-            {% else %}
-            <td>{{ list.rp_date }}</td>
-            {% endif %}
-            <td><a href="{% url 'isscm:sheet_detail' list.no %}">{{ list.estitle }}</a></td>
-            <td>{{ list.quantity|intcomma }}</td>
-            {% if list.per_price == none %}
-            <td>0</td>
-            {% else %}
-            <td>{{ list.per_price|intcomma }}</td>
-            {% endif %}
-            <td>{{ list.total_price|intcomma }}</td>
-            <td>{{ list.new_old }}</td>
             <td>{{ list.cname }}</td>
-            <td>{{ list.memo | truncatewords:10}}</td>
-            {% if list.finish == None or list.user_dept == None %}
-            <td>  </td>
-            <td>  </td>
-            {% else %}
-            <td>{{ list.finish }}</td>
-            <td>{{ list.user_dept }} </td>
-            {% endif %}
+            <td><a href="{% url 'question:que_detail' list.no %}">{{ list.title }}</a></td>
+            <td>{{ list.type }}</td>
+            <td>{{ list.content | truncatewords:5}}</td>
         </tr>
         {% endfor %}
         {% else %}
@@ -93,55 +69,24 @@
         {% if page_obj %}
         <tr class="header" style="text-align:center;">
             <th style="width:5%;">순번</th>
-            <th style="width:9%">고객 접수 일자</th>
-            <th style="width:9%">회신 완료 일자</th>
-            <th style="width:10%">견적명</th>
-            <th style="width:5%">수량</th>
-            <th style="width:6%">개당 단가</th>
-            <th style="width:9%">총 금액</th>
-            {% if login_session != 'insung' %}
-            {% else %}
-            <th style="width:5%">구분</th>
-            {% endif %}
-            <th style="width:10%">업체명</th>
-            <th style="width:15%">비고</th>
-            <th style="width:5%">종료 여부</th>
+            <th style="width:8%">등록 일자</th>
+            <th style="width:8%">업체명</th>
+            <th style="width:10%">제목</th>
+            <th style="width:5%">유형</th>
+            <th style="width:15%">내용</th>
         </tr>
         </thead>
         <tbody>
 
         {% for list in page_obj %}
         {% if list.cname == login_session %}
-
         <tr style="text-align:center;">
-            <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
+           <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
-            {% if list.rp_date == None %}
-            <td> </td>
-            {% else %}
-            <td>{{ list.rp_date }}</td>
-            {% endif %}
-            <td><a href="{% url 'isscm:sheet_detail' list.no %}">{{ list.estitle }}</a></td>
-            <td>{{ list.quantity|intcomma }}</td>
-            {% if list.per_price == none %}
-            <td>0</td>
-            {% else %}
-            <td>{{ list.per_price|intcomma }}</td>
-            {% endif %}
-            <td>{{ list.total_price|intcomma }}</td>
-
-            {% if login_session != 'insung' %}
-            {% else %}
-            <td>{{ list.new_old }}</td>
-            {% endif %}
             <td>{{ list.cname }}</td>
-            <td>{{ list.memo | truncatewords:10}}</td>
-            {% if list.finish == None %}
-            <td> </td>
-            {% else %}
-            <td>{{ list.finish }}</td>
-            {% endif %}
-
+            <td><a href="{% url 'question:que_detail' list.no %}">{{ list.title }}</a></td>
+            <td>{{ list.type }}</td>
+            <td>{{ list.content | truncatewords:5}}</td>
         </tr>
 
         {% endif %}
@@ -178,7 +123,7 @@
 
 <!--정렬-->
 <div class="col-4">
-    <form method="GET" action="{% url 'isscm:sheet_list' %}">
+    <form method="GET" action="{% url 'question:que_list' %}">
         <select name="sort" id="sort">
             <option value="rg_date" id="rg_date">고객 접수 일자</option>
             <option value="rp_date" id="rp_date">회신 완료 일자</option>
@@ -200,40 +145,5 @@
 
 <br>
 <br>
-
-<!--차트 부분-->
-{% if login_session == 'insung' %}
-<div class="access-chart__card">
-    <div class="card__title">
-        <h4 style="text-align : center">팀별 처리 현황</h4>
-    </div>
-    <div class="card__chartWrapper">
-        <canvas id="sheet_chart" width="800" height="200"></canvas>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
-<script>
-  var sheet_chart = {{sheet_chart}}
-
-  var sheet = document.getElementById('sheet_chart').getContext('2d');
-var sheet_chart = new Chart(sheet, {
-    type: 'pie',
-    data:{
-        labels: [ '영업1팀', '영업2팀' ],
-        datasets: [{
-            data: sheet_chart,
-            backgroundColor: [
-                "#f7323f",
-                "#673ba7"
-            ],
-            borderWidth: 0
-        }]
-    }
-
-});
-</script>
-
-{% endif %}
 
 {% endblock %}

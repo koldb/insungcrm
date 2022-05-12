@@ -17,16 +17,11 @@
   }
 </style>
 <!--수량*개당 단가 / 콤마 추가 jquery 부분-->
-<script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
-<link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
 <script type="text/javascript">
-	 document.addEventListener('keydown', function(event) {
-        if (event.keyCode === 13) {
-            event.preventDefault();
-        };
-    }, true);
+   $(function() {
+    $("input:text").keydown(function(evt) {
+        if (evt.keyCode == 13) return false; });
+    });
 
         $(function () {
       $("#product_name").autocomplete({
@@ -114,9 +109,9 @@
         <div class="mb-3">
             <label for="memo">비고</label>
             {% if detailView.memo == None %}
-            <textarea class="form-control" name="memo" id="memo"  readonly>비고 없음</textarea>
+            <textarea class="form-control" name="memo" id="memo" style="resize: none;" readonly>비고 없음</textarea>
             {% else %}
-            <textarea class="form-control" name="memo" id="memo"  readonly>{{ detailView.memo }}</textarea>
+            <textarea class="form-control" name="memo" id="memo" style="resize: none;" readonly>{{ detailView.memo }}</textarea>
             {% endif %}
         </div>
         <div class="mb-3">
@@ -128,7 +123,7 @@
         <div class="mb-3">
             <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:order_uploadFile' detailView.no %}'" value="파일 업로드">
 
-             {% if upfile %}
+            {% if upfile %}
             {% for file in upfile %}
             <input type="button" value="{{ file.title }}" class="btn btn-primary" disabled >
             {% endfor %}

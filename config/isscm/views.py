@@ -8,15 +8,12 @@ from .models import EstimateSheet, UploadFile, Ordersheet, ProductDb, OrderUploa
 from . import models
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import HttpResponse, Http404
-import json
 from django.http import JsonResponse
 import datetime
 import xlwt
 from django.http import HttpResponse
 import mimetypes
 import shutil
-from django.views import generic
 
 
 # Create your views here.

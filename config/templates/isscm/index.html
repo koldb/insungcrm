@@ -1,12 +1,6 @@
 {% extends "base/base2.html" %}
 {% block content %}
 {% load humanize %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>SCM</title>
-</head>
 <style>
   table {
     width: 100%;
@@ -24,7 +18,6 @@
 
 
 </style>
-<body>
 
 {% if login_session == 'insung' %}
 <div class="container-fluid">
@@ -38,8 +31,8 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                신규 견적</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"><b>{{ es_count }}</b></div>
+                                신규 견적(접수/완료)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><b>{{ es_count }}  /  {{ es_fcount }}</b></div>
                         </div>
                     </div>
                 </div>
@@ -66,8 +59,8 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                신규 AS</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"><b>{{ as_count }}</b></div>
+                                신규 AS(접수/완료)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><b>{{ as_count }}  /  {{ as_fcount }}</b></div>
                         </div>
                     </div>
                 </div>
@@ -88,8 +81,6 @@
             </div>
         </div>
     </div>
-
-
     <!-- 주간 / 월간 실적 현황 -->
     <div class="row"  style="float:left; width: 50%;">
         <h2 style="display:inline;">주간 실적 현황</h2>
@@ -100,8 +91,10 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                견적 실적</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"><b>{{ es_week.total_price__sum|intcomma }}</b></div>
+                                견적 실적(1팀/2팀)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                <b>{{ es_week1.total_price__sum|intcomma }}</b>/<b>{{ es_week2.total_price__sum|intcomma }}</b>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -114,8 +107,10 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                발주 실적</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"><b>{{ or_week.total_price__sum|intcomma }}</b></div>
+                                발주 실적(1팀/2팀)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                <b>{{ or_week1.total_price__sum|intcomma }}</b>/<b>{{ or_week2.total_price__sum|intcomma }}</b>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -125,15 +120,17 @@
 
     <div class="row" >
         <h2 style="display:inline;">월간 실적 현황</h2>
-         <!--월간 견적 실적-->
+        <!--월간 견적 실적-->
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                견적 실적</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"><b>{{ es_month.total_price__sum|intcomma }}</b></div>
+                                견적 실적(1팀/2팀)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                <b>{{ es_month1.total_price__sum|intcomma }}</b>/<b>{{ es_month2.total_price__sum|intcomma }}</b>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -146,8 +143,10 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                발주 실적</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"><b>{{ or_month.total_price__sum|intcomma }}</b></div>
+                                발주 실적(1팀/2팀)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                <b>{{ or_month2.total_price__sum|intcomma }}</b>/<b>{{ or_month2.total_price__sum|intcomma }}</b>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -239,10 +238,9 @@
                 </div>
             </div>
         </div>
-
     </div>
 
-     <!-- 업체별 견적, 발주, as 월간 현황 -->
+    <!-- 업체별 견적, 발주, as 월간 현황 -->
     <div class="row">
         <h2>업체별 견적, 발주, AS 월간 현황</h2>
         <!--월간 업체별 견적 현황-->
@@ -328,23 +326,77 @@
         </div>
     </div>
 </div>
-{% else %}
+{% elif login_session %}
 
-<table>
 
-<h2>임시 메인 페이지</h2>
-    <div>
-        {% if messages %}
-        {% for message in messages %}
-        {{ message.message }}
-        {% endfor %}
-        {% endif %}
+
+<div class="container-fluid">
+    <div class="row">
+        <h2>신규 등록 현황_1일 기준</h2>
+        <!--일별 견적 접수 현황-->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                신규 견적</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><b>{{ es_pcount }}</b></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--일별 발주 접수 현황-->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                신규 발주</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><b>{{ or_pcount }}</b></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--일별 AS 접수 현황-->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                신규 AS</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><b>{{ as_pcount }}</b></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--일별 문의 접수 현황-->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                신규 문의</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><b>{{ que_pcount }}</b></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</table>
+</div>
+
+{% else %}
+    <h2>로그인 후 사용 가능 합니다.</h2>
+
 
 {% endif %}
 
 
-</body>
-</html>
 {% endblock %}

@@ -80,12 +80,16 @@ textarea.autosize { min-height: 50px; }
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'asregister:as_list' %}">AS 접수 목록</a>
                 </li>
+                {% if login_session == 'insung' %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'isscm:order_insert' %}">발주 입력</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'isscm:order_list' %}">발주 목록</a>
                 </li>
+                {% else %}
+
+                {% endif %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'question:que_insert' %}">기타 문의 접수</a>
                 </li>

@@ -27,24 +27,27 @@ def index(request):
 
     #1일 기준 신규 접수 현황
     es_count = EstimateSheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=1)).count()
-    es_fcount = EstimateSheet.objects.filter(rg_date__gte=timezone.now() - datetime.timedelta(days=1),
-                                            finish="종료").count()
-    print(es_fcount)
+    es_pcount = EstimateSheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=1), cname=login_session).count()
+    es_fcount = EstimateSheet.objects.filter(rg_date__gte=timezone.now() - datetime.timedelta(days=1), finish="종료").count()
     as_count = ASsheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=1)).count()
-    #today = date.today()
-    #yesterday = str(date.today() - timedelta(4))
-    #or_count = Ordersheet.objects.filter(rp_date= yesterday).count()
+    as_pcount = ASsheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=1), cname=login_session).count()
+    as_fcount = ASsheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=1), finish="종료").count()
     or_count = Ordersheet.objects.filter(rp_date__gte= timezone.now() - datetime.timedelta(days=1)).count()
-    print(or_count)
+    or_pcount = Ordersheet.objects.filter(rp_date__gte= timezone.now() - datetime.timedelta(days=1), cname=login_session).count()
     que_count = question_sheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=1)).count()
+    que_pcount = question_sheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=1), cname=login_session).count()
 
     #주간 실적 현황
-    es_week = EstimateSheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(weeks=1)).aggregate(Sum('total_price'))
-    or_week = Ordersheet.objects.filter(rp_date__gte=timezone.now() - datetime.timedelta(weeks=1)).aggregate(Sum('total_price'))
+    es_week1 = EstimateSheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(weeks=1), user_dept='영업1팀').aggregate(Sum('total_price'))
+    es_week2 = EstimateSheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(weeks=1), user_dept='영업2팀').aggregate(Sum('total_price'))
+    or_week1 = Ordersheet.objects.filter(rp_date__gte=timezone.now() - datetime.timedelta(weeks=1),user_dept='영업1팀').aggregate(Sum('total_price'))
+    or_week2 = Ordersheet.objects.filter(rp_date__gte=timezone.now() - datetime.timedelta(weeks=1),user_dept='영업2팀').aggregate(Sum('total_price'))
 
     #월간 실적 현황
-    es_month = EstimateSheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=30)).aggregate(Sum('total_price'))
-    or_month = Ordersheet.objects.filter(rp_date__gte=timezone.now() - datetime.timedelta(days=30)).aggregate(Sum('total_price'))
+    es_month1 = EstimateSheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=30), user_dept='영업1팀').aggregate(Sum('total_price'))
+    es_month2 = EstimateSheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=30), user_dept='영업2팀').aggregate(Sum('total_price'))
+    or_month1 = Ordersheet.objects.filter(rp_date__gte=timezone.now() - datetime.timedelta(days=30), user_dept='영업1팀').aggregate(Sum('total_price'))
+    or_month2 = Ordersheet.objects.filter(rp_date__gte=timezone.now() - datetime.timedelta(days=30), user_dept='영업2팀').aggregate(Sum('total_price'))
 
     #제품별 월간 견적, 발주, AS 개수
     es_num = EstimateSheet.objects.filter(rg_date__gte=timezone.now() - datetime.timedelta(days=30)).values('product_name').order_by('product_name').annotate(count=Count('product_name'))
@@ -57,8 +60,9 @@ def index(request):
     as_cnum = ASsheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=1)).values('cname').order_by('cname').annotate(count=Count('cname'))
 
     context = {'login_session': login_session, 'es_count':es_count, 'as_count':as_count, 'or_count':or_count, 'que_count':que_count,
-               'es_week':es_week, 'or_week':or_week, 'es_month':es_month, 'or_month':or_month, 'es_num':es_num, 'or_num':or_num, 'as_num':as_num,
-               'es_cnum': es_cnum, 'or_cnum':or_cnum, 'as_cnum':as_cnum}
+               'es_week1':es_week1,'es_week2':es_week2 , 'or_week1':or_week1,'or_week2':or_week2 , 'es_month1':es_month1, 'es_month2':es_month2, 'or_month1':or_month1, 'or_month2':or_month2, 'es_num':es_num, 'or_num':or_num, 'as_num':as_num,
+               'es_cnum': es_cnum, 'or_cnum':or_cnum, 'as_cnum':as_cnum, 'es_fcount': es_fcount, 'as_fcount':as_fcount, 'es_pcount':es_pcount,
+               'as_pcount':as_pcount, 'or_pcount':or_pcount, 'que_pcount':que_pcount}
     return render(request, 'isscm/index.html', context)
 
 # 견적 입력

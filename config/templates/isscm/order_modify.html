@@ -58,6 +58,13 @@
     <form method="post" action="#">
         {% csrf_token %}
 
+         <div class="mb-3">
+            <div>
+                <label for="rg_date">접수 일자</label>
+                <input type="date" value="{{ detailView.rg_date }}" name="rg_date" id="rg_date" readonly>
+            </div>
+        </div>
+
         <div class="mb-3">
             <div>
                 <label for="rp_date">완료 일자</label>

@@ -23,12 +23,11 @@
     </form>
 </div>
 
-<!--회사 아이디 일때 리스트-->
-
+<!--리스트 출력 부분-->
 <div>
     <table class="board">
         <thead>
-        {% if page_obj %}
+
         <tr class="header" style="text-align:center;">
             <th style="width:5%;">순번</th>
             <th style="width:8%">등록 일자</th>
@@ -39,17 +38,38 @@
         </tr>
         </thead>
         <tbody>
+        {% if page_obj %}
         {% if login_session == 'insung' %}
         {% for list in page_obj %}
         <tr style="text-align:center;">
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
             <td>{{ list.cname }}</td>
-            <td><a href="{% url 'question:que_detail' list.no %}">{{ list.title }}</a></td>
+            {% if list.comm %}
+            <td><a href="{% url 'question:que_detail' list.no %}">{{ list.title }} </a> <span style="color: red;">[{{ list.comm }}]</span></td>
+            {% else %}
+            <td><a href="{% url 'question:que_detail' list.no %}">{{ list.title }} </a></td>
+            {% endif %}
             <td>{{ list.type }}</td>
             <td>{{ list.content | truncatewords:5}}</td>
         </tr>
         {% endfor %}
+        {% else  %}
+        {% for list in page_obj %}
+        <tr style="text-align:center;">
+            <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
+            <td>{{ list.rg_date|date:'Y-m-d' }}</td>
+            <td>{{ list.cname }}</td>
+            {% if list.comm %}
+            <td><a href="{% url 'question:que_detail' list.no %}">{{ list.title }} </a> <span>[{{ list.comm }}]</span></td>
+            {% else %}
+            <td><a href="{% url 'question:que_detail' list.no %}">{{ list.title }} </a></td>
+            {% endif %}
+            <td>{{ list.type }}</td>
+            <td>{{ list.content | truncatewords:5}}</td>
+        </tr>
+        {% endfor %}
+        {% endif %}
         {% else %}
         <tr>
         <tr><h2>등록 된 글이 없습니다.</h2></tr>
@@ -61,46 +81,6 @@
 
 <br>
 
-{% else %}
-<!--업체 아이디일때 리스트-->
-<div>
-    <table class="board">
-        <thead>
-        {% if page_obj %}
-        <tr class="header" style="text-align:center;">
-            <th style="width:5%;">순번</th>
-            <th style="width:8%">등록 일자</th>
-            <th style="width:8%">업체명</th>
-            <th style="width:10%">제목</th>
-            <th style="width:5%">유형</th>
-            <th style="width:15%">내용</th>
-        </tr>
-        </thead>
-        <tbody>
-
-        {% for list in page_obj %}
-        {% if list.cname == login_session %}
-        <tr style="text-align:center;">
-           <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
-            <td>{{ list.rg_date|date:'Y-m-d' }}</td>
-            <td>{{ list.cname }}</td>
-            <td><a href="{% url 'question:que_detail' list.no %}">{{ list.title }}</a></td>
-            <td>{{ list.type }}</td>
-            <td>{{ list.content | truncatewords:5}}</td>
-        </tr>
-
-        {% endif %}
-        {% endfor %}
-
-        {% else %}
-        <tr><h2>등록 된 견적 글이 없습니다.</h2></tr>
-        {% endif %}
-        </tbody>
-    </table>
-</div>
-
-<br>
-{% endif %}
 
 <!--페이징 부분-->
 <div class = "container" id="paging">

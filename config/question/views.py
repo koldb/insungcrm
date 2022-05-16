@@ -4,9 +4,10 @@ from .models import question_sheet, question_comment, que_UploadFile
 from django.core.paginator import Paginator
 from django.db.models import Q
 from . import models
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 import mimetypes
 import shutil
+import json
 
 
 # Create your views here.
@@ -48,13 +49,12 @@ def que_insert(request):
 def que_detail(request, pk):
     login_session = request.session.get('login_session')
     detailView = get_object_or_404(question_sheet, no=pk)
-    comments = question_comment.objects.filter(que_no_id=pk).order_by('-rg_date')
+    comments = question_comment.objects.filter(que_no_id=pk).order_by('rg_date')
     if request.method == 'GET':
-        # upfile = get_object_or_404(UploadFile, sheet_no_id=pk)
         try:
             upfile = que_UploadFile.objects.filter(que_no=pk)
             context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile, 'comments': comments}
-            print("성공")
+            print("get 성공")
         except:
             context = {'detailView': detailView, 'login_session': login_session, 'comments': comments}
             print("실패")
@@ -66,7 +66,7 @@ def que_detail(request, pk):
         try:
             upfile = que_UploadFile.objects.filter(que_no=pk)
             context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile}
-            print("성공")
+            print("post 성공")
         except:
             context = {'detailView': detailView, 'login_session': login_session}
             print("실패")
@@ -78,7 +78,6 @@ def que_detail(request, pk):
 def que_list(request):
     print("문의글 리스트 시작")
     login_session = request.session.get('login_session')
-
     if request.method == 'GET':
         if login_session == 'insung':
             sort = request.GET.get('sort', '')
@@ -131,7 +130,7 @@ def que_list(request):
             paginator = Paginator(company_sheet, 7)
             page_obj = paginator.get_page(page)
             print("페이징 끝")
-        context = {'company_sheet': company_sheet, 'login_session': login_session, 'page_obj': page_obj}
+        context = {'company_sheet': company_sheet, 'login_session': login_session, 'page_obj': page_obj, 'comments': comments}
         print("리스트 끝")
         return render(request, 'question/que_list.html', context)
 
@@ -178,20 +177,13 @@ def que_modify(request, pk):
         # get으로 오면 다시 수정페이지로 넘김
         detailView = get_object_or_404(question_sheet, no=pk)
 
-        try:
-            upfile = que_UploadFile.objects.filter(que_no=pk)
-            context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile}
-            print("성공")
-        except:
-            context = {'detailView': detailView, 'login_session': login_session}
-            print("실패")
+        context = {'detailView': detailView, 'login_session': login_session}
 
         print("겟으로 들어왓다 나감")
         return render(request, 'question/que_modify.html', context)
     elif request.method == 'POST':
         print('POST 들어옴')
         # 수정 내용 저장
-        detailView.odtitle = request.POST['odtitle']
         detailView.title = request.POST['title']
         detailView.cname = request.POST['cname']
         detailView.type = request.POST['type']
@@ -199,10 +191,21 @@ def que_modify(request, pk):
         print("바로 저장으로")
         detailView.save()
 
-    login_session = request.session.get('login_session')
     context = {'detailView': detailView, 'login_session': login_session}
     print("저장하고 나감")
-    return render(request, 'question/que_modify.html', context)
+    return render(request, 'question/que_detail.html', context)
+
+# 문의글 삭제
+def que_delete(request, pk):
+    login_session = request.session.get('login_session')
+    detailView = get_object_or_404(question_sheet, no=pk)
+    if login_session == 'insung':
+        detailView.delete()
+        print('삭제완료')
+        return redirect('question:que_list')
+    else:
+        print("삭제 됨?")
+        return redirect(f'/question/que_modify/{pk}')
 
 
 # 문의글 파일 업로드
@@ -272,12 +275,13 @@ def que_file_delete(request, pk):
         print("삭제 안함")
         return redirect(f'/question/que_modify/{pk}')
 
-
 # 문의글 댓글/대댓글
 def comment_create(request, pk):
     login_session = request.session.get('login_session')
     que_sheet = get_object_or_404(question_sheet, no=pk)
     comments = question_comment.objects.filter(que_no_id=pk)
+    comment_count = question_comment.objects.filter(que_no_id=pk).count()+1
+    quecom = get_object_or_404(question_sheet, no=pk)
     print("댓글 시작")
     if request.method == 'POST':
         print("댓글 저장")
@@ -287,6 +291,10 @@ def comment_create(request, pk):
         comment.que_no_id = pk
         comment.parent_comment = request.POST.get('no', None)
         comment.save()
+        
+        print('댓글수 저장')
+        quecom.comm = comment_count
+        quecom.save()
         return render(request, 'question/que_detail.html', {'detailView': que_sheet, 'comments': comments, 'login_session': login_session})
     else:
         print('GET 들어옴 / 댓글 조회')
@@ -300,5 +308,31 @@ def com_delete(request, no, qno):
     que_sheet = get_object_or_404(question_sheet, no=no)
     comments = question_comment.objects.filter(no=qno)
     comments.delete()
+
+    comment_count = question_comment.objects.filter(que_no_id=no).count()
+    quecom = get_object_or_404(question_sheet, no=no)
+    quecom.comm = comment_count
+    print(quecom.comm)
+    quecom.save()
+
     print('댓글 삭제 완료')
     return redirect('question:que_detail', no)
+
+
+# 댓글 수정
+def comment_modify(request):
+    print('댓글 수정 시작')
+    jsonObject = json.loads(request.body)
+    comment = question_comment.objects.filter(no=jsonObject.get('no'))
+    context = {
+        'result': 'no'
+    }
+    if comment is not None:
+        print('업데이트 시작')
+        comment.update(content=jsonObject.get('content'))
+        context = {
+            'result': 'ok'
+        }
+        print('댓글 수정 성공')
+        return JsonResponse(context);
+    return JsonResponse(context)

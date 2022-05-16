@@ -10,6 +10,7 @@ class question_sheet(models.Model):
     rg_date = models.DateTimeField(auto_now_add=True, verbose_name='등록일자')
     type = models.CharField(max_length=30, verbose_name='유형')
     content = models.TextField(verbose_name='내용', null=True, blank=True)
+    comm = models.PositiveIntegerField(verbose_name='댓글수', null=True)
 
     class Meta:
         managed = True

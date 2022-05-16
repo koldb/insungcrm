@@ -61,7 +61,7 @@
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
             <td>{{ list.cname }}</td>
             {% if list.comm %}
-            <td><a href="{% url 'question:que_detail' list.no %}">{{ list.title }} </a> <span>[{{ list.comm }}]</span></td>
+            <td><a href="{% url 'question:que_detail' list.no %}">{{ list.title }} </a> <span style="color: red;">[{{ list.comm }}]</span></td>
             {% else %}
             <td><a href="{% url 'question:que_detail' list.no %}">{{ list.title }} </a></td>
             {% endif %}
@@ -105,20 +105,14 @@
 <div class="col-4">
     <form method="GET" action="{% url 'question:que_list' %}">
         <select name="sort" id="sort">
-            <option value="rg_date" id="rg_date">고객 접수 일자</option>
-            <option value="rp_date" id="rp_date">회신 완료 일자</option>
-            <option value="estitle" id="estitle">견적명</option>
-            <option value="new_old" id="new_old">구분</option>
+            <option value="rg_date" id="rg_date">등록 일자</option>
             <option value="cname" id="cname">업체명</option>
-            <option value="finish" id="finish">종결 여부</option>
-            {% if login_session == 'insung' %}
-            <option value="user_dept" id="user_dept">부서명</option>
-            {% endif %}
+            <option value="type" id="type">유형</option>
             <option value="all" id="all">전체</option>
         </select>
         <button class="btn btn-primary" type="submit" value="">정렬</button>
         <!--엑셀 다운로드-->
-        <a href="{% url 'isscm:es_excel' %}" style="color:white"><button type="button" class="btn btn-primary">EXCEL DOWN</button></a>
+        <!--<a href="{% url 'isscm:es_excel' %}" style="color:white"><button type="button" class="btn btn-primary">EXCEL DOWN</button></a>-->
 
     </form>
 </div>

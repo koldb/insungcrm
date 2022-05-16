@@ -58,19 +58,19 @@ def as_list(request):
         if login_session == 'insung':
             sort = request.GET.get('sort', '')
             if sort == 'rg_date':
-                company_sheet = ASsheet.objects.all().order_by('rg_date')
+                company_sheet = ASsheet.objects.all().order_by('-rg_date')
             elif sort == 'rp_date':
-                company_sheet = ASsheet.objects.all().order_by('rp_date')
+                company_sheet = ASsheet.objects.all().order_by('-rp_date')
             elif sort == 'product_name':
-                company_sheet = ASsheet.objects.all().order_by('product_name')
+                company_sheet = ASsheet.objects.all().order_by('product_name', '-rg_date')
             elif sort == 'finish':
-                company_sheet = ASsheet.objects.all().order_by('finish')
+                company_sheet = ASsheet.objects.all().order_by('finish', '-rg_date')
             elif sort == 'cname':
-                company_sheet = ASsheet.objects.all().order_by('cname')
+                company_sheet = ASsheet.objects.all().order_by('cname', '-rg_date')
             elif sort == 'all':
-                company_sheet = ASsheet.objects.all().order_by('cname', 'rg_date', 'finish')
+                company_sheet = ASsheet.objects.all().order_by('-rg_date', 'finish')
             else:
-                company_sheet = ASsheet.objects.all().order_by('rg_date', 'finish')
+                company_sheet = ASsheet.objects.all().order_by('-rg_date', 'finish')
 
             page = request.GET.get('page', '1')
             paginator = Paginator(company_sheet, 5)
@@ -81,17 +81,17 @@ def as_list(request):
         else:
             sort = request.GET.get('sort', '')
             if sort == 'rg_date':
-                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('rg_date')
+                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('-rg_date')
             elif sort == 'rp_date':
-                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('rp_date')
+                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('-rp_date')
             elif sort == 'product_name':
-                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('product_name')
+                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('product_name', '-rg_date')
             elif sort == 'finish':
-                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('finish')
+                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('finish', '-rg_date')
             elif sort == 'all':
-                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('rg_date', 'finish')
+                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('-rg_date', 'finish')
             else:
-                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('rg_date', 'finish')
+                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('-rg_date', 'finish')
             #company_sheet = ASsheet.objects.filter(cname=login_session).order_by('rg_date')
             page = request.GET.get('page', '1')
             paginator = Paginator(company_sheet, 5)

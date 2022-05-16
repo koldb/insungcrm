@@ -27,8 +27,15 @@ def index(request):
 
     #1일 기준 신규 접수 현황
     es_count = EstimateSheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=1)).count()
+    es_fcount = EstimateSheet.objects.filter(rg_date__gte=timezone.now() - datetime.timedelta(days=1),
+                                            finish="종료").count()
+    print(es_fcount)
     as_count = ASsheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=1)).count()
-    or_count = Ordersheet.objects.filter(rp_date__gte = timezone.now() - datetime.timedelta(days=1)).count()
+    #today = date.today()
+    #yesterday = str(date.today() - timedelta(4))
+    #or_count = Ordersheet.objects.filter(rp_date= yesterday).count()
+    or_count = Ordersheet.objects.filter(rp_date__gte= timezone.now() - datetime.timedelta(days=1)).count()
+    print(or_count)
     que_count = question_sheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=1)).count()
 
     #주간 실적 현황
@@ -429,6 +436,7 @@ def sheet_modify(request, pk):
         if detailView.finish == '종료':
             try:
                 orfilter = get_object_or_404(Ordersheet, essheet_pk=pk)
+                orderinsert.rg_date = request.POST['rg_date']
                 orfilter.rp_date = request.POST['rp_date']
                 orfilter.odtitle = request.POST['estitle']
                 orfilter.product_name = request.POST['product_name']
@@ -445,6 +453,7 @@ def sheet_modify(request, pk):
                 print("발주건 업데이트 저장")
             except:
                 orderinsert = Ordersheet()
+                orderinsert.rg_date = request.POST['rg_date']
                 orderinsert.rp_date = request.POST['rp_date']
                 orderinsert.odtitle = request.POST['estitle']
                 orderinsert.product_name = request.POST['product_name']

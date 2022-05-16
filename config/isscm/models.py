@@ -50,6 +50,7 @@ class UploadFile(models.Model):
 #발주 모델
 class Ordersheet(models.Model):
     no = models.AutoField(primary_key=True)
+    rg_date = models.CharField(null=True, blank=True, max_length=20)
     rp_date = models.CharField(null=True, blank=True, max_length=50)
     odtitle = models.CharField(null=True, blank=True, max_length=50, verbose_name='발주명')
     product_name = models.CharField(max_length=100, verbose_name='제품 이름')

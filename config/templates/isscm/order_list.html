@@ -29,7 +29,8 @@
         {% if page_obj %}
         <tr class="header" style="text-align:center;">
             <th style="width:5%">순번</th>
-            <th style="width:9%">완료 일자</th>
+            <th style="width:8%">접수 일자</th>
+            <th style="width:8%">완료 일자</th>
             <th style="width:10%">발주 명</th>
             <th style="width:10%">제품명</th>
             <th style="width:5%">수량</th>
@@ -46,6 +47,7 @@
         {% for list in page_obj %}
         <tr style="text-align:center;">
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
+            <td>{{ list.rg_date }}</td>
             {% if list.rp_date == None %}
             <td> </td>
             {% else %}

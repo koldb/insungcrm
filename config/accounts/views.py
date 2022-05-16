@@ -47,6 +47,7 @@ def login(request):
     context = { 'forms': loginform, 'login_session': login_session }
 
     if request.method == 'GET':
+        print("로그인 시작 겟방식")
         return render(request, 'accounts/login.html', context)
     elif request.method == 'POST':
         loginform = LoginForm(data=request.POST)
@@ -61,20 +62,22 @@ def login(request):
             if login_session == 'insung':
                 context['login_session'] = 'insung'
                 context['user_dept'] = request.session.get('user_dept')
-                return render(request, 'isscm/index.html', context)
+                print('포스트, 인성로그인')
+                return redirect('isscm:index')
             else:
                 login_session = request.session.get('login_session')
                 context = {'forms': loginform, 'login_session': login_session}
-                return render(request, 'isscm/index.html', context)
+                print("포스트, 일반 로그인")
+                return redirect('isscm:index')
         else:
             context['forms'] = loginform
             if loginform.errors:
                 for value in loginform.errors.values():
                     context['error'] = value
-        return render(request, 'accounts/login.html', context)
+        return render(request, 'isscm/login.html', context)
 
 # 로그아웃
 def logout(request):
     request.session.flush()
-    return redirect('/isscm/')
+    return redirect('/isscm/index')
 

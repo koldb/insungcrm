@@ -82,13 +82,13 @@ def que_list(request):
         if login_session == 'insung':
             sort = request.GET.get('sort', '')
             if sort == 'rg_date':
-                company_sheet = question_sheet.objects.all().order_by('rg_date')
+                company_sheet = question_sheet.objects.all().order_by('rg_date', '-rg_date')
             elif sort == 'type':
-                company_sheet = question_sheet.objects.all().order_by('type')
+                company_sheet = question_sheet.objects.all().order_by('type', '-rg_date')
             elif sort == 'cname':
-                company_sheet = question_sheet.objects.all().order_by('cname')
+                company_sheet = question_sheet.objects.all().order_by('cname', '-rg_date')
             else:
-                company_sheet = question_sheet.objects.all().order_by('no', 'rg_date')
+                company_sheet = question_sheet.objects.all().order_by('-rg_date')
 
             # 페이징
             page = request.GET.get('page', '1')
@@ -101,13 +101,13 @@ def que_list(request):
         else:
             sort = request.GET.get('sort', '')
             if sort == 'rg_date':
-                company_sheet = question_sheet.objects.filter(cname=login_session).order_by('rg_date')
+                company_sheet = question_sheet.objects.filter(cname=login_session).order_by('rg_date', '-rg_date')
             elif sort == 'type':
-                company_sheet = question_sheet.objects.filter(cname=login_session).order_by('type')
+                company_sheet = question_sheet.objects.filter(cname=login_session).order_by('type', '-rg_date')
             elif sort == 'cname':
-                company_sheet = question_sheet.objects.filter(cname=login_session).order_by('cname')
+                company_sheet = question_sheet.objects.filter(cname=login_session).order_by('cname', '-rg_date')
             else:
-                company_sheet = question_sheet.objects.filter(cname=login_session).order_by('no', 'rg_date')
+                company_sheet = question_sheet.objects.filter(cname=login_session).order_by('-rg_date')
             page = request.GET.get('page', '1')
             paginator = Paginator(company_sheet, 7)
             page_obj = paginator.get_page(page)
@@ -130,7 +130,7 @@ def que_list(request):
             paginator = Paginator(company_sheet, 7)
             page_obj = paginator.get_page(page)
             print("페이징 끝")
-        context = {'company_sheet': company_sheet, 'login_session': login_session, 'page_obj': page_obj, 'comments': comments}
+        context = {'company_sheet': company_sheet, 'login_session': login_session, 'page_obj': page_obj}
         print("리스트 끝")
         return render(request, 'question/que_list.html', context)
 

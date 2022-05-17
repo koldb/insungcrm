@@ -28,20 +28,20 @@ def index(request):
     login_session = request.session.get('login_session')
 
     # 1일 기준 신규 접수 현황
-    es_count = EstimateSheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(days=1)).count()
-    es_pcount = EstimateSheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(days=1),
+    es_count = EstimateSheet.objects.filter(rg_date=date.today() - datetime.timedelta(days=1)).count()
+    es_pcount = EstimateSheet.objects.filter(rg_date=date.today() - datetime.timedelta(days=1),
                                              cname=login_session).count()
-    es_fcount = EstimateSheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(days=1),
+    es_fcount = EstimateSheet.objects.filter(rg_date=date.today() - datetime.timedelta(days=1),
                                              finish="종료").count()
-    as_count = ASsheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(days=1)).count()
-    as_pcount = ASsheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(days=1),
+    as_count = ASsheet.objects.filter(rg_date=date.today() - datetime.timedelta(days=1)).count()
+    as_pcount = ASsheet.objects.filter(rg_date=date.today() - datetime.timedelta(days=1),
                                        cname=login_session).count()
-    as_fcount = ASsheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(days=1), finish="종료").count()
-    or_count = Ordersheet.objects.filter(rp_date__gte=date.today() - datetime.timedelta(days=1)).count()
-    or_pcount = Ordersheet.objects.filter(rp_date__gte=date.today() - datetime.timedelta(days=1),
+    as_fcount = ASsheet.objects.filter(rp_date=date.today() - datetime.timedelta(days=1), finish="종료").count()
+    or_count = Ordersheet.objects.filter(rp_date=date.today() - datetime.timedelta(days=1)).count()
+    or_pcount = Ordersheet.objects.filter(rp_date=date.today() - datetime.timedelta(days=1),
                                           cname=login_session).count()
-    que_count = question_sheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(days=1)).count()
-    que_pcount = question_sheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(days=1),
+    que_count = question_sheet.objects.filter(rg_date=date.today() - datetime.timedelta(days=1)).count()
+    que_pcount = question_sheet.objects.filter(rg_date=date.today() - datetime.timedelta(days=1),
                                                cname=login_session).count()
 
     # 주간 실적 현황
@@ -144,9 +144,9 @@ def sheet_list(request):
             elif sort == 'rp_date':
                 company_sheet = EstimateSheet.objects.all().order_by('-rp_date')
             elif sort == 'estitle':
-                company_sheet = EstimateSheet.objects.all().order_by('-rg_date', 'estitle')
+                company_sheet = EstimateSheet.objects.all().order_by('estitle', '-rg_date')
             elif sort == 'new_old':
-                company_sheet = EstimateSheet.objects.all().order_by('-rg_date', 'new_old')
+                company_sheet = EstimateSheet.objects.all().order_by('new_old', '-rg_date',)
             elif sort == 'cname':
                 company_sheet = EstimateSheet.objects.all().order_by('cname', '-rg_date')
             elif sort == 'finish':
@@ -199,11 +199,11 @@ def sheet_list(request):
             elif sort == 'rp_date':
                 company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('-rp_date')
             elif sort == 'estitle':
-                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('-rg_date', 'estitle')
+                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('estitle', '-rg_date')
             elif sort == 'new_old':
-                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('-rg_date', 'new_old')
+                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('new_old', '-rg_date')
             elif sort == 'cname':
-                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('cname', '-rg_date')
+                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('-rg_date', 'cname')
             elif sort == 'finish':
                 company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('finish', '-rg_date')
             elif sort == 'all':
@@ -213,7 +213,6 @@ def sheet_list(request):
             else:
                 company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('finish', '-rg_date',
                                                                                            '-rp_date')
-            # company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('rg_date', 'rp_date')
             page = request.GET.get('page', '1')
             paginator = Paginator(company_sheet, 7)
             page_obj = paginator.get_page(page)
@@ -620,9 +619,9 @@ def order_list(request):
         elif sort == 'cname':
             ordersheet = Ordersheet.objects.all().order_by('cname', '-rp_date')
         elif sort == 'user_dept':
-            ordersheet = Ordersheet.objects.all().order_by('user_dept', '-rp_date')
+            ordersheet = Ordersheet.objects.all().order_by('-user_dept', '-rp_date')
         else:
-            ordersheet = Ordersheet.objects.all().order_by('user_dept', '-rp_date')
+            ordersheet = Ordersheet.objects.all().order_by('-user_dept', '-rp_date')
 
         # 페이징
         page = request.GET.get('page', '1')
@@ -639,14 +638,14 @@ def order_list(request):
 
         # 주간 팀별 실적 현황
         es_week1 = Ordersheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(weeks=1),
-                                                user_dept='영업1팀').aggregate(Sum('total_price'))
+                                             user_dept='영업1팀').aggregate(Sum('total_price'))
         es_week2 = Ordersheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(weeks=1),
-                                                user_dept='영업2팀').aggregate(Sum('total_price'))
+                                             user_dept='영업2팀').aggregate(Sum('total_price'))
         # 월간 팀별 실적 조회
         es_month1 = Ordersheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1),
-                                                 user_dept='영업1팀').aggregate(Sum('total_price'))
+                                              user_dept='영업1팀').aggregate(Sum('total_price'))
         es_month2 = Ordersheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1),
-                                                 user_dept='영업2팀').aggregate(Sum('total_price'))
+                                              user_dept='영업2팀').aggregate(Sum('total_price'))
 
         # 주간 담당자별 실적 현황
         es_cweek1_total = Ordersheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1)).values(
@@ -664,7 +663,7 @@ def order_list(request):
     elif request.method == 'POST':
         print('포스트인가')
         if login_session == 'insung':
-            ordersheet = Ordersheet.objects.all().order_by('user_dept', '-rp_date')
+            ordersheet = Ordersheet.objects.all().order_by('-rp_date', '-user_dept')
             page = request.GET.get('page', '1')
             paginator = Paginator(ordersheet, 7)
             page_obj = paginator.get_page(page)

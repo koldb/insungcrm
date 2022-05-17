@@ -23,7 +23,7 @@
 <div class="container-fluid">
     <!-- 1일 기준 신규 접수 현황 -->
     <div class="row">
-        <h2>신규 등록 현황_1일 기준</h2>
+        <h2>신규 등록 현황_전일 기준</h2>
         <!--일별 견적 접수 현황-->
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-primary shadow h-100 py-2">
@@ -85,7 +85,7 @@
     <div class="row"  style="float:left; width: 50%;">
         <h2 style="display:inline;">주간 실적 현황</h2>
         <!--주간 견적 실적-->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-3 col-md-6 mb-4" style="width: 50%;">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -93,7 +93,7 @@
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                 견적 실적(1팀/2팀)</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <b>{{ es_week1.total_price__sum|intcomma }}</b>/<b>{{ es_week2.total_price__sum|intcomma }}</b>
+                                <b>{{ es_week1.total_price__sum|intcomma }}</b> / <b>{{ es_week2.total_price__sum|intcomma }}</b>
                             </div>
                         </div>
                     </div>
@@ -101,7 +101,7 @@
             </div>
         </div>
         <!--주간 발주 실적-->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-3 col-md-6 mb-4" style="width: 50%;">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -109,7 +109,7 @@
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                 발주 실적(1팀/2팀)</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <b>{{ or_week1.total_price__sum|intcomma }}</b>/<b>{{ or_week2.total_price__sum|intcomma }}</b>
+                                <b>{{ or_week1.total_price__sum|intcomma }}</b> / <b>{{ or_week2.total_price__sum|intcomma }}</b>
                             </div>
                         </div>
                     </div>
@@ -121,7 +121,7 @@
     <div class="row" >
         <h2 style="display:inline;">월간 실적 현황</h2>
         <!--월간 견적 실적-->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-3 col-md-6 mb-4" style="width: 50%;">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -129,7 +129,7 @@
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                 견적 실적(1팀/2팀)</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <b>{{ es_month1.total_price__sum|intcomma }}</b>/<b>{{ es_month2.total_price__sum|intcomma }}</b>
+                                <b>{{ es_month1.total_price__sum|intcomma }}</b> / <b>{{ es_month2.total_price__sum|intcomma }}</b>
                             </div>
                         </div>
                     </div>
@@ -137,7 +137,7 @@
             </div>
         </div>
         <!--월간 발주 실적-->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-3 col-md-6 mb-4" style="width: 50%;">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -145,7 +145,7 @@
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                 발주 실적(1팀/2팀)</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <b>{{ or_month2.total_price__sum|intcomma }}</b>/<b>{{ or_month2.total_price__sum|intcomma }}</b>
+                                <b>{{ or_month2.total_price__sum|intcomma }}</b> / <b>{{ or_month2.total_price__sum|intcomma }}</b>
                             </div>
                         </div>
                     </div>
@@ -158,7 +158,7 @@
     <div class="row">
         <h2>제품별 견적, 발주, AS 월간 현황</h2>
         <!--월간 제품별 견적 현황-->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-3 col-md-6 mb-4" style="width: 33%;">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -173,7 +173,7 @@
                                     </tr>
                                     {% for ep in es_num %}
                                     <tr>
-                                        <td>{{ ep.product_name }}</td>
+                                        <td style="width: 90%;">{{ ep.product_name }}</td>
                                         <td>{{ ep.count }}</td>
                                     </tr>
                                     {% endfor %}
@@ -185,7 +185,7 @@
             </div>
         </div>
         <!--월간 제품별 발주 현황-->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-3 col-md-6 mb-4" style="width: 33%;">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -195,7 +195,7 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
                                 <table>
                                     <tr>
-                                        <th>제품명</th>
+                                        <th style="width: 90%;">제품명</th>
                                         <th>수량</th>
                                     </tr>
                                     {% for or in or_num %}
@@ -212,7 +212,7 @@
             </div>
         </div>
         <!--월간 제품별 AS 현황-->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-3 col-md-6 mb-4" style="width: 33%;">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -222,7 +222,7 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
                                 <table>
                                     <tr>
-                                        <th>제품명</th>
+                                        <th style="width: 90%;">제품명</th>
                                         <th>수량</th>
                                     </tr>
                                     {% for as in as_num %}
@@ -244,7 +244,7 @@
     <div class="row">
         <h2>업체별 견적, 발주, AS 월간 현황</h2>
         <!--월간 업체별 견적 현황-->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-3 col-md-6 mb-4" style="width: 33%;">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -271,7 +271,7 @@
             </div>
         </div>
         <!--월간 업체별 발주 현황-->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-3 col-md-6 mb-4" style="width: 33%;">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -298,7 +298,7 @@
             </div>
         </div>
         <!--월간 업체별 AS 현황-->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-3 col-md-6 mb-4" style="width: 33%;">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">

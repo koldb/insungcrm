@@ -22,6 +22,7 @@ class EstimateSheet(models.Model):
     option = models.TextField(verbose_name='의견', null=True, blank=True)
     finish = models.CharField(max_length=10, null=True, blank=True)
     user_dept = models.CharField(null=True, blank=True, max_length=20, verbose_name='부서명')
+    user_name = models.CharField(max_length=20, verbose_name='성함', null=True, blank=True)
 
 
     class Meta:
@@ -63,7 +64,9 @@ class Ordersheet(models.Model):
     memo = models.TextField(verbose_name='비고', null=True, blank=True)
     option = models.TextField(verbose_name='의견', null=True, blank=True)
     user_dept = models.CharField(null=True, blank=True, max_length=20, verbose_name='부서명')
+    user_name = models.CharField(max_length=20, verbose_name='성함', null=True, blank=True)
     essheet_pk = models.IntegerField(null=True, blank=True)
+
 
     class Meta:
         managed = True

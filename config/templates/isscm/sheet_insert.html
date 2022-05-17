@@ -75,7 +75,7 @@
             <label for="memo">비고</label>
             <textarea class="form-control" onkeydown="resize(this)" onkeyup="resize(this)" name="memo" id="memo"> </textarea>
         </div>
-
+        <input type="hidden" value="{{ user_name }}" name="user_name" id="user_name">
 
         <div >
             <button type="submit" class="btn btn-primary" onclick="alert('입력 완료')">제출</button>

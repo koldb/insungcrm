@@ -18,6 +18,8 @@ import mimetypes
 import shutil
 from datetime import date, timedelta
 from django.utils import timezone
+from dateutil.relativedelta import relativedelta
+
 
 # Create your views here.
 
@@ -25,57 +27,82 @@ from django.utils import timezone
 def index(request):
     login_session = request.session.get('login_session')
 
-    #1일 기준 신규 접수 현황
-    es_count = EstimateSheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=1)).count()
-    es_pcount = EstimateSheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=1), cname=login_session).count()
-    es_fcount = EstimateSheet.objects.filter(rg_date__gte=timezone.now() - datetime.timedelta(days=1), finish="종료").count()
-    as_count = ASsheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=1)).count()
-    as_pcount = ASsheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=1), cname=login_session).count()
-    as_fcount = ASsheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=1), finish="종료").count()
-    or_count = Ordersheet.objects.filter(rp_date__gte= timezone.now() - datetime.timedelta(days=1)).count()
-    or_pcount = Ordersheet.objects.filter(rp_date__gte= timezone.now() - datetime.timedelta(days=1), cname=login_session).count()
-    que_count = question_sheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=1)).count()
-    que_pcount = question_sheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=1), cname=login_session).count()
+    # 1일 기준 신규 접수 현황
+    es_count = EstimateSheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(days=1)).count()
+    es_pcount = EstimateSheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(days=1),
+                                             cname=login_session).count()
+    es_fcount = EstimateSheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(days=1),
+                                             finish="종료").count()
+    as_count = ASsheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(days=1)).count()
+    as_pcount = ASsheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(days=1),
+                                       cname=login_session).count()
+    as_fcount = ASsheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(days=1), finish="종료").count()
+    or_count = Ordersheet.objects.filter(rp_date__gte=date.today() - datetime.timedelta(days=1)).count()
+    or_pcount = Ordersheet.objects.filter(rp_date__gte=date.today() - datetime.timedelta(days=1),
+                                          cname=login_session).count()
+    que_count = question_sheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(days=1)).count()
+    que_pcount = question_sheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(days=1),
+                                               cname=login_session).count()
 
-    #주간 실적 현황
-    es_week1 = EstimateSheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(weeks=1), user_dept='영업1팀').aggregate(Sum('total_price'))
-    es_week2 = EstimateSheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(weeks=1), user_dept='영업2팀').aggregate(Sum('total_price'))
-    or_week1 = Ordersheet.objects.filter(rp_date__gte=timezone.now() - datetime.timedelta(weeks=1),user_dept='영업1팀').aggregate(Sum('total_price'))
-    or_week2 = Ordersheet.objects.filter(rp_date__gte=timezone.now() - datetime.timedelta(weeks=1),user_dept='영업2팀').aggregate(Sum('total_price'))
+    # 주간 실적 현황
+    es_week1 = EstimateSheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(weeks=1),
+                                            user_dept='영업1팀').aggregate(Sum('total_price'))
+    es_week2 = EstimateSheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(weeks=1),
+                                            user_dept='영업2팀').aggregate(Sum('total_price'))
+    or_week1 = Ordersheet.objects.filter(rp_date__gte=date.today() - datetime.timedelta(weeks=1),
+                                         user_dept='영업1팀').aggregate(Sum('total_price'))
+    or_week2 = Ordersheet.objects.filter(rp_date__gte=date.today() - datetime.timedelta(weeks=1),
+                                         user_dept='영업2팀').aggregate(Sum('total_price'))
 
-    #월간 실적 현황
-    es_month1 = EstimateSheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=30), user_dept='영업1팀').aggregate(Sum('total_price'))
-    es_month2 = EstimateSheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=30), user_dept='영업2팀').aggregate(Sum('total_price'))
-    or_month1 = Ordersheet.objects.filter(rp_date__gte=timezone.now() - datetime.timedelta(days=30), user_dept='영업1팀').aggregate(Sum('total_price'))
-    or_month2 = Ordersheet.objects.filter(rp_date__gte=timezone.now() - datetime.timedelta(days=30), user_dept='영업2팀').aggregate(Sum('total_price'))
+    # 월간 실적 현황
+    es_month1 = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1),
+                                             user_dept='영업1팀').aggregate(Sum('total_price'))
+    es_month2 = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1),
+                                             user_dept='영업2팀').aggregate(Sum('total_price'))
+    or_month1 = Ordersheet.objects.filter(rp_date__gte=date.today() - relativedelta(months=1),
+                                          user_dept='영업1팀').aggregate(Sum('total_price'))
+    or_month2 = Ordersheet.objects.filter(rp_date__gte=date.today() - relativedelta(months=1),
+                                          user_dept='영업2팀').aggregate(Sum('total_price'))
 
-    #제품별 월간 견적, 발주, AS 개수
-    es_num = EstimateSheet.objects.filter(rg_date__gte=timezone.now() - datetime.timedelta(days=30)).values('product_name').order_by('product_name').annotate(count=Count('product_name'))
-    or_num = Ordersheet.objects.filter(rp_date__gte=timezone.now() - datetime.timedelta(days=30)).values('product_name').order_by('product_name').annotate(count=Count('product_name'))
-    as_num = ASsheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=1)).values('product_name').order_by('product_name').annotate(count=Count('product_name'))
+    # 제품별 월간 견적, 발주, AS 개수
+    es_num = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values(
+        'product_name').order_by('product_name').annotate(count=Count('product_name'))
+    or_num = Ordersheet.objects.filter(rp_date__gte=date.today() - relativedelta(months=1)).values(
+        'product_name').order_by('product_name').annotate(count=Count('product_name'))
+    as_num = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values(
+        'product_name').order_by('product_name').annotate(count=Count('product_name'))
 
-    #업체별 월간 견적, 발주, AS 개수
-    es_cnum = EstimateSheet.objects.filter(rg_date__gte=timezone.now() - datetime.timedelta(days=30)).values('cname').order_by('cname').annotate(count=Count('cname'))
-    or_cnum = Ordersheet.objects.filter(rp_date__gte=timezone.now() - datetime.timedelta(days=30)).values('cname').order_by('cname').annotate(count=Count('cname'))
-    as_cnum = ASsheet.objects.filter(rg_date__gte = timezone.now() - datetime.timedelta(days=1)).values('cname').order_by('cname').annotate(count=Count('cname'))
+    # 업체별 월간 견적, 발주, AS 개수
+    es_cnum = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values(
+        'cname').order_by('cname').annotate(count=Count('cname'))
+    or_cnum = Ordersheet.objects.filter(rp_date__gte=date.today() - relativedelta(months=1)).values('cname').order_by(
+        'cname').annotate(count=Count('cname'))
+    as_cnum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values('cname').order_by(
+        'cname').annotate(count=Count('cname'))
 
-    context = {'login_session': login_session, 'es_count':es_count, 'as_count':as_count, 'or_count':or_count, 'que_count':que_count,
-               'es_week1':es_week1,'es_week2':es_week2 , 'or_week1':or_week1,'or_week2':or_week2 , 'es_month1':es_month1, 'es_month2':es_month2, 'or_month1':or_month1, 'or_month2':or_month2, 'es_num':es_num, 'or_num':or_num, 'as_num':as_num,
-               'es_cnum': es_cnum, 'or_cnum':or_cnum, 'as_cnum':as_cnum, 'es_fcount': es_fcount, 'as_fcount':as_fcount, 'es_pcount':es_pcount,
-               'as_pcount':as_pcount, 'or_pcount':or_pcount, 'que_pcount':que_pcount}
+    context = {'login_session': login_session, 'es_count': es_count, 'as_count': as_count, 'or_count': or_count,
+               'que_count': que_count,
+               'es_week1': es_week1, 'es_week2': es_week2, 'or_week1': or_week1, 'or_week2': or_week2,
+               'es_month1': es_month1, 'es_month2': es_month2, 'or_month1': or_month1, 'or_month2': or_month2,
+               'es_num': es_num, 'or_num': or_num, 'as_num': as_num,
+               'es_cnum': es_cnum, 'or_cnum': or_cnum, 'as_cnum': as_cnum, 'es_fcount': es_fcount,
+               'as_fcount': as_fcount, 'es_pcount': es_pcount,
+               'as_pcount': as_pcount, 'or_pcount': or_pcount, 'que_pcount': que_pcount}
     return render(request, 'isscm/index.html', context)
+
 
 # 견적 입력
 @login_required
 def sheet_insert(request):
     print('견적서 입력 도달')
     login_session = request.session.get('login_session')
+    user_name = request.session.get('user_name')
     # render context로 넘길때 key:value 로 넘겨야 넘어가고 받아진다
 
     if request.method == 'GET':
         print('겟 도달')
         # render context로 넘길때 key:value 로 넘겨야 넘어가고 받아진다
-        context = {'login_session': login_session}
+        context = {'login_session': login_session, 'user_name': user_name}
         print('겟 끝나 나감')
         return render(request, 'isscm/sheet_insert.html', context)
     elif request.method == 'POST':
@@ -92,6 +119,7 @@ def sheet_insert(request):
         print(insert.quantity)
         insert.cname = request.POST['cname']
         insert.memo = request.POST['memo']
+        insert.user_name = request.POST['user_name']
 
         insert.save()
 
@@ -106,6 +134,7 @@ def sheet_insert(request):
 def sheet_list(request):
     print("견적 리스트 시작")
     login_session = request.session.get('login_session')
+    user_name = request.session.get('user_name')
 
     if request.method == 'GET':
         if login_session == 'insung':
@@ -135,14 +164,33 @@ def sheet_list(request):
 
             # 차트 데이터
             sheet_chart = []
-            sheet_chart_data = EstimateSheet.objects.all()
-            dept_1 = sheet_chart_data.filter(user_dept="영업1팀", finish="종료").count()
-            print(dept_1)
-            dept_2 = sheet_chart_data.filter(user_dept="영업2팀", finish="종료").count()
-            print(dept_2)
+            sheet_chart_data = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1))
+            dept_1 = sheet_chart_data.filter(user_dept="영업1팀").count()
+            dept_2 = sheet_chart_data.filter(user_dept="영업2팀").count()
             sheet_chart = [dept_1, dept_2]
 
-            context = {'login_session': login_session, 'page_obj': page_obj, 'sheet_chart': sheet_chart, 'sort': sort}
+            # 주간 팀별 실적 현황
+            es_week1 = EstimateSheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(weeks=1),
+                                                    user_dept='영업1팀').aggregate(Sum('total_price'))
+            es_week2 = EstimateSheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(weeks=1),
+                                                    user_dept='영업2팀').aggregate(Sum('total_price'))
+            # 월간 팀별 실적 조회
+            es_month1 = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1),
+                                                     user_dept='영업1팀').aggregate(Sum('total_price'))
+            es_month2 = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1),
+                                                     user_dept='영업2팀').aggregate(Sum('total_price'))
+
+            # 주간 담당자별 실적 현황
+            es_cweek1_total = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1)).values(
+                'user_name').order_by('user_name').distinct().annotate(sum=Sum('total_price'))
+            print(es_cweek1_total)
+            # 월간 담당자별 실적 현황
+            es_cmonth1_total = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values(
+                'user_name').order_by('user_name').distinct().annotate(sum=Sum('total_price'))
+
+            context = {'login_session': login_session, 'page_obj': page_obj, 'sheet_chart': sheet_chart, 'sort': sort,
+                       'es_month1': es_month1, 'es_month2': es_month2, 'es_week1': es_week1, 'es_week2': es_week2,
+                       'es_cweek1_total': es_cweek1_total, 'es_cmonth1_total': es_cmonth1_total}
 
         else:
             sort = request.GET.get('sort', '')
@@ -159,7 +207,8 @@ def sheet_list(request):
             elif sort == 'finish':
                 company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('finish', '-rg_date')
             elif sort == 'all':
-                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('finish', '-rg_date', '-rp_date'
+                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('finish', '-rg_date',
+                                                                                           '-rp_date'
                                                                                            )
             else:
                 company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('finish', '-rg_date',
@@ -309,7 +358,9 @@ def es_excel(request):
               'default': xlwt.Style.default_style}
     # 첫번째 열에 들어갈 컬럼명 설정
     col_names = ['NO', '고객 접수 일자', '회신 완료 일자', '견적명', '제품명', '수량', '개당 단가', '총 금액', '구분', '사업자코드', '업체명', '비고', '의견',
-                 '종료 여부', '담당 팀']
+                 '종료 여부', '담당 팀', '담당자']
+    col_names_c = ['NO', '고객 접수 일자', '회신 완료 일자', '견적명', '제품명', '수량', '개당 단가', '총 금액', '구분', '사업자코드', '업체명', '비고', '의견',
+                   '종료 여부', '담당 팀']
 
     query = request.GET.get('query')
     if query:
@@ -323,24 +374,34 @@ def es_excel(request):
                                                                                         'per_price', 'total_price',
                                                                                         'new_old', 'business_number',
                                                                                         'cname', 'memo', 'option',
-                                                                                        'finish', 'user_dept')
+                                                                                        'finish', 'user_dept',
+                                                                                        'user_name')
         else:
             rows = EstimateSheet.objects.filter(
                 Q(product_name__icontains=query) | Q(new_old__icontains=query) | Q(
                     cname__icontains=query) | Q(
-                    finish__icontains=query) | Q(estitle__icontains=query), cname=login_session ).values_list('no', 'rg_date', 'rp_date',
-                                                                                        'estitle', 'product_name',
-                                                                                        'quantity', 'per_price',
-                                                                                        'total_price',
-                                                                                        'new_old', 'business_number',
-                                                                                        'cname', 'memo', 'option',
-                                                                                        'finish', 'user_dept')
+                    finish__icontains=query) | Q(estitle__icontains=query), cname=login_session).values_list('no',
+                                                                                                             'rg_date',
+                                                                                                             'rp_date',
+                                                                                                             'estitle',
+                                                                                                             'product_name',
+                                                                                                             'quantity',
+                                                                                                             'per_price',
+                                                                                                             'total_price',
+                                                                                                             'new_old',
+                                                                                                             'business_number',
+                                                                                                             'cname',
+                                                                                                             'memo',
+                                                                                                             'option',
+                                                                                                             'finish',
+                                                                                                             'user_dept')
     else:
         if login_session == 'insung':
             rows = EstimateSheet.objects.all().values_list('no', 'rg_date', 'rp_date', 'estitle', 'product_name',
                                                            'quantity',
                                                            'per_price', 'total_price', 'new_old', 'business_number',
-                                                           'cname', 'memo', 'option', 'finish', 'user_dept')
+                                                           'cname', 'memo', 'option', 'finish', 'user_dept',
+                                                           'user_name')
         else:
             rows = EstimateSheet.objects.all().filter(cname=login_session).values_list('no', 'rg_date', 'rp_date',
                                                                                        'estitle', 'product_name',
@@ -350,14 +411,15 @@ def es_excel(request):
                                                                                        'cname', 'memo', 'option',
                                                                                        'finish', 'user_dept')
 
-    # rows = EstimateSheet.objects.filter(cname=login_session).values_list('no', 'rg_date', 'rp_date', 'estitle', 'product_name',
-    #                                                                      'quantity','per_price', 'total_price', 'new_old', 'business_number', 'cname', 'memo', 'option', 'finish', 'user_dept')
-
     # 첫번째 열: 설정한 컬럼명 순서대로 스타일 적용하여 생성
     print("다운 중간2")
     row_num = 0
-    for idx, col_name in enumerate(col_names):
-        ws.write(row_num, idx, col_name, title_style)
+    if login_session == 'insung':
+        for idx, col_name in enumerate(col_names):
+            ws.write(row_num, idx, col_name, title_style)
+    else:
+        for idx, col_names_c in enumerate(col_names_c):
+            ws.write(row_num, idx, col_names_c, title_style)
 
     # 두번째 이후 열: 설정한 컬럼명에 맞춘 데이터 순서대로 스타일 적용하여 생성
     for row in rows:
@@ -413,12 +475,14 @@ def sheet_detail(request, pk):
 def sheet_modify(request, pk):
     login_session = request.session.get('login_session')
     user_dept = request.session.get('user_dept')
+    user_name = request.session.get('user_name')
     detailView = get_object_or_404(EstimateSheet, no=pk)
 
     if request.method == 'GET':
         # get으로 오면 다시 수정페이지로 넘김
         detailView = get_object_or_404(EstimateSheet, no=pk)
-        context = {'detailView': detailView, 'login_session': login_session, 'user_dept': user_dept}
+        context = {'detailView': detailView, 'login_session': login_session, 'user_dept': user_dept,
+                   'user_name': user_name}
         print("겟으로 들어왓다 나감")
         return render(request, 'isscm/sheet_modify.html', context)
     elif request.method == 'POST':
@@ -435,12 +499,13 @@ def sheet_modify(request, pk):
         detailView.memo = request.POST['memo']
         detailView.option = request.POST['option']
         detailView.finish = request.POST['finish']
+        detailView.user_name = request.POST['user_name']
         detailView.user_dept = request.POST.get('user_dept')
 
         if detailView.finish == '종료':
             try:
                 orfilter = get_object_or_404(Ordersheet, essheet_pk=pk)
-                orderinsert.rg_date = request.POST['rg_date']
+                orfilter.rg_date = request.POST['rg_date']
                 orfilter.rp_date = request.POST['rp_date']
                 orfilter.odtitle = request.POST['estitle']
                 orfilter.product_name = request.POST['product_name']
@@ -451,6 +516,7 @@ def sheet_modify(request, pk):
                 orfilter.cname = request.POST['cname']
                 orfilter.memo = request.POST['memo']
                 orfilter.option = request.POST['option']
+                orfilter.user_name = request.POST['user_name']
                 orfilter.user_dept = request.POST.get('user_dept')
                 orfilter.essheet_pk = pk
                 orfilter.save()
@@ -468,6 +534,7 @@ def sheet_modify(request, pk):
                 orderinsert.cname = request.POST['cname']
                 orderinsert.memo = request.POST['memo']
                 orderinsert.option = request.POST['option']
+                orderinsert.user_name = request.POST['user_name']
                 orderinsert.user_dept = request.POST.get('user_dept')
                 orderinsert.essheet_pk = pk
                 orderinsert.save()
@@ -502,10 +569,11 @@ def order_insert(request):
     print('발주 입력 도달')
     login_session = request.session.get('login_session')
     user_dept = request.session.get('user_dept')
+    user_name = request.session.get('user_name')
     print(user_dept)
     if request.method == 'GET':
         print('겟 도달')
-        context = {'login_session': login_session, 'user_dept': user_dept}
+        context = {'login_session': login_session, 'user_dept': user_dept, 'user_name': user_name}
         print('겟 끝나 나감')
         return render(request, 'isscm/order_insert.html', context)
     elif request.method == 'POST':
@@ -521,11 +589,13 @@ def order_insert(request):
         insert.cname = request.POST['cname']
         insert.option = request.POST['option']
         insert.user_dept = request.POST['user_dept']
+        insert.user_name = request.POST['user_name']
 
         insert.save()
 
         login_session = request.session.get('login_session')
-        context = {'login_session': login_session}
+        user_name = request.session.get('user_name')
+        context = {'login_session': login_session, 'user_name': user_name}
         print('입력 끝나 나감')
         return render(request, 'isscm/order_insert.html', context)
 
@@ -535,6 +605,7 @@ def order_insert(request):
 def order_list(request):
     print("발주 리스트 시작")
     login_session = request.session.get('login_session')
+    user_name = request.session.get('user_name')
 
     if request.method == 'GET':
         sort = request.GET.get('sort', '')
@@ -559,7 +630,35 @@ def order_list(request):
         page_obj = paginator.get_page(page)
         print("insung GET 페이징 끝")
 
-        context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort}
+        # 차트 데이터
+        sheet_chart = []
+        sheet_chart_data = Ordersheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1))
+        dept_1 = sheet_chart_data.filter(user_dept="영업1팀").count()
+        dept_2 = sheet_chart_data.filter(user_dept="영업2팀").count()
+        sheet_chart = [dept_1, dept_2]
+
+        # 주간 팀별 실적 현황
+        es_week1 = Ordersheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(weeks=1),
+                                                user_dept='영업1팀').aggregate(Sum('total_price'))
+        es_week2 = Ordersheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(weeks=1),
+                                                user_dept='영업2팀').aggregate(Sum('total_price'))
+        # 월간 팀별 실적 조회
+        es_month1 = Ordersheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1),
+                                                 user_dept='영업1팀').aggregate(Sum('total_price'))
+        es_month2 = Ordersheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1),
+                                                 user_dept='영업2팀').aggregate(Sum('total_price'))
+
+        # 주간 담당자별 실적 현황
+        es_cweek1_total = Ordersheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1)).values(
+            'user_name').order_by('user_name').distinct().annotate(sum=Sum('total_price'))
+        # 월간 담당자별 실적 현황
+        es_cmonth1_total = Ordersheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values(
+            'user_name').order_by('user_name').distinct().annotate(sum=Sum('total_price'))
+
+
+        context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort, 'user_name': user_name, 'es_week1': es_week1,
+                   'es_week2': es_week2, 'es_month1': es_month1, 'es_month2':es_month2, 'es_cweek1_total': es_cweek1_total,
+                   'es_cmonth1_total': es_cmonth1_total, 'sheet_chart': sheet_chart}
         print('끝')
         return render(request, 'isscm/order_list.html', context)
     elif request.method == 'POST':
@@ -570,7 +669,7 @@ def order_list(request):
             paginator = Paginator(ordersheet, 7)
             page_obj = paginator.get_page(page)
             print("페이징 끝")
-        context = {'login_session': login_session, 'page_obj': page_obj}
+        context = {'login_session': login_session, 'page_obj': page_obj, 'user_name': user_name}
     print("리스트 끝")
     return render(request, 'isscm/order_list.html', context)
 
@@ -578,6 +677,7 @@ def order_list(request):
 # 발주 리스트 검색
 def ordersearchResult(request):
     login_session = request.session.get('login_session')
+    user_name = request.session.get('user_name')
     searchlist = None
     query = None
     if 'q' in request.GET:
@@ -593,7 +693,7 @@ def ordersearchResult(request):
         page_obj = paginator.get_page(page)
         print("지나갓나")
         return render(request, 'isscm/order_list.html',
-                      {'query': query, 'page_obj': page_obj, 'login_session': login_session})
+                      {'query': query, 'page_obj': page_obj, 'login_session': login_session, 'user_name': user_name})
     else:
         print('post로 왓나')
         query = request.GET.get('query')
@@ -605,7 +705,7 @@ def ordersearchResult(request):
         page = request.GET.get('page', '1')
         paginator = Paginator(searchlist, 7)
         page_obj = paginator.get_page(page)
-        context = {'query': query, 'page_obj': page_obj, 'login_session': login_session}
+        context = {'query': query, 'page_obj': page_obj, 'login_session': login_session, 'user_name': user_name}
         print('포스트 나갓나')
     return render(request, 'isscm/order_list.html', context)
 
@@ -614,6 +714,7 @@ def ordersearchResult(request):
 def order_modify(request, pk):
     login_session = request.session.get('login_session')
     user_dept = request.session.get('user_dept')
+    user_name = request.session.get('user_name')
     detailView = get_object_or_404(Ordersheet, no=pk)
 
     if request.method == 'GET':
@@ -623,10 +724,10 @@ def order_modify(request, pk):
         try:
             upfile = OrderUploadFile.objects.filter(sheet_no_id=pk)
             context = {'detailView': detailView, 'login_session': login_session, 'user_dept': user_dept,
-                       'upfile': upfile}
+                       'upfile': upfile, 'user_name': user_name}
             print("성공")
         except:
-            context = {'detailView': detailView, 'login_session': login_session, 'user_dept': user_dept}
+            context = {'detailView': detailView, 'login_session': login_session, 'user_dept': user_dept, 'user_name': user_name}
             print("실패")
 
         print("겟으로 들어왓다 나감")
@@ -645,11 +746,13 @@ def order_modify(request, pk):
         detailView.memo = request.POST['memo']
         detailView.option = request.POST['option']
         detailView.user_dept = request.POST.get('user_dept')
+        detailView.user_name = request.POST.get('user_name')
         print("바로 저장으로")
         detailView.save()
 
     login_session = request.session.get('login_session')
-    context = {'detailView': detailView, 'login_session': login_session}
+    user_name = request.session.get('user_name')
+    context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name}
     print("저장하고 나감")
     return render(request, 'isscm/order_modify.html', context)
 
@@ -748,7 +851,9 @@ def order_excel(request):
               'time': xlwt.easyxf(num_format_str='hh:mm:ss'),
               'default': xlwt.Style.default_style}
     # 첫번째 열에 들어갈 컬럼명 설정
-    col_names = ['NO', '완료 일자', '발주명', '제품명', '수량', '개당 단가', '총 금액', '구분', '사업자코드', '업체명', '비고', '의견', '담당 팀']
+    col_names = ['NO', '완료 일자', '발주명', '제품명', '수량', '개당 단가', '총 금액', '구분', '사업자코드', '업체명', '비고', '의견', '담당 팀', '담당자']
+
+
 
     query = request.GET.get('query')
     print('query인가 : ' + str(query))
@@ -762,13 +867,13 @@ def order_excel(request):
                                                                                        'per_price', 'total_price',
                                                                                        'new_old', 'business_number',
                                                                                        'cname', 'memo', 'option',
-                                                                                       'user_dept')
+                                                                                       'user_dept', 'user_name')
     else:
         print('pk 실패')
         ##엑셀에 쓸 데이터 리스트화
         rows = Ordersheet.objects.all().values_list('no', 'rp_date', 'odtitle', 'product_name', 'quantity',
                                                     'per_price', 'total_price', 'new_old', 'business_number', 'cname',
-                                                    'memo', 'option', 'user_dept')
+                                                    'memo', 'option', 'user_dept', 'user_name')
 
     # 첫번째 열: 설정한 컬럼명 순서대로 스타일 적용하여 생성
     print("다운 중간2")

@@ -18,6 +18,18 @@ class RegisterForm(forms.ModelForm):
         ),
         error_messages={'required': '아이디를 입력하세요.', 'unique': '중복된 아이디 입니다.'}
     )
+    user_name = forms.CharField(
+        label='성함',
+        required=True,
+        widget=forms.TextInput(
+            attrs={
+                'class': 'user_name',
+                'id': 'user_name',
+                'placeholder': '성함'
+            }
+        ),
+        error_messages={'required': '성함을 입력하세요.'}
+    )
     user_pw = forms.CharField(
         label='비밀번호',
         required=True,
@@ -93,6 +105,7 @@ class RegisterForm(forms.ModelForm):
     field_order = [
         'user_id',
         'cname',
+        'user_name',
         'user_pw',
         'user_pw2',
         'user_phone',
@@ -105,6 +118,7 @@ class RegisterForm(forms.ModelForm):
         fields = [
             'user_id',
             'cname',
+            'user_name',
             'user_pw',
             'user_phone',
             'user_email',
@@ -116,6 +130,7 @@ class RegisterForm(forms.ModelForm):
 
         user_id = cleaned_data.get('user_id', '')
         cname = cleaned_data.get('cname', '')
+        user_name = cleaned_data.get('user_name', '')
         user_pw = cleaned_data.get('user_pw', '')
         user_pw2 = cleaned_data.get('user_pw2', '')
         user_phone = cleaned_data.get('user_phone', '')
@@ -132,6 +147,7 @@ class RegisterForm(forms.ModelForm):
         else:
             self.user_id = user_id
             self.cname = cname
+            self.user_name = user_name
             self.user_pw = PasswordHasher().hash(user_pw)
             self.user_pw2 = user_pw2
             self.user_phone = user_phone
@@ -192,4 +208,5 @@ class LoginForm(forms.Form):
                 return self.add_error('user_pw', '비밀번호가 다릅니다.')
             self.login_session = user.cname
             self.user_dept = user.user_dept
+            self.user_name = user.user_name
 

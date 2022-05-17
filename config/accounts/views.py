@@ -74,7 +74,7 @@ def login(request):
             if loginform.errors:
                 for value in loginform.errors.values():
                     context['error'] = value
-        return render(request, 'isscm/login.html', context)
+        return render(request, 'accounts/login.html', context)
 
 # 로그아웃
 def logout(request):

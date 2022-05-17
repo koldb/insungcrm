@@ -9,6 +9,7 @@ class User(models.Model):
     no = models.AutoField(primary_key=True)
     user_id = models.CharField(max_length=100, unique=True, verbose_name='아이디')
     cname = models.CharField(max_length=100, verbose_name='업체명')
+    user_name = models.CharField(max_length=20, verbose_name='성함', null=True, blank=True)
     user_pw = models.CharField(max_length=100, verbose_name='비밀번호')
     phoneNumberRegex = RegexValidator(regex='\d{2,3}-\d{3,4}-\d{4}')
     user_phone = models.CharField(validators=[phoneNumberRegex], max_length=30, unique=True, verbose_name='연락처')

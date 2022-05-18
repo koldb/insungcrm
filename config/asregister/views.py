@@ -5,10 +5,12 @@ from isscm.decorators import login_required
 from . import models
 from .models import ASsheet, ASUploadFile
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Count, Sum
 import datetime
 import xlwt
 from django.http import HttpResponse
+from datetime import date, timedelta
+from dateutil.relativedelta import relativedelta
 
 
 # Create your views here.
@@ -38,6 +40,7 @@ def as_insert(request):
         insert = ASsheet()
         insert.cname = request.POST['cname']
         insert.product_name = request.POST['product_name']
+        insert.quantity = request.POST['quantity']
         insert.memo = request.POST['memo']
 
         insert.save()
@@ -62,11 +65,11 @@ def as_list(request):
             elif sort == 'rp_date':
                 company_sheet = ASsheet.objects.all().order_by('-rp_date')
             elif sort == 'product_name':
-                company_sheet = ASsheet.objects.all().order_by('product_name', '-rg_date')
+                company_sheet = ASsheet.objects.all().order_by('-product_name', '-rg_date')
             elif sort == 'finish':
-                company_sheet = ASsheet.objects.all().order_by('finish', '-rg_date')
+                company_sheet = ASsheet.objects.all().order_by('-finish', '-rg_date')
             elif sort == 'cname':
-                company_sheet = ASsheet.objects.all().order_by('cname', '-rg_date')
+                company_sheet = ASsheet.objects.all().order_by('-cname', '-rg_date')
             elif sort == 'all':
                 company_sheet = ASsheet.objects.all().order_by('-rg_date', 'finish')
             else:
@@ -76,6 +79,17 @@ def as_list(request):
             paginator = Paginator(company_sheet, 5)
             page_obj = paginator.get_page(page)
             upfile = ASUploadFile.objects.all()
+            
+            #주간 월간 제품별 AS 현황
+            as_wnum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1)).values(
+                'product_name').order_by('product_name').annotate(count=Sum('quantity'))
+            as_wnum_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1)).aggregate(
+                Sum('quantity'))
+            as_mnum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values(
+                'product_name').order_by('product_name').annotate(count=Sum('quantity'))
+            as_mnum_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).aggregate(
+                Sum('quantity'))
+            print(as_mnum)
             print("insung GET 페이징 끝")
 
         else:
@@ -85,9 +99,9 @@ def as_list(request):
             elif sort == 'rp_date':
                 company_sheet = ASsheet.objects.filter(cname=login_session).order_by('-rp_date')
             elif sort == 'product_name':
-                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('product_name', '-rg_date')
+                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('-product_name', '-rg_date')
             elif sort == 'finish':
-                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('finish', '-rg_date')
+                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('-finish', '-rg_date')
             elif sort == 'all':
                 company_sheet = ASsheet.objects.filter(cname=login_session).order_by('-rg_date', 'finish')
             else:
@@ -98,7 +112,8 @@ def as_list(request):
             page_obj = paginator.get_page(page)
             print("GET 페이징 끝")
 
-        context = {'login_session': login_session, 'company_sheet': company_sheet, 'page_obj': page_obj, 'sort': sort}
+        context = {'login_session': login_session, 'company_sheet': company_sheet, 'page_obj': page_obj, 'sort': sort,
+                   'as_wnum': as_wnum, 'as_mnum':as_mnum, 'as_wnum_sum': as_wnum_sum, 'as_mnum_sum': as_mnum_sum}
         print('끝')
         return render(request, 'assheet/as_list.html', context)
     elif request.method == 'POST':
@@ -320,6 +335,7 @@ def as_modify(request, pk):
         # 수정 내용 저장
         detailView.rp_date = request.POST['rp_date']
         detailView.product_name = request.POST['product_name']
+        detailView.quantity = request.POST['quantity']
         detailView.cname = request.POST['cname']
         detailView.memo = request.POST['memo']
         detailView.option = request.POST['option']

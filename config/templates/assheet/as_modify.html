@@ -59,7 +59,10 @@
             <label for="product_name">제품명</label>
             <input type="text" class="form-control" name="product_name" id="product_name" value="{{ detailView.product_name }}" >
         </div>
-
+        <div class="mb-3">
+            <label for="quantity">수량</label>
+            <input type="text" class="form-control" name="quantity" id="quantity" value="{{ detailView.quantity }}" onkeyup="inputNumberFormat(this)">
+        </div>
         <div class="mb-3">
             <label for="memo">비고</label>
             {% if login_session == 'insung' %}
@@ -77,15 +80,15 @@
             {% if login_session == 'insung' %}
             <label for="option">의견</label>
             {% if detailView.option == None %}
-            <textarea class="form-control" style="resize: none;" name="option"> </textarea>
+            <textarea class="form-control" style="resize: none;" name="option"></textarea>
             {% else %}
-            <textarea class="form-control" style="resize: none;" name="option" id="option"  >{{ detailView.option }}</textarea>
+            <textarea class="form-control" style="resize: none;" name="option" id="option">{{ detailView.option }}</textarea>
             {% endif %}
 
             {% else %}
              <label for="option">의견</label>
             {% if detailView.option == None %}
-            <textarea class="form-control" style="resize: none;" name="option" readonly> </textarea>
+            <textarea class="form-control" style="resize: none;" name="option" readonly></textarea>
             {% else %}
             <textarea class="form-control" style="resize: none;" name="option" id="option"  readonly>{{ detailView.option }}</textarea>
             {% endif %}

@@ -1,5 +1,6 @@
 {% extends "base/base2.html" %}
 {% block content %}
+{% load humanize %}
 {% load filter %}
 <style>
     #paging{
@@ -11,6 +12,11 @@
         width : 350px;
         margin: 0 auto;
         }
+    table {
+    text-align: center;
+    margin-left:auto;
+    margin-right:auto;
+    }
 </style>
 
 <!--검색창 부분-->
@@ -29,13 +35,14 @@
         <thead>
         {% if page_obj %}
         <tr class="header" style="text-align:center;">
-            <th style="width:5%;">순번</th>
-            <th style="width:10%">업체명</th>
+            <th style="width:3%;">순번</th>
+            <th style="width:8%">업체명</th>
             <th style="width:9%">고객 접수 일자</th>
-            <th style="width:9%">회신 완료 일자</th>
-            <th style="width:10%">제품명</th>
+            <th style="width:9%">처리 완료 일자</th>
+            <th style="width:25%">제품명</th>
+            <th style="width:4%">수량</th>
             <th style="width:15%">비고</th>
-            <th style="width:5%">완료 여부</th>
+            <th style="width:4%">완료 여부</th>
         </tr>
         </thead>
         <tbody>
@@ -51,6 +58,7 @@
             <td>{{ list.rp_date }}</td>
             {% endif %}
             <td><a href="{% url 'asregister:as_detail' list.no %}">{{ list.product_name }}</a></td>
+            <td>{{ list.quantity }}</td>
             <td>{{ list.memo | truncatewords:10}}</td>
             {% if list.finish == None %}
             <td> </td>
@@ -83,6 +91,7 @@
             <th style="width:9%">고객 접수 일자</th>
             <th style="width:9%">회신 완료 일자</th>
             <th style="width:10%">제품명</th>
+            <th style="width:4%">수량</th>
             <th style="width:15%">비고</th>
             <th style="width:5%">완료 여부</th>
         </tr>
@@ -105,6 +114,7 @@
             <td>{{ list.rp_date }}</td>
             {% endif %}
             <td><a href="{% url 'asregister:as_detail' list.no %}">{{ list.product_name }}</a></td>
+            <td>{{ list.quantity }}</td>
             <td>{{ list.memo | truncatewords:10}}</td>
             {% if list.finish == None %}
             <td> </td>
@@ -163,6 +173,72 @@
         <a href="{% url 'asregister:AS_excel' %}?query={{ query | urlencode }}" style="color:white"><button type="button" class="btn btn-primary">EXCEL DOWN</button></a>
     </form>
 </div>
+
+<br>
+<br>
+<hr style="border: 1px;">
+<!--AS 제품별 주간, 월간 현황-->
+<div class="row" style="padding: 20px 0px 20px 20px; width: 100%;">
+    <div class="col-xl-3 col-md-6 mb-4" style="float:left; width: 50%; ">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="font-weight:bold; font-size: 21px;"  >
+                            주간 제품별 AS 현황</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <table>
+                                <tr>
+                                    <th>제품명</th>
+                                    <th>수량</th>
+                                </tr>
+                                {% for as in as_wnum %}
+                                <tr>
+                                    <td>{{ as.product_name }}</td>
+                                    <td>{{ as.count }}</td>
+                                </tr>
+                                {% endfor %}
+                                <td style="font-weight: bold">합계</td>
+                                <td style="font-weight: bold">{{ as_wnum_sum.quantity__sum }}</td>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4" style="float:right; width: 50%;">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="font-weight:bold; font-size: 21px;"  >
+                            월간 제품별 AS 현황</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <table>
+                                <tr>
+                                    <th>제품명</th>
+                                    <th>수량</th>
+                                </tr>
+                                {% for as in as_mnum %}
+                                <tr>
+                                    <td>{{ as.product_name }}</td>
+                                    <td>{{ as.count }}</td>
+                                </tr>
+                                {% endfor %}
+                                <td style="font-weight: bold">합계</td>
+                                <td style="font-weight: bold">{{ as_mnum_sum.quantity__sum }}</td>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 
 
 {% endblock %}

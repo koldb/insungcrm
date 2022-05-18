@@ -17,7 +17,6 @@ from django.http import HttpResponse
 import mimetypes
 import shutil
 from datetime import date, timedelta
-from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 
 
@@ -66,19 +65,33 @@ def index(request):
 
     # 제품별 월간 견적, 발주, AS 개수
     es_num = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values(
-        'product_name').order_by('product_name').annotate(count=Count('product_name'))
+        'product_name').order_by('product_name').annotate(count=Sum('quantity'))
+    es_num_sum = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).aggregate(Sum('quantity'))
     or_num = Ordersheet.objects.filter(rp_date__gte=date.today() - relativedelta(months=1)).values(
-        'product_name').order_by('product_name').annotate(count=Count('product_name'))
+        'product_name').order_by('product_name').annotate(count=Sum('quantity'))
+    print(or_num)
+    or_num_sum = Ordersheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).aggregate(
+        Sum('quantity'))
     as_num = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values(
-        'product_name').order_by('product_name').annotate(count=Count('product_name'))
+        'product_name').order_by('product_name').annotate(count=Sum('quantity'))
+    as_num_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).aggregate(
+        Sum('quantity'))
 
     # 업체별 월간 견적, 발주, AS 개수
     es_cnum = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values(
         'cname').order_by('cname').annotate(count=Count('cname'))
+    es_cnum_sum = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values(
+        'cname').order_by('cname').annotate(count=Count('cname')).aggregate(Sum('count'))
     or_cnum = Ordersheet.objects.filter(rp_date__gte=date.today() - relativedelta(months=1)).values('cname').order_by(
         'cname').annotate(count=Count('cname'))
+    or_cnum_sum = Ordersheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values(
+        'cname').order_by('cname').annotate(count=Count('cname')).aggregate(Sum('count'))
+    print(or_cnum_sum)
     as_cnum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values('cname').order_by(
         'cname').annotate(count=Count('cname'))
+    as_cnum_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values(
+        'cname').order_by('cname').annotate(count=Count('cname')).aggregate(Sum('count'))
+
 
     context = {'login_session': login_session, 'es_count': es_count, 'as_count': as_count, 'or_count': or_count,
                'que_count': que_count,
@@ -87,7 +100,8 @@ def index(request):
                'es_num': es_num, 'or_num': or_num, 'as_num': as_num,
                'es_cnum': es_cnum, 'or_cnum': or_cnum, 'as_cnum': as_cnum, 'es_fcount': es_fcount,
                'as_fcount': as_fcount, 'es_pcount': es_pcount,
-               'as_pcount': as_pcount, 'or_pcount': or_pcount, 'que_pcount': que_pcount}
+               'as_pcount': as_pcount, 'or_pcount': or_pcount, 'que_pcount': que_pcount, 'es_num_sum':es_num_sum, 'or_num_sum': or_num_sum,
+               'as_num_sum': as_num_sum, 'es_cnum_sum': es_cnum_sum, 'or_cnum_sum': or_cnum_sum, 'as_cnum_sum': as_cnum_sum}
     return render(request, 'isscm/index.html', context)
 
 
@@ -126,7 +140,7 @@ def sheet_insert(request):
         login_session = request.session.get('login_session')
         context = {'login_session': login_session}
         print('입력 끝나 나감')
-        return render(request, 'isscm/sheet_insert.html', context)
+        return redirect('isscm:sheet_insert')
 
 
 # 견적 접수건 리스트
@@ -150,11 +164,12 @@ def sheet_list(request):
             elif sort == 'cname':
                 company_sheet = EstimateSheet.objects.all().order_by('cname', '-rg_date')
             elif sort == 'finish':
-                company_sheet = EstimateSheet.objects.all().order_by('finish', '-rg_date')
+                company_sheet = EstimateSheet.objects.all().order_by('-finish', '-rg_date')
             elif sort == 'user_dept':
                 company_sheet = EstimateSheet.objects.all().order_by('-user_dept', '-rg_date')
             else:
-                company_sheet = EstimateSheet.objects.all().order_by('finish', 'user_dept', '-rg_date', '-rp_date')
+                print("리스트 조회")
+                company_sheet = EstimateSheet.objects.all().order_by('-rg_date', 'finish', '-user_dept')
 
             # 페이징
             page = request.GET.get('page', '1')
@@ -174,23 +189,26 @@ def sheet_list(request):
                                                     user_dept='영업1팀').aggregate(Sum('total_price'))
             es_week2 = EstimateSheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(weeks=1),
                                                     user_dept='영업2팀').aggregate(Sum('total_price'))
+            es_week3 = EstimateSheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(weeks=1)).aggregate(Sum('total_price'))
             # 월간 팀별 실적 조회
             es_month1 = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1),
                                                      user_dept='영업1팀').aggregate(Sum('total_price'))
             es_month2 = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1),
                                                      user_dept='영업2팀').aggregate(Sum('total_price'))
+            es_month3 = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).aggregate(Sum('total_price'))
 
             # 주간 담당자별 실적 현황
-            es_cweek1_total = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1)).values(
+            es_cweek1_total = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1)).exclude(user_dept=None).values(
                 'user_name').order_by('user_name').distinct().annotate(sum=Sum('total_price'))
-            print(es_cweek1_total)
+            print(EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1)).distinct().values(
+                'user_name').aggregate(Sum('total_price')))
             # 월간 담당자별 실적 현황
-            es_cmonth1_total = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values(
+            es_cmonth1_total = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).exclude(user_dept=None).values(
                 'user_name').order_by('user_name').distinct().annotate(sum=Sum('total_price'))
 
             context = {'login_session': login_session, 'page_obj': page_obj, 'sheet_chart': sheet_chart, 'sort': sort,
                        'es_month1': es_month1, 'es_month2': es_month2, 'es_week1': es_week1, 'es_week2': es_week2,
-                       'es_cweek1_total': es_cweek1_total, 'es_cmonth1_total': es_cmonth1_total}
+                       'es_cweek1_total': es_cweek1_total, 'es_cmonth1_total': es_cmonth1_total, 'es_week3': es_week3, 'es_month3': es_month3}
 
         else:
             sort = request.GET.get('sort', '')
@@ -203,16 +221,14 @@ def sheet_list(request):
             elif sort == 'new_old':
                 company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('new_old', '-rg_date')
             elif sort == 'cname':
-                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('-rg_date', 'cname')
+                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('cname', '-rg_date')
             elif sort == 'finish':
                 company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('finish', '-rg_date')
             elif sort == 'all':
-                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('finish', '-rg_date',
-                                                                                           '-rp_date'
-                                                                                           )
+                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('-rg_date', 'finish')
             else:
-                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('finish', '-rg_date',
-                                                                                           '-rp_date')
+                company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('-rg_date', 'finish')
+
             page = request.GET.get('page', '1')
             paginator = Paginator(company_sheet, 7)
             page_obj = paginator.get_page(page)
@@ -484,63 +500,81 @@ def sheet_modify(request, pk):
                    'user_name': user_name}
         print("겟으로 들어왓다 나감")
         return render(request, 'isscm/sheet_modify.html', context)
-    elif request.method == 'POST':
+    else :
         print('POST 들어옴')
-        # 수정 내용 저장
-        detailView.rp_date = request.POST['rp_date']
-        detailView.estitle = request.POST['estitle']
-        detailView.product_name = request.POST['product_name']
-        detailView.quantity = request.POST['quantity'].replace(",", "")
-        detailView.per_price = request.POST.get('per_price', None).replace(",", "")
-        detailView.total_price = request.POST.get('total_price', None).replace(",", "")
-        detailView.new_old = request.POST['new_old']
-        detailView.cname = request.POST['cname']
-        detailView.memo = request.POST['memo']
-        detailView.option = request.POST['option']
-        detailView.finish = request.POST['finish']
-        detailView.user_name = request.POST['user_name']
-        detailView.user_dept = request.POST.get('user_dept')
+        if login_session == 'insung':
+            # 수정 내용 저장
+            detailView.rp_date = request.POST['rp_date']
+            detailView.estitle = request.POST['estitle']
+            detailView.product_name = request.POST['product_name']
+            detailView.quantity = request.POST['quantity'].replace(",", "")
+            detailView.per_price = request.POST.get('per_price', None).replace(",", "")
+            detailView.total_price = request.POST.get('total_price', None).replace(",", "")
+            detailView.new_old = request.POST['new_old']
+            detailView.cname = request.POST['cname']
+            detailView.memo = request.POST['memo']
+            detailView.option = request.POST['option']
+            detailView.finish = request.POST['finish']
+            detailView.user_name = request.POST['user_name']
+            detailView.user_dept = request.POST.get('user_dept')
+            if detailView.finish == '종료':
+                try:
+                    orfilter = get_object_or_404(Ordersheet, essheet_pk=pk)
+                    orfilter.rg_date = request.POST['rg_date']
+                    orfilter.rp_date = request.POST['rp_date']
+                    orfilter.odtitle = request.POST['estitle']
+                    orfilter.product_name = request.POST['product_name']
+                    orfilter.quantity = request.POST['quantity'].replace(",", "")
+                    orfilter.per_price = request.POST.get('per_price', None).replace(",", "")
+                    orfilter.total_price = request.POST.get('total_price', None).replace(",", "")
+                    orfilter.new_old = request.POST['new_old']
+                    orfilter.cname = request.POST['cname']
+                    orfilter.memo = request.POST['memo']
+                    orfilter.option = request.POST['option']
+                    orfilter.user_name = request.POST['user_name']
+                    orfilter.user_dept = request.POST.get('user_dept')
+                    orfilter.essheet_pk = pk
+                    orfilter.save()
+                    print("발주건 업데이트 저장")
+                except:
+                    orderinsert = Ordersheet()
+                    orderinsert.rg_date = request.POST['rg_date']
+                    orderinsert.rp_date = request.POST['rp_date']
+                    orderinsert.odtitle = request.POST['estitle']
+                    orderinsert.product_name = request.POST['product_name']
+                    orderinsert.quantity = request.POST['quantity'].replace(",", "")
+                    orderinsert.per_price = request.POST.get('per_price', None).replace(",", "")
+                    orderinsert.total_price = request.POST.get('total_price', None).replace(",", "")
+                    orderinsert.new_old = request.POST['new_old']
+                    orderinsert.cname = request.POST['cname']
+                    orderinsert.memo = request.POST['memo']
+                    orderinsert.option = request.POST['option']
+                    orderinsert.user_name = request.POST['user_name']
+                    orderinsert.user_dept = request.POST.get('user_dept')
+                    orderinsert.essheet_pk = pk
+                    orderinsert.save()
+                    print("견적과 발주 저장")
+                    print("바로 저장으로")
+                    detailView.save()
+            detailView.save()
+        else:
+            detailView.estitle = request.POST['estitle']
+            detailView.product_name = request.POST['product_name']
+            detailView.quantity = request.POST['quantity'].replace(",", "")
+            detailView.per_price = request.POST.get('per_price', None).replace(",", "")
+            detailView.total_price = request.POST.get('total_price', None).replace(",", "")
+            detailView.cname = request.POST['cname']
+            detailView.memo = request.POST['memo']
+            detailView.option = request.POST['option']
+            detailView.finish = request.POST['finish']
+            detailView.user_name = request.POST['user_name']
+            detailView.user_dept = request.POST.get('user_dept')
+            print("바로 저장으로")
+            detailView.save()
 
-        if detailView.finish == '종료':
-            try:
-                orfilter = get_object_or_404(Ordersheet, essheet_pk=pk)
-                orfilter.rg_date = request.POST['rg_date']
-                orfilter.rp_date = request.POST['rp_date']
-                orfilter.odtitle = request.POST['estitle']
-                orfilter.product_name = request.POST['product_name']
-                orfilter.quantity = request.POST['quantity'].replace(",", "")
-                orfilter.per_price = request.POST.get('per_price', None).replace(",", "")
-                orfilter.total_price = request.POST.get('total_price', None).replace(",", "")
-                orfilter.new_old = request.POST['new_old']
-                orfilter.cname = request.POST['cname']
-                orfilter.memo = request.POST['memo']
-                orfilter.option = request.POST['option']
-                orfilter.user_name = request.POST['user_name']
-                orfilter.user_dept = request.POST.get('user_dept')
-                orfilter.essheet_pk = pk
-                orfilter.save()
-                print("발주건 업데이트 저장")
-            except:
-                orderinsert = Ordersheet()
-                orderinsert.rg_date = request.POST['rg_date']
-                orderinsert.rp_date = request.POST['rp_date']
-                orderinsert.odtitle = request.POST['estitle']
-                orderinsert.product_name = request.POST['product_name']
-                orderinsert.quantity = request.POST['quantity'].replace(",", "")
-                orderinsert.per_price = request.POST.get('per_price', None).replace(",", "")
-                orderinsert.total_price = request.POST.get('total_price', None).replace(",", "")
-                orderinsert.new_old = request.POST['new_old']
-                orderinsert.cname = request.POST['cname']
-                orderinsert.memo = request.POST['memo']
-                orderinsert.option = request.POST['option']
-                orderinsert.user_name = request.POST['user_name']
-                orderinsert.user_dept = request.POST.get('user_dept')
-                orderinsert.essheet_pk = pk
-                orderinsert.save()
-                print("견적과 발주 저장")
-
-        print("바로 저장으로")
-        detailView.save()
+            context = {'detailView': detailView, 'login_session': login_session, 'user_dept': user_dept,
+                       'user_name': user_name}
+            return render(request, 'isscm/sheet_detail.html', context)
 
     login_session = request.session.get('login_session')
     detailView = get_object_or_404(EstimateSheet, no=pk)
@@ -579,6 +613,7 @@ def order_insert(request):
         print("입력 시작")
         insert = Ordersheet()
         insert.rp_date = request.POST['rp_date']
+        insert.rg_date = request.POST['rg_date']
         insert.odtitle = request.POST['odtitle']
         insert.product_name = request.POST['product_name']
         insert.quantity = request.POST['quantity'].replace(",", "")
@@ -610,14 +645,14 @@ def order_list(request):
         sort = request.GET.get('sort', '')
         if sort == 'rp_date':
             ordersheet = Ordersheet.objects.all().order_by('-rp_date')
+        elif sort == 'rg_date':
+            ordersheet = Ordersheet.objects.all().order_by('-rg_date')
         elif sort == 'odtitle':
-            ordersheet = Ordersheet.objects.all().order_by('odtitle', '-rp_date')
+            ordersheet = Ordersheet.objects.all().order_by('-odtitle', '-rp_date')
         elif sort == 'product_name':
-            ordersheet = Ordersheet.objects.all().order_by('product_name', '-rp_date')
-        elif sort == 'new_old':
-            ordersheet = Ordersheet.objects.all().order_by('new_old', '-rp_date')
+            ordersheet = Ordersheet.objects.all().order_by('-product_name', '-rp_date')
         elif sort == 'cname':
-            ordersheet = Ordersheet.objects.all().order_by('cname', '-rp_date')
+            ordersheet = Ordersheet.objects.all().order_by('-cname', '-rp_date')
         elif sort == 'user_dept':
             ordersheet = Ordersheet.objects.all().order_by('-user_dept', '-rp_date')
         else:
@@ -735,6 +770,7 @@ def order_modify(request, pk):
         print('POST 들어옴')
         # 수정 내용 저장
         detailView.rp_date = request.POST['rp_date']
+        detailView.rg_date = request.POST['rg_date']
         detailView.odtitle = request.POST['odtitle']
         detailView.product_name = request.POST['product_name']
         detailView.quantity = request.POST['quantity'].replace(",", "")

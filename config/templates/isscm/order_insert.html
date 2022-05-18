@@ -31,6 +31,7 @@
           source: '{% url 'isscm:searchData' %}',
           minLength: 1
        });
+     document.getElementById('rg_date').value = new Date().toISOString().substring(0, 10);
     });
 
  //콤마찍기
@@ -54,6 +55,8 @@
         var total_price = document.getElementById('total_price');
     total_price.value = comma(Number(uncomma(quantity.value))*Number(uncomma(per_price.value)));
     }
+
+
 
 </script>
 
@@ -99,11 +102,12 @@
         </div>
         <div class="mb-3">
             <label for="option">의견</label>
-            <textarea class="form-control" style="resize: none;" name="option" id="option" > </textarea>
+            <textarea class="form-control" style="resize: none;" name="option" id="option" ></textarea>
         </div>
         <div>
             <input type="hidden" name="user_dept" id="user_dept" value="{{ user_dept }}">
             <input type="hidden" name="user_name" id="user_name" value="{{ user_name }}">
+            <input type="hidden" name="rg_date" id="rg_date" value="rg_date">
         </div>
 
         <div >

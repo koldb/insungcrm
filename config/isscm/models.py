@@ -99,13 +99,11 @@ class ProductDb(models.Model):
     center = models.TextField(blank=True, null=True)
     warehouse_code = models.TextField(blank=True, null=True)
     warehouse_name = models.TextField(blank=True, null=True)
-    location = models.TextField(blank=True, null=True)
     product_code = models.TextField(blank=True, null=True)
     product_num = models.TextField(blank=True, null=True)
     scan_code = models.TextField(blank=True, null=True)
     product_name = models.TextField(blank=True, null=True)
     account_code = models.TextField(blank=True, null=True)
-    delivery_date = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = True

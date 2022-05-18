@@ -12,6 +12,11 @@
         width : 350px;
         margin: 0 auto;
         }
+    table {
+    text-align: center;
+    margin-left:auto;
+    margin-right:auto;
+    }
 </style>
 
 <!--검색창 부분-->
@@ -235,6 +240,10 @@
                                 <td style="font-weight: bold; color: #6799FF;">영업 2팀</td>
                                 <td>{{es_week2.total_price__sum|intcomma}}</td>
                             </tr>
+                            <tr>
+                                <td style="font-weight: bold">합계</td>
+                                <td>{{  es_week3.total_price__sum|intcomma }}</td>
+                            </tr>
                         </table>
                     </div>
                 </div>
@@ -261,6 +270,10 @@
                             <tr>
                                 <td style="font-weight: bold; color: #6799FF;">영업 2팀</td>
                                 <td>{{es_month2.total_price__sum|intcomma}}</td>
+                            </tr>
+                             <tr>
+                                <td style="font-weight: bold">합계</td>
+                                <td>{{  es_month3.total_price__sum|intcomma }}</td>
                             </tr>
                         </table>
                     </div>
@@ -306,7 +319,7 @@
                             월간 담당자별 견적 현황</div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">
                             <table style="text-align: center;">
-                              <tr>
+                                <tr>
                                     <th>담당자</th>
                                     <th>실적</th>
                                 </tr>

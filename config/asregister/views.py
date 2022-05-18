@@ -73,7 +73,13 @@ def as_list(request):
             elif sort == 'all':
                 company_sheet = ASsheet.objects.all().order_by('-rg_date', 'finish')
             else:
-                company_sheet = ASsheet.objects.all().order_by('-rg_date', 'finish')
+                if 'q' in request.GET:
+                    query = request.GET.get('q')
+                    company_sheet = ASsheet.objects.all().filter(
+                        Q(product_name__icontains=query) | Q(memo__icontains=query) | Q(cname__icontains=query) | Q(
+                            finish__icontains=query) | Q(option__icontains=query)).order_by('-rg_date', 'finish')
+                else:
+                    company_sheet = ASsheet.objects.all().order_by('-rg_date', 'finish')
 
             page = request.GET.get('page', '1')
             paginator = Paginator(company_sheet, 5)
@@ -89,8 +95,8 @@ def as_list(request):
                 'product_name').order_by('product_name').annotate(count=Sum('quantity'))
             as_mnum_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).aggregate(
                 Sum('quantity'))
-            print(as_mnum)
-            print("insung GET 페이징 끝")
+            context = {'login_session': login_session, 'company_sheet': company_sheet, 'page_obj': page_obj,
+                       'sort': sort, 'as_wnum': as_wnum, 'as_mnum': as_mnum, 'as_wnum_sum': as_wnum_sum, 'as_mnum_sum': as_mnum_sum}
 
         else:
             sort = request.GET.get('sort', '')
@@ -105,68 +111,30 @@ def as_list(request):
             elif sort == 'all':
                 company_sheet = ASsheet.objects.filter(cname=login_session).order_by('-rg_date', 'finish')
             else:
-                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('-rg_date', 'finish')
-            #company_sheet = ASsheet.objects.filter(cname=login_session).order_by('rg_date')
+                if 'q' in request.GET:
+                    query = request.GET.get('q')
+                    print('get?')
+                    company_sheet = ASsheet.objects.all().filter(
+                        Q(product_name__icontains=query) | Q(memo__icontains=query) | Q(cname__icontains=query) | Q(
+                            finish__icontains=query) | Q(option__icontains=query), cname=login_session).order_by('-rg_date', 'finish')
+                else:
+                    company_sheet = ASsheet.objects.filter(cname=login_session).order_by('-rg_date', 'finish')
+
             page = request.GET.get('page', '1')
             paginator = Paginator(company_sheet, 5)
             page_obj = paginator.get_page(page)
             print("GET 페이징 끝")
-
-        context = {'login_session': login_session, 'company_sheet': company_sheet, 'page_obj': page_obj, 'sort': sort,
-                   'as_wnum': as_wnum, 'as_mnum':as_mnum, 'as_wnum_sum': as_wnum_sum, 'as_mnum_sum': as_mnum_sum}
+            context = {'login_session': login_session, 'company_sheet': company_sheet, 'page_obj': page_obj, 'sort': sort
+                   }
         print('끝')
         return render(request, 'assheet/as_list.html', context)
     elif request.method == 'POST':
         print('포스트인가')
-        if login_session == 'insung':
-            company_sheet = ASsheet.objects.all().order_by('rg_date')
-            page = request.GET.get('page', '1')
-            paginator = Paginator(company_sheet, 5)
-            page_obj = paginator.get_page(page)
-            print("insung POST 페이징 끝")
-        else:
-            company_sheet = ASsheet.objects.filter(cname=login_session).order_by('rg_date')
-            page = request.GET.get('page', '1')
-            paginator = Paginator(company_sheet, 5)
-            page_obj = paginator.get_page(page)
-            print("POST 페이징 끝")
-
-        context = {'company_sheet': company_sheet, 'login_session': login_session, 'page_obj': page_obj}
         print("리스트 끝")
-        return render(request, 'assheet/as_list.html', context)
+        return redirect('asregister:as_list')
 
 
-# 리스트 검색2
-def assearchResult(request):
-    login_session = request.session.get('login_session')
-    searchlist = None
-    query = None
-    if 'q' in request.GET:
-        query = request.GET.get('q')
-        print('get?')
-        searchlist = ASsheet.objects.all().filter(
-            Q(product_name__icontains=query) | Q(memo__icontains=query) | Q(cname__icontains=query) | Q(
-                finish__icontains=query) | Q(option__icontains=query))
-        print("여기 왓나")
-        page = request.GET.get('page', '1')
-        paginator = Paginator(searchlist, 5)
-        page_obj = paginator.get_page(page)
-        print("지나갓나")
-        return render(request, 'assheet/as_list.html',
-                      {'query': query, 'page_obj': page_obj, 'login_session': login_session})
-    else:
-        print('post로 왓나')
-        query = request.GET.get('query')
-        print(query)
-        searchlist = ASsheet.objects.all().filter(
-            Q(product_name__icontains=query) | Q(memo__icontains=query) | Q(cname__icontains=query) | Q(
-                finish__icontains=query) | Q(option__icontains=query))
-        page = request.GET.get('page', '1')
-        paginator = Paginator(searchlist, 5)
-        page_obj = paginator.get_page(page)
-        context = {'query': query, 'page_obj': page_obj, 'login_session': login_session}
-        print('포스트 나갓나')
-    return render(request, 'assheet/as_list.html', context)
+
 
 
 # AS 파일 업로드/다운로드

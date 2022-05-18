@@ -116,10 +116,9 @@ def que_list(request):
             else:
                 if 'q' in request.GET:
                     query = request.GET.get('q')
-                    print('get?')
                     company_sheet = question_sheet.objects.all().filter(
                         Q(title__icontains=query) | Q(type__icontains=query) | Q(cname__icontains=query) | Q(
-                            content__icontains=query)).order_by('-rg_date')
+                            content__icontains=query), cname=login_session).order_by('-rg_date')
                 else:
                     company_sheet = question_sheet.objects.filter(cname=login_session).order_by('-rg_date')
 

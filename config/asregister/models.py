@@ -10,6 +10,7 @@ class ASsheet(models.Model):
     rg_date = models.DateTimeField(auto_now_add=True, verbose_name='고객 접수일')
     rp_date = models.CharField(null=True, blank=True, max_length=50, verbose_name='처리 완료일')
     product_name = models.CharField(max_length=100, verbose_name='제품 이름')
+    quantity = models.IntegerField(null=True, blank=True, default=0)
     memo = models.TextField(verbose_name='비고', null=True, blank=True)
     option = models.TextField(verbose_name='의견', null=True, blank=True)
     finish = models.CharField(max_length=10, null=True, blank=True, verbose_name='완료 여부')

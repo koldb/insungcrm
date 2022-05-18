@@ -35,6 +35,21 @@
        });
     });
 
+
+     //콤마찍기
+    function comma(str) {
+        str = String(str);
+        return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+    }
+    //콤마풀기
+    function uncomma(str) {
+        str = String(str);
+        return str.replace(/[^\d]+/g, '');
+    }
+    function inputNumberFormat(obj) {
+        obj.value = comma(uncomma(obj.value));
+    }
+
 </script>
 
 <!--견적서 등록 페이지-->
@@ -50,8 +65,12 @@
             <input type="text" class="form-control" name="product_name" id="product_name" placeholder="필수 입력" autofocus>
         </div>
         <div class="mb-3">
+            <label for="quantity">수량</label>
+            <input type="text" class="form-control" name="quantity" id="quantity" placeholder="필수 입력" onkeyup="inputNumberFormat(this)">
+        </div>
+        <div class="mb-3">
             <label for="memo">비고</label>
-            <textarea class="form-control" onkeydown="resize(this)" onkeyup="resize(this)" name="memo" id="memo"> </textarea>
+            <textarea class="form-control" onkeydown="resize(this)" onkeyup="resize(this)" name="memo" id="memo"></textarea>
         </div>
 
 

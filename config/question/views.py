@@ -84,9 +84,9 @@ def que_list(request):
             if sort == 'rg_date':
                 company_sheet = question_sheet.objects.all().order_by('rg_date', '-rg_date')
             elif sort == 'type':
-                company_sheet = question_sheet.objects.all().order_by('type', '-rg_date')
+                company_sheet = question_sheet.objects.all().order_by('-type', '-rg_date')
             elif sort == 'cname':
-                company_sheet = question_sheet.objects.all().order_by('cname', '-rg_date')
+                company_sheet = question_sheet.objects.all().order_by('-cname', '-rg_date')
             else:
                 company_sheet = question_sheet.objects.all().order_by('-rg_date')
 
@@ -103,9 +103,9 @@ def que_list(request):
             if sort == 'rg_date':
                 company_sheet = question_sheet.objects.filter(cname=login_session).order_by('rg_date', '-rg_date')
             elif sort == 'type':
-                company_sheet = question_sheet.objects.filter(cname=login_session).order_by('type', '-rg_date')
+                company_sheet = question_sheet.objects.filter(cname=login_session).order_by('-type', '-rg_date')
             elif sort == 'cname':
-                company_sheet = question_sheet.objects.filter(cname=login_session).order_by('cname', '-rg_date')
+                company_sheet = question_sheet.objects.filter(cname=login_session).order_by('-cname', '-rg_date')
             else:
                 company_sheet = question_sheet.objects.filter(cname=login_session).order_by('-rg_date')
             page = request.GET.get('page', '1')

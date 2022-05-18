@@ -105,12 +105,12 @@
 <div class="col-4">
     <form method="GET" action="{% url 'isscm:order_list' %}">
         <select name="sort" id="sort">
+            <option value="rg_date" id="rg_date">접수 일자</option>
             <option value="rp_date" id="rp_date">완료 일자</option>
             <option value="odtitle" id="odtitle">발주명</option>
             <option value="product_name" id="product_name">제품명</option>
             <option value="new_old" id="new_old">구분</option>
             <option value="cname" id="cname">업체명</option>
-            <option value="finish" id="finish">종결 여부</option>
             <option value="user_dept" id="user_dept">부서명</option>
             <option value="all" id="all">전체</option>
         </select>

@@ -177,6 +177,8 @@
                                         <td>{{ ep.count }}</td>
                                     </tr>
                                     {% endfor %}
+                                    <td style="font-weight: bold">합계</td>
+                                    <td style="font-weight: bold">{{ es_num_sum.quantity__sum }}</td>
                                 </table>
                             </div>
                         </div>
@@ -204,6 +206,8 @@
                                         <td>{{ or.count }}</td>
                                     </tr>
                                     {% endfor %}
+                                    <td style="font-weight: bold">합계</td>
+                                    <td style="font-weight: bold">{{ or_num_sum.quantity__sum }}</td>
                                 </table>
                             </div>
                         </div>
@@ -231,6 +235,8 @@
                                         <td>{{ as.count }}</td>
                                     </tr>
                                     {% endfor %}
+                                    <td style="font-weight: bold">합계</td>
+                                    <td style="font-weight: bold">{{ as_num_sum.quantity__sum }}</td>
                                 </table>
                             </div>
                         </div>
@@ -263,6 +269,8 @@
                                         <td>{{ ep.count }}</td>
                                     </tr>
                                     {% endfor %}
+                                    <td style="font-weight: bold">합계</td>
+                                    <td style="font-weight: bold">{{ es_cnum_sum.count__sum }}</td>
                                 </table>
                             </div>
                         </div>
@@ -290,6 +298,8 @@
                                         <td>{{ or.count }}</td>
                                     </tr>
                                     {% endfor %}
+                                    <td style="font-weight: bold">합계</td>
+                                    <td style="font-weight: bold">{{ or_cnum_sum.count__sum }}</td>
                                 </table>
                             </div>
                         </div>
@@ -317,6 +327,8 @@
                                         <td>{{ as.count }}</td>
                                     </tr>
                                     {% endfor %}
+                                    <td style="font-weight: bold">합계</td>
+                                    <td style="font-weight: bold">{{ as_cnum_sum.count__sum }}</td>
                                 </table>
                             </div>
                         </div>
@@ -391,7 +403,7 @@
 </div>
 
 {% else %}
-    <h2>로그인 후 사용 가능 합니다.</h2>
+<h2>로그인 후 사용 가능 합니다.</h2>
 
 
 {% endif %}

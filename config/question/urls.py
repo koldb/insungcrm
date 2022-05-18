@@ -10,7 +10,6 @@ urlpatterns = [
     path('comment_create/<int:pk>/', views.comment_create, name='comment_create'),
     path('comment_modify/', views.comment_modify, name='comment_modify'),
     path('que_detail/<int:pk>/', views.que_detail, name='que_detail'),
-    path('searchResult', views.searchResult, name='searchResult'),
     path('que_list', views.que_list, name='que_list'),
     path('que_modify/<int:pk>/', views.que_modify, name='que_modify'),
     path('que_delete/<int:pk>/', views.que_delete, name='que_delete'),

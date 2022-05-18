@@ -21,7 +21,7 @@
 
 <!--검색창 부분-->
 <div>
-    <form action="{% url 'isscm:searchResult' %}" method="GET">
+    <form action="{% url 'isscm:sheet_list' %}" method="GET">
         {% csrf_token %}
         <input type="search" placeholder="견적명 / 제품명 / 구분 / 업체명 / 종료 여부 검색 가능" class="form-control mr-sm-2" name="q" value="{{ query }}">
         <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
@@ -224,7 +224,7 @@
             <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="font-weight:bold; font-size: 21px;">
-                        주간 팀별 견적 실적
+                        주간 팀별 견적 현황
                     </div>
                     <div class="h5 mb-0 font-weight-bold text-gray-800">
                         <table style="text-align: center;">
@@ -240,8 +240,8 @@
                                 <td style="font-weight: bold; color: #6799FF;">영업 2팀</td>
                                 <td>{{es_week2.total_price__sum|intcomma}}</td>
                             </tr>
-                            <tr>
-                                <td style="font-weight: bold">합계</td>
+                            <tr style="font-weight: bold">
+                                <td>합계</td>
                                 <td>{{  es_week3.total_price__sum|intcomma }}</td>
                             </tr>
                         </table>
@@ -255,7 +255,7 @@
             <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="font-weight:bold; font-size: 21px;">
-                        월간 팀별 견적 실적
+                        월간 팀별 견적 현황
                     </div>
                     <div class="h5 mb-0 font-weight-bold text-gray-800">
                         <table style="text-align: center;">
@@ -271,8 +271,8 @@
                                 <td style="font-weight: bold; color: #6799FF;">영업 2팀</td>
                                 <td>{{es_month2.total_price__sum|intcomma}}</td>
                             </tr>
-                             <tr>
-                                <td style="font-weight: bold">합계</td>
+                             <tr style="font-weight: bold">
+                                <td>합계</td>
                                 <td>{{  es_month3.total_price__sum|intcomma }}</td>
                             </tr>
                         </table>
@@ -303,6 +303,10 @@
                                     <td>{{ es.sum|intcomma }}</td>
                                 </tr>
                                 {% endfor %}
+                                <tr style="font-weight: bold">
+                                <td>합계</td>
+                                <td>{{  es_cweek1_sum.total_price__sum|intcomma }}</td>
+                                </tr>
                             </table>
                         </div>
                     </div>
@@ -329,6 +333,10 @@
                                     <td>{{ es.sum|intcomma }}</td>
                                 </tr>
                                 {% endfor %}
+                                <tr style="font-weight: bold">
+                                <td>합계</td>
+                                <td>{{  es_cmonth1_sum.total_price__sum|intcomma }}</td>
+                                </tr>
                             </table>
                         </div>
                     </div>

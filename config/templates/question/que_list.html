@@ -16,7 +16,7 @@
 
 <!--검색창 부분-->
 <div>
-    <form action="{% url 'question:searchResult' %}" method="GET">
+    <form action="{% url 'question:que_list' %}" method="GET">
         {% csrf_token %}
         <input type="search" placeholder="제품명 / 구분 / 업체명 / 종료 여부 검색 가능" class="form-control mr-sm-2" name="q" value="{{ query }}">
         <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>

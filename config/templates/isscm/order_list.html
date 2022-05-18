@@ -16,7 +16,7 @@
 
 <!--검색창 부분-->
 <div>
-    <form action="{% url 'isscm:ordersearchResult' %}" method="GET">
+    <form action="{% url 'isscm:order_list' %}" method="GET">
         {% csrf_token %}
         <input type="search" placeholder="발주명 / 제품명 / 구분 / 업체명 / 담당 팀 검색 가능" class="form-control mr-sm-2" name="q" value="{{ query }}">
         <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
@@ -150,11 +150,15 @@
                             </tr>
                             <tr>
                                 <td style="font-weight: bold; color: #A6A6A6;">영업 1팀</td>
-                                <td>{{es_week1.total_price__sum|intcomma}}</td>
+                                <td>{{or_week1.total_price__sum|intcomma}}</td>
                             </tr>
                             <tr>
                                 <td style="font-weight: bold; color: #6799FF;">영업 2팀</td>
-                                <td>{{es_week2.total_price__sum|intcomma}}</td>
+                                <td>{{or_week2.total_price__sum|intcomma}}</td>
+                            </tr>
+                            <tr style="font-weight: bold">
+                                <td>합계</td>
+                                <td>{{  or_week3.total_price__sum|intcomma }}</td>
                             </tr>
                         </table>
                     </div>
@@ -177,11 +181,15 @@
                             </tr>
                             <tr>
                                 <td style="font-weight: bold; color: #A6A6A6;">영업 1팀</td>
-                                <td>{{es_month1.total_price__sum|intcomma}}</td>
+                                <td>{{or_month1.total_price__sum|intcomma}}</td>
                             </tr>
                             <tr>
                                 <td style="font-weight: bold; color: #6799FF;">영업 2팀</td>
-                                <td>{{es_month2.total_price__sum|intcomma}}</td>
+                                <td>{{or_month2.total_price__sum|intcomma}}</td>
+                            </tr>
+                            <tr style="font-weight: bold">
+                                <td>합계</td>
+                                <td>{{  or_month3.total_price__sum|intcomma }}</td>
                             </tr>
                         </table>
                     </div>
@@ -205,12 +213,16 @@
                                     <th>담당자</th>
                                     <th>실적</th>
                                 </tr>
-                                {% for es in es_cweek1_total %}
+                                {% for os in or_cweek1_total %}
                                 <tr>
-                                    <td>{{ es.user_name }}</td>
-                                    <td>{{ es.sum|intcomma }}</td>
+                                    <td>{{ os.user_name }}</td>
+                                    <td>{{ os.sum|intcomma }}</td>
                                 </tr>
                                 {% endfor %}
+                                <tr style="font-weight: bold">
+                                <td>합계</td>
+                                <td>{{  or_cweek1_sum.total_price__sum|intcomma }}</td>
+                                </tr>
                             </table>
                         </div>
                     </div>
@@ -231,12 +243,16 @@
                                     <th>담당자</th>
                                     <th>실적</th>
                                 </tr>
-                                {% for es in es_cmonth1_total %}
+                                {% for os in or_cmonth1_total %}
                                 <tr>
-                                    <td>{{ es.user_name }}</td>
-                                    <td>{{ es.sum|intcomma }}</td>
+                                    <td>{{ os.user_name }}</td>
+                                    <td>{{ os.sum|intcomma }}</td>
                                 </tr>
                                 {% endfor %}
+                                <tr style="font-weight: bold">
+                                <td>합계</td>
+                                <td>{{  or_cmonth1_sum.total_price__sum|intcomma }}</td>
+                                </tr>
                             </table>
                         </div>
                     </div>

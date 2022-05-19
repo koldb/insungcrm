@@ -100,11 +100,12 @@
         <div class="mb-3">
             <label for="new_old">구분</label>
             <select name="new_old" id="new_old">
-                {% if detailView.new_old %}
-                <option value="{{ detailView.new_old }}">{{ detailView.new_old }}</option>
-                {% else %}
-                <option value="신규" selected>신규</option>
+                {% if detailView.new_old == '신규' %}
+                <option value="{{ detailView.new_old }}" selected>{{ detailView.new_old }}</option>
                 <option value="기존">기존</option>
+                {% elif detailView.new_old == '기존' %}
+                <option value="신규">신규</option>
+                <option value="{{ detailView.new_old }}" selected>{{ detailView.new_old }}</option>
                 {% endif %}
             </select>
         </div>

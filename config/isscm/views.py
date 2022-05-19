@@ -169,16 +169,18 @@ def sheet_list(request):
                 company_sheet = EstimateSheet.objects.all().order_by('-finish', '-rg_date')
             elif sort == 'user_dept':
                 company_sheet = EstimateSheet.objects.all().order_by('-user_dept', '-rg_date')
+            elif sort == 'all':
+                company_sheet = EstimateSheet.objects.all().order_by('-rg_date', 'finish', '-user_dept')
             else:
                 print("리스트 조회 겸 목록 조회")
                 if 'q' in request.GET:
                     query = request.GET.get('q')
                     company_sheet = EstimateSheet.objects.all().filter(
                         Q(product_name__icontains=query) | Q(new_old__icontains=query) | Q(cname__icontains=query) | Q(
-                            finish__icontains=query) | Q(estitle__icontains=query)).order_by('-rg_date', 'finish', '-user_dept')
+                            finish__icontains=query) | Q(estitle__icontains=query)).order_by('-rg_date', 'finish',
+                                                                                             '-user_dept')
                 else:
                     company_sheet = EstimateSheet.objects.all().order_by('-rg_date', 'finish', '-user_dept')
-
 
             # 페이징
             page = request.GET.get('page', '1')
@@ -188,7 +190,7 @@ def sheet_list(request):
 
             # 차트 데이터
             sheet_chart = []
-            sheet_chart_data = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1))
+            sheet_chart_data = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1))
             dept_1 = sheet_chart_data.filter(user_dept="영업1팀").count()
             dept_2 = sheet_chart_data.filter(user_dept="영업2팀").count()
             sheet_chart = [dept_1, dept_2]
@@ -250,7 +252,8 @@ def sheet_list(request):
                     query = request.GET.get('q')
                     company_sheet = EstimateSheet.objects.filter(
                         Q(product_name__icontains=query) | Q(new_old__icontains=query) | Q(cname__icontains=query) | Q(
-                            finish__icontains=query) | Q(estitle__icontains=query), cname=login_session).order_by('-rg_date', 'finish')
+                            finish__icontains=query) | Q(estitle__icontains=query), cname=login_session).order_by(
+                        '-rg_date', 'finish')
                 else:
                     company_sheet = EstimateSheet.objects.filter(cname=login_session).order_by('-rg_date', 'finish')
 
@@ -470,10 +473,10 @@ def sheet_modify(request, pk):
     user_dept = request.session.get('user_dept')
     user_name = request.session.get('user_name')
     detailView = get_object_or_404(EstimateSheet, no=pk)
-
     if request.method == 'GET':
         # get으로 오면 다시 수정페이지로 넘김
         detailView = get_object_or_404(EstimateSheet, no=pk)
+
         context = {'detailView': detailView, 'login_session': login_session, 'user_dept': user_dept,
                    'user_name': user_name}
         print("겟으로 들어왓다 나감")
@@ -534,6 +537,7 @@ def sheet_modify(request, pk):
                     print("견적과 발주 저장")
                     print("바로 저장으로")
                     detailView.save()
+
             detailView.save()
         else:
             detailView.estitle = request.POST['estitle']
@@ -633,14 +637,16 @@ def order_list(request):
             ordersheet = Ordersheet.objects.all().order_by('-cname', '-rp_date')
         elif sort == 'user_dept':
             ordersheet = Ordersheet.objects.all().order_by('-user_dept', '-rp_date')
+        elif sort == 'all':
+            ordersheet = Ordersheet.objects.all().order_by('-rp_date', '-user_dept')
         else:
             if 'q' in request.GET:
                 query = request.GET.get('q')
                 ordersheet = Ordersheet.objects.all().filter(
                     Q(product_name__icontains=query) | Q(new_old__icontains=query) | Q(cname__icontains=query) | Q(
-                        odtitle__icontains=query) | Q(user_dept__icontains=query)).order_by('-user_dept', '-rp_date')
+                        odtitle__icontains=query) | Q(user_dept__icontains=query)).order_by('-rp_date', '-user_dept')
             else:
-                ordersheet = Ordersheet.objects.all().order_by('-user_dept', '-rp_date')
+                ordersheet = Ordersheet.objects.all().order_by('-rp_date', '-user_dept')
 
         # 페이징
         page = request.GET.get('page', '1')
@@ -650,7 +656,7 @@ def order_list(request):
 
         # 차트 데이터
         sheet_chart = []
-        sheet_chart_data = Ordersheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1))
+        sheet_chart_data = Ordersheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1))
         dept_1 = sheet_chart_data.filter(user_dept="영업1팀").count()
         dept_2 = sheet_chart_data.filter(user_dept="영업2팀").count()
         sheet_chart = [dept_1, dept_2]
@@ -713,6 +719,8 @@ def order_modify(request, pk):
     user_name = request.session.get('user_name')
     detailView = get_object_or_404(Ordersheet, no=pk)
 
+    print("시작한다")
+
     if request.method == 'GET':
         # get으로 오면 다시 수정페이지로 넘김
         detailView = get_object_or_404(Ordersheet, no=pk)
@@ -731,6 +739,7 @@ def order_modify(request, pk):
         return render(request, 'isscm/order_modify.html', context)
     elif request.method == 'POST':
         print('POST 들어옴')
+        esView = get_object_or_404(EstimateSheet, no=detailView.essheet_pk)
         # 수정 내용 저장
         detailView.rp_date = request.POST['rp_date']
         detailView.rg_date = request.POST['rg_date']
@@ -746,6 +755,11 @@ def order_modify(request, pk):
         detailView.user_dept = request.POST.get('user_dept')
         detailView.user_name = request.POST.get('user_name')
         print("바로 저장으로")
+
+        esView.new_old = request.POST['new_old']
+        print(esView.new_old)
+        esView.save()
+
         detailView.save()
 
     login_session = request.session.get('login_session')
@@ -828,7 +842,6 @@ def order_downloadfile(request, pk):
 def order_excel(request):
     print("다운로드 시작")
     # 데이터 db에서 불러옴
-    data = EstimateSheet.objects.all()
     response = HttpResponse(content_type="application/vnd.ms-excel")
     # 다운로드 받을 때 생성될 파일명 설정
     response["Content-Disposition"] = 'attachment; filename=' \
@@ -918,8 +931,8 @@ def searchData(request):
 
 # 이력관리 조회
 @login_required
-def history_list(request):
-    print('history 시작')
+def order_history_list(request):
+    print('order_history 시작')
     login_session = request.session.get('login_session')
 
     if request.method == 'GET':
@@ -936,8 +949,19 @@ def history_list(request):
             order_history = Ordersheet.objects.all().order_by('-cname', '-rp_date')
         elif sort == 'user_dept':
             order_history = Ordersheet.objects.all().order_by('-user_dept', '-rp_date')
+        elif sort == 'user_name':
+            order_history = Ordersheet.objects.all().order_by('-user_name', '-rp_date')
+        elif sort == 'all':
+            order_history = Ordersheet.objects.all().order_by('-rp_date', '-user_dept', 'new_old')
         else:
-            order_history = Ordersheet.objects.all().order_by('-rp_date', 'new_old')
+            if 'q' in request.GET:
+                query = request.GET.get('q')
+                order_history = Ordersheet.objects.all().filter(
+                    Q(product_name__icontains=query) | Q(new_old__icontains=query) | Q(cname__icontains=query) | Q(
+                        odtitle__icontains=query) | Q(user_dept__icontains=query)).order_by('-rp_date', '-user_dept',
+                                                                                            'new_old')
+            else:
+                order_history = Ordersheet.objects.all().order_by('-rp_date', '-user_dept', 'new_old')
 
         # 페이징
         page = request.GET.get('page', '1')
@@ -947,46 +971,70 @@ def history_list(request):
 
         # 차트 데이터
         sheet_chart = []
-        sheet_chart_data = Ordersheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1))
+        sheet_chart_data = Ordersheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1))
         type_1 = sheet_chart_data.filter(new_old="신규").count()
         type_2 = sheet_chart_data.filter(new_old="기존").count()
         sheet_chart = [type_1, type_2]
 
-        # 신규 주간 발주 현황
+        # 신규 주간 발주 금액 현황
         or_week1_new = Ordersheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(weeks=1),
                                                  user_dept='영업1팀', new_old='신규').aggregate(Sum('total_price'))
         or_week2_new = Ordersheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(weeks=1),
                                                  user_dept='영업2팀', new_old='신규').aggregate(Sum('total_price'))
-        or_week2_new = Ordersheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(weeks=1),
-                                                 new_old='신규').aggregate(
-            Sum('total_price'))
+        or_week3_new = Ordersheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(weeks=1),
+                                                 new_old='신규').aggregate(Sum('total_price'))
 
-        # 기존 주간 발주 현황
+        # 기존 주간 발주 금액 현황
         or_week1_old = Ordersheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(weeks=1),
                                                  user_dept='영업1팀', new_old='기존').aggregate(Sum('total_price'))
         or_week2_old = Ordersheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(weeks=1),
                                                  user_dept='영업2팀', new_old='기존').aggregate(Sum('total_price'))
-        or_week2_old = Ordersheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(weeks=1),
-                                                 new_old='기존').aggregate(
-            Sum('total_price'))
+        or_week3_old = Ordersheet.objects.filter(rg_date__gte=date.today() - datetime.timedelta(weeks=1),
+                                                 new_old='기존').aggregate(Sum('total_price'))
 
-        # 신규 월간 발주 현황
+        # 신규 월간 발주 금액 현황
         or_month1_new = Ordersheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1),
                                                   user_dept='영업1팀', new_old='신규').aggregate(Sum('total_price'))
         or_month2_new = Ordersheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1),
                                                   user_dept='영업2팀', new_old='신규').aggregate(Sum('total_price'))
         or_month3_new = Ordersheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1),
-                                                  new_old='신규').aggregate(
-            Sum('total_price'))
+                                                  new_old='신규').aggregate(Sum('total_price'))
 
-        # 기존 월간 발주 현황
+        # 기존 월간 발주 금액 현황
         or_month1_old = Ordersheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1),
                                                   user_dept='영업1팀', new_old='기존').aggregate(Sum('total_price'))
         or_month2_old = Ordersheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1),
                                                   user_dept='영업2팀', new_old='기존').aggregate(Sum('total_price'))
         or_month3_old = Ordersheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1),
-                                                  new_old='신규').aggregate(Sum('total_price'))
+                                                  new_old='기존').aggregate(Sum('total_price'))
 
-        context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort, }
+        # 아래껀 일단 보류, 차트로 대체
+        # 신규 주간 발주 건수
+        or_wcount1_new = Ordersheet.objects.filter(rp_date__gte=date.today() - datetime.timedelta(weeks=1),
+                                                   new_old='신규', user_dept='영업1팀').count()
+        or_wcount2_new = Ordersheet.objects.filter(rp_date__gte=date.today() - datetime.timedelta(weeks=1),
+                                                   new_old='신규', user_dept='영업2팀').count()
+        or_wcount3_new = Ordersheet.objects.filter(rp_date__gte=date.today() - datetime.timedelta(weeks=1),
+                                                   new_old='신규').count()
+
+        # 기존 주간 발주 건수
+        or_mcount1_old = Ordersheet.objects.filter(rp_date__gte=date.today() - relativedelta(months=1), new_old='기존',
+                                                   user_dept='영업1팀').count()
+        or_mcount2_old = Ordersheet.objects.filter(rp_date__gte=date.today() - relativedelta(months=1), new_old='기존',
+                                                   user_dept='영업2팀').count()
+        or_mcount3_old = Ordersheet.objects.filter(rp_date__gte=date.today() - relativedelta(months=1),
+                                                   new_old='기존').count()
+
+        context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort, 'sheet_chart': sheet_chart,
+                   'or_week1_new': or_week1_new,
+                   'or_week2_new': or_week2_new, 'or_week3_new': or_week3_new, 'or_week1_old': or_week1_old,
+                   'or_week2_old': or_week2_old,
+                   'or_week3_old': or_week3_old, 'or_month1_new': or_month1_new, 'or_month2_new': or_month2_new,
+                   'or_month3_new': or_month3_new,
+                   'or_month1_old': or_month1_old, 'or_month2_old': or_month2_old, 'or_month3_old': or_month3_old}
         print('끝')
-        return render(request, 'isscm/history_list.html', context)
+        return render(request, 'isscm/order_history.html', context)
+
+
+
+

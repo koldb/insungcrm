@@ -87,15 +87,17 @@ def que_list(request):
                 company_sheet = question_sheet.objects.all().order_by('-type', '-rg_date')
             elif sort == 'cname':
                 company_sheet = question_sheet.objects.all().order_by('-cname', '-rg_date')
+            elif sort == 'all':
+                company_sheet = question_sheet.objects.all().order_by('-rg_date', '-cname')
             else:
                 if 'q' in request.GET:
                     query = request.GET.get('q')
                     print('get?')
                     company_sheet = question_sheet.objects.all().filter(
                         Q(title__icontains=query) | Q(type__icontains=query) | Q(cname__icontains=query) | Q(
-                            content__icontains=query)).order_by('-rg_date')
+                            content__icontains=query)).order_by('-rg_date', '-cname')
                 else:
-                    company_sheet = question_sheet.objects.all().order_by('-rg_date')
+                    company_sheet = question_sheet.objects.all().order_by('-rg_date', '-cname')
 
             # 페이징
             page = request.GET.get('page', '1')
@@ -113,14 +115,16 @@ def que_list(request):
                 company_sheet = question_sheet.objects.filter(cname=login_session).order_by('-type', '-rg_date')
             elif sort == 'cname':
                 company_sheet = question_sheet.objects.filter(cname=login_session).order_by('-cname', '-rg_date')
+            elif sort == 'all':
+                company_sheet = question_sheet.objects.filter(cname=login_session).order_by('-rg_date', '-cname')
             else:
                 if 'q' in request.GET:
                     query = request.GET.get('q')
                     company_sheet = question_sheet.objects.all().filter(
                         Q(title__icontains=query) | Q(type__icontains=query) | Q(cname__icontains=query) | Q(
-                            content__icontains=query), cname=login_session).order_by('-rg_date')
+                            content__icontains=query), cname=login_session).order_by('-rg_date', '-cname')
                 else:
-                    company_sheet = question_sheet.objects.filter(cname=login_session).order_by('-rg_date')
+                    company_sheet = question_sheet.objects.filter(cname=login_session).order_by('-rg_date', '-cname')
 
             page = request.GET.get('page', '1')
             paginator = Paginator(company_sheet, 7)

@@ -10,6 +10,7 @@ urlpatterns = [
     path('order_insert', views.order_insert, name='order_insert'),
     path('sheet_list', views.sheet_list, name='sheet_list'),
     path('order_list', views.order_list, name='order_list'),
+    path('order_history_list', views.order_history_list, name='order_history_list'),
     path('uploadFile/<int:pk>/', views.uploadFile, name='uploadFile'),
     path('sheetfile_delete/<int:pk>/', views.sheetfile_delete, name='sheetfile_delete'),
     path('order_uploadFile/<int:pk>/', views.order_uploadFile, name='order_uploadFile'),

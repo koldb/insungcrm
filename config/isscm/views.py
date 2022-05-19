@@ -450,15 +450,16 @@ def sheetfile_delete(request, pk):
 def sheet_detail(request, pk):
     if request.method == 'GET':
         login_session = request.session.get('login_session')
+        user_name= request.session.get('user_name')
         detailView = get_object_or_404(EstimateSheet, no=pk)
 
         # upfile = get_object_or_404(UploadFile, sheet_no_id=pk)
         try:
             upfile = UploadFile.objects.filter(sheet_no_id=pk)
-            context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile}
+            context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile, 'user_name': user_name}
             print("성공")
         except:
-            context = {'detailView': detailView, 'login_session': login_session}
+            context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name}
             print("실패")
 
         print("견적 상세 뷰 들어감")
@@ -486,6 +487,7 @@ def sheet_modify(request, pk):
         if login_session == 'insung':
             # 수정 내용 저장
             detailView.rp_date = request.POST['rp_date']
+            detailView.rg_date = request.POST['rg_date']
             detailView.estitle = request.POST['estitle']
             detailView.product_name = request.POST['product_name']
             detailView.quantity = request.POST['quantity'].replace(",", "")

@@ -124,7 +124,9 @@
 
         </div>
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:sheet_modify' detailView.no %}'" value="수정">
+        {% if login_session == detailView.cname or login_session == 'insung' %}
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:sheet_delete' detailView.no %}'" value="삭제">
+        {% endif %}
     </form>
 </div>
 

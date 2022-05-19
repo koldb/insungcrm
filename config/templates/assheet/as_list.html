@@ -11,7 +11,11 @@
         border : 1px solid #dcdcdc;
         width : 350px;
         margin: 0 auto;
-        }
+        cursor:pointer;
+    }
+    tr:hover{
+     background-color: #98bee0;
+    }
     table {
     text-align: center;
     margin-left:auto;
@@ -48,7 +52,7 @@
         <tbody>
 
         {% for list in page_obj %}
-        <tr style="text-align:center;">
+        <tr style="text-align:center;" onclick="location.href='{% url 'asregister:as_detail' list.no %}'">
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.cname }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
@@ -57,7 +61,7 @@
             {% else %}
             <td>{{ list.rp_date }}</td>
             {% endif %}
-            <td><a href="{% url 'asregister:as_detail' list.no %}">{{ list.product_name }}</a></td>
+            <td>{{ list.product_name }}</td>
             <td>{{ list.quantity }}</td>
             <td>{{ list.memo | truncatewords:10}}</td>
             {% if list.finish == None %}

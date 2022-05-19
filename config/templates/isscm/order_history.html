@@ -56,7 +56,7 @@
             {% else %}
             <td>{{ list.rp_date }}</td>
             {% endif %}
-            <td><a href="*">{{ list.odtitle }}</a></td>
+            <td>{{ list.odtitle }}</td>
             <td>{{ list.product_name }}</td>
             <td>{{ list.quantity|intcomma }}</td>
             <td>{{ list.per_price|intcomma }}</td>
@@ -69,8 +69,6 @@
             {% else %}
             <td>{{ list.user_dept }} </td>
             {% endif %}
-
-
         </tr>
         {% endfor %}
 

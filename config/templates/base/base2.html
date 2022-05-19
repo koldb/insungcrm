@@ -81,6 +81,9 @@ textarea.autosize { min-height: 50px; }
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'isscm:order_list' %}">발주 목록</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'isscm:order_history_list' %}">발주 이력 관리</a>
+                </li>
                 {% else %}
                 {% endif %}
 

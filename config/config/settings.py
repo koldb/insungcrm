@@ -46,7 +46,6 @@ INSTALLED_APPS = [
 
 
 
-
     # 'django.contrib.sites',
     # 'allauth',
     # 'allauth.account',
@@ -211,6 +210,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 #클릭 재킹 방지
 X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+
 
 # #date 입력 포멧
 # DATE_INPUT_FORMATS = ['%d-%m-%Y']

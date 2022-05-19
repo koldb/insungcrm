@@ -48,15 +48,17 @@ def que_insert(request):
 # 문의글 상세 뷰
 def que_detail(request, pk):
     login_session = request.session.get('login_session')
+    user_name = request.session.get('user_name')
     detailView = get_object_or_404(question_sheet, no=pk)
     comments = question_comment.objects.filter(que_no_id=pk).order_by('rg_date')
     if request.method == 'GET':
         try:
             upfile = que_UploadFile.objects.filter(que_no=pk)
-            context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile, 'comments': comments}
+            context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile, 'comments': comments,
+                       'user_name': user_name}
             print("get 성공")
         except:
-            context = {'detailView': detailView, 'login_session': login_session, 'comments': comments}
+            context = {'detailView': detailView, 'login_session': login_session, 'comments': comments, 'user_name': user_name}
             print("실패")
 
         print("문의글 상세 뷰 들어감")
@@ -65,10 +67,10 @@ def que_detail(request, pk):
         # upfile = get_object_or_404(UploadFile, sheet_no_id=pk)
         try:
             upfile = que_UploadFile.objects.filter(que_no=pk)
-            context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile}
+            context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile, 'user_name': user_name}
             print("post 성공")
         except:
-            context = {'detailView': detailView, 'login_session': login_session}
+            context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name}
             print("실패")
     return render(request, 'question/que_detail.html', context)
 

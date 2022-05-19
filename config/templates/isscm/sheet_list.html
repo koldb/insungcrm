@@ -11,13 +11,19 @@
         border : 1px solid #dcdcdc;
         width : 350px;
         margin: 0 auto;
-        }
+        cursor:pointer;
+    }
+    tr:hover{
+     background-color: #98bee0;
+    }
     table {
     text-align: center;
     margin-left:auto;
     margin-right:auto;
     }
 </style>
+
+
 
 <!--검색창 부분-->
 <div>
@@ -51,7 +57,7 @@
         </thead>
         <tbody>
         {% for list in page_obj %}
-        <tr style="text-align:center;">
+        <tr style="text-align:center;" onclick="location.href='{% url 'isscm:sheet_detail' list.no %}'">
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
             {% if list.rp_date == None %}
@@ -59,7 +65,7 @@
             {% else %}
             <td>{{ list.rp_date }}</td>
             {% endif %}
-            <td><a href="{% url 'isscm:sheet_detail' list.no %}">{{ list.estitle }}</a></td>
+            <td>{{ list.estitle }}</td>
             <td>{{ list.quantity|intcomma }}</td>
             {% if list.per_price == none %}
             <td>0</td>

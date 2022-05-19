@@ -268,14 +268,15 @@ def ASfile_delete(request, pk):
 def as_detail(request, pk):
     if request.method == 'GET':
         login_session = request.session.get('login_session')
+        user_name = request.session.get('user_name')
         detailView = get_object_or_404(ASsheet, no=pk)
 
         try:
             upfile = ASUploadFile.objects.filter(sheet_no_id=pk)
-            context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile}
+            context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile, 'user_name': user_name}
             print("성공")
         except:
-            context = {'detailView': detailView, 'login_session': login_session}
+            context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name}
             print("실패")
 
     else:

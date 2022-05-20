@@ -11,10 +11,10 @@
         border : 1px solid #dcdcdc;
         width : 350px;
         margin: 0 auto;
-        cursor:pointer;
     }
-    tr:hover{
+    tr.m:hover{
      background-color: #98bee0;
+     cursor:pointer;
     }
 
 </style>
@@ -50,7 +50,7 @@
         <tbody>
 
         {% for list in page_obj %}
-        <tr style="text-align:center;" onclick="location.href='{% url 'isscm:order_modify' list.no %}'">
+        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'isscm:order_modify' list.no %}'">
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.rg_date }}</td>
             {% if list.rp_date == None %}

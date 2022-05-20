@@ -81,6 +81,11 @@ def as_list(request):
                 else:
                     company_sheet = ASsheet.objects.all().order_by('-rg_date', 'finish')
 
+            #한달이상 미처리건 조회
+            over_as = ASsheet.objects.filter(rg_date__lte=date.today() - relativedelta(months=1)).exclude(
+                finish='종료').order_by('-rg_date')
+
+
             page = request.GET.get('page', '1')
             paginator = Paginator(company_sheet, 5)
             page_obj = paginator.get_page(page)
@@ -96,7 +101,8 @@ def as_list(request):
             as_mnum_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).aggregate(
                 Sum('quantity'))
             context = {'login_session': login_session, 'company_sheet': company_sheet, 'page_obj': page_obj,
-                       'sort': sort, 'as_wnum': as_wnum, 'as_mnum': as_mnum, 'as_wnum_sum': as_wnum_sum, 'as_mnum_sum': as_mnum_sum}
+                       'sort': sort, 'as_wnum': as_wnum, 'as_mnum': as_mnum, 'as_wnum_sum': as_wnum_sum, 'as_mnum_sum': as_mnum_sum,
+                       'over_as': over_as}
 
         else:
             sort = request.GET.get('sort', '')
@@ -303,6 +309,7 @@ def as_modify(request, pk):
 
         # 수정 내용 저장
         detailView.rp_date = request.POST['rp_date']
+        detailView.rg_date = request.POST['rg_date']
         detailView.product_name = request.POST['product_name']
         detailView.quantity = request.POST['quantity']
         detailView.cname = request.POST['cname']

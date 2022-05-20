@@ -11,15 +11,22 @@
         border : 1px solid #dcdcdc;
         width : 350px;
         margin: 0 auto;
-        cursor:pointer;
     }
-    tr:hover{
+    tr.m:hover{
      background-color: #98bee0;
+     cursor:pointer;
     }
     table {
     text-align: center;
     margin-left:auto;
     margin-right:auto;
+    }
+    caption {
+    caption-side: top;
+    text-align: left;
+    font-weight : bold;
+    color : #2478FF;
+    font-size : 21px;
     }
 </style>
 
@@ -52,7 +59,7 @@
         <tbody>
 
         {% for list in page_obj %}
-        <tr style="text-align:center;" onclick="location.href='{% url 'asregister:as_detail' list.no %}'">
+        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'asregister:as_detail' list.no %}'">
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.cname }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
@@ -108,7 +115,7 @@
         {% if list.cname == login_session %}
 
 
-        <tr style="text-align:center;">
+        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'isscm:sheet_detail' list.no %}'">
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.cname }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
@@ -117,7 +124,7 @@
             {% else %}
             <td>{{ list.rp_date }}</td>
             {% endif %}
-            <td><a href="{% url 'asregister:as_detail' list.no %}">{{ list.product_name }}</a></td>
+            <td>{{ list.product_name }}</td>
             <td>{{ list.quantity }}</td>
             <td>{{ list.memo | truncatewords:10}}</td>
             {% if list.finish == None %}
@@ -178,8 +185,41 @@
     </form>
 </div>
 
-<br>
-<br>
+<hr style="border: 1px;">
+{% if over_as %}
+<div>
+    <table>
+        <caption>한달 이상 미처리건 목록</caption>
+        <tr style="text-align:center;">
+            <th style="width:3%;">순번</th>
+            <th style="width:8%">업체명</th>
+            <th style="width:9%">고객 접수 일자</th>
+            <th style="width:9%">처리 완료 일자</th>
+            <th style="width:25%">제품명</th>
+            <th style="width:4%">수량</th>
+            <th style="width:15%">비고</th>
+            <th style="width:4%">완료 여부</th>
+        </tr>
+        {% for list in over_as reversed %}
+        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'isscm:sheet_detail' list.no %}'">
+            <td>{{ forloop.counter }}</td>
+            <td>{{ list.cname }}</td>
+            <td>{{ list.rg_date|date:'Y-m-d' }}</td>
+            {% if list.rp_date == None %}
+            <td> </td>
+            {% else %}
+            <td>{{ list.rp_date }}</td>
+            {% endif %}
+            <td>{{ list.product_name }}</td>
+            <td>{{ list.quantity }}</td>
+            <td>{{ list.memo | truncatewords:10}}</td>
+            <td>{{ list.finish }}</td>
+        </tr>
+        {% endfor %}
+
+    </table>
+</div>
+{% endif %}
 <hr style="border: 1px;">
 
 {% if login_session == 'insung' %}

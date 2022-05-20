@@ -11,15 +11,22 @@
         border : 1px solid #dcdcdc;
         width : 350px;
         margin: 0 auto;
-        cursor:pointer;
     }
-    tr:hover{
+    tr.m:hover{
      background-color: #98bee0;
+     cursor:pointer;
     }
     table {
     text-align: center;
     margin-left:auto;
     margin-right:auto;
+    }
+    caption {
+    caption-side: top;
+    text-align: left;
+    font-weight : bold;
+    color : #2478FF;
+    font-size : 21px;
     }
 </style>
 
@@ -57,7 +64,7 @@
         </thead>
         <tbody>
         {% for list in page_obj %}
-        <tr style="text-align:center;" onclick="location.href='{% url 'isscm:sheet_detail' list.no %}'">
+        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'isscm:sheet_detail' list.no %}'">
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
             {% if list.rp_date == None %}
@@ -124,7 +131,7 @@
         {% for list in page_obj %}
         {% if list.cname == login_session %}
 
-        <tr style="text-align:center;">
+        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'isscm:sheet_detail' list.no %}'">
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
             {% if list.rp_date == None %}
@@ -132,7 +139,7 @@
             {% else %}
             <td>{{ list.rp_date }}</td>
             {% endif %}
-            <td><a href="{% url 'isscm:sheet_detail' list.no %}">{{ list.estitle }}</a></td>
+            <td>{{ list.estitle }}</td>
             <td>{{ list.quantity|intcomma }}</td>
             {% if list.per_price == none %}
             <td>0</td>
@@ -208,9 +215,58 @@
 
     </form>
 </div>
+<hr style="border: 1px;">
+{% if over_es %}
+<div>
+    <table>
+        <caption>한달 이상 미처리건 목록</caption>
+        <tr class="header" style="text-align:center;">
+            <th style="width:5%;">순번</th>
+            <th style="width:9%">고객 접수 일자</th>
+            <th style="width:9%">회신 완료 일자</th>
+            <th style="width:10%">견적명</th>
+            <th style="width:5%">수량</th>
+            <th style="width:6%">개당 단가</th>
+            <th style="width:9%">총 금액</th>
+            <th style="width:5%">구분</th>
+            <th style="width:10%">업체명</th>
+            <th style="width:15%">비고</th>
+            <th style="width:5%">종료 여부</th>
+            <th style="width:5%">담당 팀</th>
+        </tr>
+        {% for list in over_es reversed %}
+        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'isscm:sheet_detail' list.no %}'">
+            <td>{{ forloop.counter }}</td>
+            <td>{{ list.rg_date|date:'Y-m-d' }}</td>
+            {% if list.rp_date == None %}
+            <td> </td>
+            {% else %}
+            <td>{{ list.rp_date }}</td>
+            {% endif %}
+            <td>{{ list.estitle }}</td>
+            <td>{{ list.quantity|intcomma }}</td>
+            {% if list.per_price == none %}
+            <td>0</td>
+            {% else %}
+            <td>{{ list.per_price|intcomma }}</td>
+            {% endif %}
+            <td>{{ list.total_price|intcomma }}</td>
+            <td>{{ list.new_old }}</td>
+            <td>{{ list.cname }}</td>
+            <td>{{ list.memo | truncatewords:10}}</td>
+            {% if list.finish == None or list.user_dept == None %}
+            <td>  </td>
+            <td>  </td>
+            {% else %}
+            <td>{{ list.finish }}</td>
+            <td>{{ list.user_dept }} </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
 
-<br>
-<br>
+    </table>
+</div>
+{% endif %}
 <hr style="border: 1px;">
 <!--차트 부분-->
 {% if login_session == 'insung' %}
@@ -277,7 +333,7 @@
                                 <td style="font-weight: bold; color: #6799FF;">영업 2팀</td>
                                 <td>{{es_month2.total_price__sum|intcomma}}</td>
                             </tr>
-                             <tr style="font-weight: bold">
+                            <tr style="font-weight: bold">
                                 <td>합계</td>
                                 <td>{{  es_month3.total_price__sum|intcomma }}</td>
                             </tr>
@@ -310,8 +366,8 @@
                                 </tr>
                                 {% endfor %}
                                 <tr style="font-weight: bold">
-                                <td>합계</td>
-                                <td>{{  es_cweek1_sum.total_price__sum|intcomma }}</td>
+                                    <td>합계</td>
+                                    <td>{{  es_cweek1_sum.total_price__sum|intcomma }}</td>
                                 </tr>
                             </table>
                         </div>
@@ -340,8 +396,8 @@
                                 </tr>
                                 {% endfor %}
                                 <tr style="font-weight: bold">
-                                <td>합계</td>
-                                <td>{{  es_cmonth1_sum.total_price__sum|intcomma }}</td>
+                                    <td>합계</td>
+                                    <td>{{  es_cmonth1_sum.total_price__sum|intcomma }}</td>
                                 </tr>
                             </table>
                         </div>

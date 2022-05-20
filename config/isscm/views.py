@@ -181,6 +181,9 @@ def sheet_list(request):
                                                                                              '-user_dept')
                 else:
                     company_sheet = EstimateSheet.objects.all().order_by('-rg_date', 'finish', '-user_dept')
+            
+            #한달이상 미처리건 조회
+            over_es = EstimateSheet.objects.filter(rg_date__lte=date.today() - relativedelta(months=1)).exclude(finish='종료').order_by('-rg_date')
 
             # 페이징
             page = request.GET.get('page', '1')
@@ -228,7 +231,7 @@ def sheet_list(request):
             context = {'login_session': login_session, 'page_obj': page_obj, 'sheet_chart': sheet_chart, 'sort': sort,
                        'es_month1': es_month1, 'es_month2': es_month2, 'es_week1': es_week1, 'es_week2': es_week2,
                        'es_cweek1_total': es_cweek1_total, 'es_cmonth1_total': es_cmonth1_total, 'es_week3': es_week3,
-                       'es_month3': es_month3,
+                       'es_month3': es_month3, 'over_es': over_es,
                        'es_cweek1_sum': es_cweek1_sum, 'es_cmonth1_sum': es_cmonth1_sum}
 
         else:

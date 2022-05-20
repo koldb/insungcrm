@@ -1,3 +1,4 @@
+#app 없이 외부에서 실행시 필요한 코드(하단 8번째 줄까지) 
 import os
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")

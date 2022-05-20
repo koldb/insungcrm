@@ -11,10 +11,10 @@
         border : 1px solid #dcdcdc;
         width : 350px;
         margin: 0 auto;
-        cursor:pointer;
     }
-    tr:hover{
+    tr.m:hover{
      background-color: #98bee0;
+     cursor:pointer;
     }
 </style>
 
@@ -45,7 +45,7 @@
         {% if page_obj %}
         {% if login_session == 'insung' %}
         {% for list in page_obj %}
-        <tr style="text-align:center;" onclick="location.href='{% url 'question:que_detail' list.no %}'">
+        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'question:que_detail' list.no %}'">
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
             <td>{{ list.cname }}</td>
@@ -60,14 +60,14 @@
         {% endfor %}
         {% else  %}
         {% for list in page_obj %}
-        <tr style="text-align:center;">
+        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'isscm:sheet_detail' list.no %}'">
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
             <td>{{ list.cname }}</td>
             {% if list.comm %}
-            <td><a href="{% url 'question:que_detail' list.no %}">{{ list.title }} </a> <span style="color: red;">[{{ list.comm }}]</span></td>
+            <td>{{ list.title }} <span style="color: red;">[{{ list.comm }}]</span></td>
             {% else %}
-            <td><a href="{% url 'question:que_detail' list.no %}">{{ list.title }} </a></td>
+            <td>{{ list.title }} </td>
             {% endif %}
             <td>{{ list.type }}</td>
             <td>{{ list.content | truncatewords:5}}</td>

@@ -39,11 +39,14 @@
             <label for="cname">업체명</label>
             <input type="text" class="form-control" name="cname" id="cname" value="{{ detailView.cname }}" readonly>
         </div>
-
         <div class="mb-3">
             <div>
                 <label for="rg_date">고객 접수 일자</label>
-                <tr id="rg_date">{{ detailView.rg_date | date:'Y-m-d' }} </tr>
+                {% if login_session == 'insung' %}
+                <input type="date" value="{{ detailView.rg_date|date:'Y-m-d' }}" name="rg_date" id="rg_date" >
+                {% else %}
+                <input type="date" value="{{ detailView.rg_date|date:'Y-m-d' }}" name="rg_date" id="rg_date"  readonly>
+                {% endif %}
             </div>
             <div>
                 <label for="rp_date">처리 완료 일자</label>
@@ -68,11 +71,11 @@
             {% if login_session == 'insung' %}
             <textarea class="form-control" name="memo" id="memo"  readonly>{{ detailView.memo }}</textarea>
             {% else %}
-                {% if detailView.finish == '종료' %}
-                <textarea class="form-control" name="memo" id="memo" readonly>{{ detailView.memo }}</textarea>
-                {% else %}
-                <textarea class="form-control" name="memo" id="memo" >{{ detailView.memo }}</textarea>
-                {% endif %}
+            {% if detailView.finish == '종료' %}
+            <textarea class="form-control" name="memo" id="memo" readonly>{{ detailView.memo }}</textarea>
+            {% else %}
+            <textarea class="form-control" name="memo" id="memo" >{{ detailView.memo }}</textarea>
+            {% endif %}
             {% endif %}
         </div>
 
@@ -86,7 +89,7 @@
             {% endif %}
 
             {% else %}
-             <label for="option">의견</label>
+            <label for="option">의견</label>
             {% if detailView.option == None %}
             <textarea class="form-control" style="resize: none;" name="option" readonly></textarea>
             {% else %}
@@ -95,26 +98,26 @@
             {% endif %}
         </div>
 
-          <div class="mb-3">
+        <div class="mb-3">
             <label for="finish">종결 여부</label>
 
-                {% if login_session == 'insung' %}
-                <select name="finish" id="finish">
+            {% if login_session == 'insung' %}
+            <select name="finish" id="finish">
                 {% else %}
                 <select name="finish" onFocus="this.initialSelect = this.selectedIndex;" onChange="this.selectedIndex = this.initialSelect;">
-                {% endif %}
-                {% if detailView.finish == "진행 중" %}
+                    {% endif %}
+                    {% if detailView.finish == "진행 중" %}
                     <option value="{{ detailView.finish }}">{{ detailView.finish }}</option>
                     <option value="종료">종료</option>
-                {% elif detailView.finish == None %}
+                    {% elif detailView.finish == None %}
                     <option value="" selected> </option>
                     <option value="진행 중" >진행 중</option>
                     <option value="종료">종료</option>
-                {% else %}
+                    {% else %}
                     <option value="진행 중" >진행 중</option>
                     <option value="종료" selected>종료</option>
-                {% endif %}
-            </select>
+                    {% endif %}
+                </select>
         </div>
 
         <input type="submit" class="btn btn-primary" value="저장">

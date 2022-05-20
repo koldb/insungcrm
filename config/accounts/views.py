@@ -84,5 +84,5 @@ def login(request):
 # 로그아웃
 def logout(request):
     request.session.flush()
-    return redirect('/isscm/index')
+    return redirect('/index')
 

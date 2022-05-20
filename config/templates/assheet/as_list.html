@@ -115,7 +115,7 @@
         {% if list.cname == login_session %}
 
 
-        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'isscm:sheet_detail' list.no %}'">
+        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'asregister:as_detail' list.no %}'">
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.cname }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
@@ -201,7 +201,7 @@
             <th style="width:4%">완료 여부</th>
         </tr>
         {% for list in over_as reversed %}
-        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'isscm:sheet_detail' list.no %}'">
+        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'asregister:as_detail' list.no %}'">
             <td>{{ forloop.counter }}</td>
             <td>{{ list.cname }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>

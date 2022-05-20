@@ -5,6 +5,7 @@ from . import views
 app_name = 'isscm'
 
 urlpatterns = [
+    path('', views.index, name='index'),
     path('index', views.index, name='index'),
     path('sheet_insert', views.sheet_insert, name='sheet_insert'),
     path('order_insert', views.order_insert, name='order_insert'),

@@ -17,7 +17,8 @@ from dateutil.relativedelta import relativedelta
 
 # 임시 메인페이지
 def index(request):
-    return render(request, 'isscm/index.html')
+    login_session = request.session.get('login_session')
+    return render(request, 'isscm/index.html', {'login_session': login_session})
 
 
 # AS 입력

@@ -60,7 +60,7 @@
         {% endfor %}
         {% else  %}
         {% for list in page_obj %}
-        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'isscm:sheet_detail' list.no %}'">
+        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'question:que_detail' list.no %}'">
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
             <td>{{ list.cname }}</td>

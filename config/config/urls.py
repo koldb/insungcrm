@@ -22,10 +22,11 @@ from django.conf.urls.static import static
 from django.shortcuts import redirect
 
 urlpatterns = [
+    path('', include('isscm.urls')),
     path('admin/', admin.site.urls),
     path('estimate/', include('estimate.urls')),
     path('accounts/', include('accounts.urls'), name='accounts'),
-    path('isscm/', include('isscm.urls')),
+    #path('isscm/', include('isscm.urls')),
     path('asregister/', include('asregister.urls')),
     path('question/', include('question.urls')),
 

@@ -60,8 +60,10 @@ def index(request):
                                              user_dept='영업2팀').aggregate(Sum('total_price'))
     or_month1 = Ordersheet.objects.filter(rp_date__gte=date.today() - relativedelta(months=1),
                                           user_dept='영업1팀').aggregate(Sum('total_price'))
+    print(or_month1)
     or_month2 = Ordersheet.objects.filter(rp_date__gte=date.today() - relativedelta(months=1),
                                           user_dept='영업2팀').aggregate(Sum('total_price'))
+    print(or_month2)
 
     # 제품별 월간 견적, 발주, AS 개수
     es_num = EstimateSheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values(

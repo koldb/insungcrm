@@ -118,7 +118,7 @@
         </div>
     </div>
 
-    <div class="row" >
+    <div class="row" style="float:right; width: 50%;">
         <h2 style="display:inline;">월간 실적 현황</h2>
         <!--월간 견적 실적-->
         <div class="col-xl-3 col-md-6 mb-4" style="width: 50%;">
@@ -145,7 +145,7 @@
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                 발주 실적(1팀/2팀)</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <b>{{ or_month2.total_price__sum|intcomma }}</b> / <b>{{ or_month2.total_price__sum|intcomma }}</b>
+                                <b>{{ or_month1.total_price__sum|intcomma }}</b> / <b>{{ or_month2.total_price__sum|intcomma }}</b>
                             </div>
                         </div>
                     </div>
@@ -155,7 +155,7 @@
     </div>
 
     <!-- 제품별 견적, 발주, as 월간 현황 -->
-    <div class="row">
+    <div class="row" style="float:left; width: 100%;">
         <h2>제품별 견적, 발주, AS 월간 현황</h2>
         <!--월간 제품별 견적 현황-->
         <div class="col-xl-3 col-md-6 mb-4" style="width: 33%;">
@@ -247,7 +247,7 @@
     </div>
 
     <!-- 업체별 견적, 발주, as 월간 현황 -->
-    <div class="row">
+    <div class="row" style="clear: both; width: 100%;">
         <h2>업체별 견적, 발주, AS 월간 현황</h2>
         <!--월간 업체별 견적 현황-->
         <div class="col-xl-3 col-md-6 mb-4" style="width: 33%;">

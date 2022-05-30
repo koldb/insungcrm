@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404, reverse
 import sys
+
 sys.path.append('..')
 from isscm.decorators import login_required
 from . import models
@@ -61,6 +62,7 @@ def as_list(request):
     if request.method == 'GET':
         if login_session == 'insung':
             sort = request.GET.get('sort', '')
+            query = request.GET.get('q', '')
             if sort == 'rg_date':
                 company_sheet = ASsheet.objects.all().order_by('-rg_date')
             elif sort == 'rp_date':
@@ -74,25 +76,37 @@ def as_list(request):
             elif sort == 'all':
                 company_sheet = ASsheet.objects.all().order_by('-rg_date', 'finish')
             else:
-                if 'q' in request.GET:
-                    query = request.GET.get('q')
+                print("리스트 조회 겸 목록 조회")
+                search_sort = request.GET.get('search_sort', '')
+                if search_sort == 'cname':
+                    company_sheet = ASsheet.objects.all().filter(Q(cname__icontains=query)).order_by('-rg_date',
+                                                                                                     'finish')
+                elif search_sort == 'product_name':
+                    company_sheet = ASsheet.objects.all().filter(Q(product_name__icontains=query)).order_by('-rg_date',
+                                                                                                            'finish')
+                elif search_sort == 'finish':
+                    company_sheet = ASsheet.objects.all().filter(Q(finish__icontains=query)).order_by('-rg_date',
+                                                                                                      'finish')
+                elif search_sort == 'memo':
+                    company_sheet = ASsheet.objects.all().filter(Q(memo__icontains=query)).order_by('-rg_date',
+                                                                                                    'finish')
+                elif search_sort == 'all':
                     company_sheet = ASsheet.objects.all().filter(
                         Q(product_name__icontains=query) | Q(memo__icontains=query) | Q(cname__icontains=query) | Q(
                             finish__icontains=query) | Q(option__icontains=query)).order_by('-rg_date', 'finish')
                 else:
                     company_sheet = ASsheet.objects.all().order_by('-rg_date', 'finish')
 
-            #한달이상 미처리건 조회
+            # 한달이상 미처리건 조회
             over_as = ASsheet.objects.filter(rg_date__lte=date.today() - relativedelta(months=1)).exclude(
                 finish='종료').order_by('-rg_date')
-
 
             page = request.GET.get('page', '1')
             paginator = Paginator(company_sheet, 5)
             page_obj = paginator.get_page(page)
             upfile = ASUploadFile.objects.all()
-            
-            #주간 월간 제품별 AS 현황
+
+            # 주간 월간 제품별 AS 현황
             as_wnum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1)).values(
                 'product_name').order_by('product_name').annotate(count=Sum('quantity'))
             as_wnum_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1)).aggregate(
@@ -102,11 +116,13 @@ def as_list(request):
             as_mnum_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).aggregate(
                 Sum('quantity'))
             context = {'login_session': login_session, 'company_sheet': company_sheet, 'page_obj': page_obj,
-                       'sort': sort, 'as_wnum': as_wnum, 'as_mnum': as_mnum, 'as_wnum_sum': as_wnum_sum, 'as_mnum_sum': as_mnum_sum,
-                       'over_as': over_as}
+                       'sort': sort, 'as_wnum': as_wnum, 'as_mnum': as_mnum, 'as_wnum_sum': as_wnum_sum,
+                       'as_mnum_sum': as_mnum_sum,
+                       'over_as': over_as, 'query': query}
 
         else:
             sort = request.GET.get('sort', '')
+            query = request.GET.get('q', '')
             if sort == 'rg_date':
                 company_sheet = ASsheet.objects.filter(cname=login_session).order_by('-rg_date')
             elif sort == 'rp_date':
@@ -118,9 +134,18 @@ def as_list(request):
             elif sort == 'all':
                 company_sheet = ASsheet.objects.filter(cname=login_session).order_by('-rg_date', 'finish')
             else:
-                if 'q' in request.GET:
-                    query = request.GET.get('q')
-                    print('get?')
+                print("리스트 조회 겸 목록 조회")
+                search_sort = request.GET.get('search_sort', '')
+                if search_sort == 'product_name':
+                    company_sheet = ASsheet.objects.all().filter(Q(product_name__icontains=query), cname=login_session).order_by('-rg_date',
+                                                                                                            'finish')
+                elif search_sort == 'finish':
+                    company_sheet = ASsheet.objects.all().filter(Q(finish__icontains=query), cname=login_session).order_by('-rg_date',
+                                                                                                      'finish')
+                elif search_sort == 'memo':
+                    company_sheet = ASsheet.objects.all().filter(Q(memo__icontains=query), cname=login_session).order_by('-rg_date',
+                                                                                                    'finish')
+                elif search_sort == 'all':
                     company_sheet = ASsheet.objects.all().filter(
                         Q(product_name__icontains=query) | Q(memo__icontains=query) | Q(cname__icontains=query) | Q(
                             finish__icontains=query) | Q(option__icontains=query), cname=login_session).order_by('-rg_date', 'finish')
@@ -131,17 +156,14 @@ def as_list(request):
             paginator = Paginator(company_sheet, 5)
             page_obj = paginator.get_page(page)
             print("GET 페이징 끝")
-            context = {'login_session': login_session, 'company_sheet': company_sheet, 'page_obj': page_obj, 'sort': sort
-                   }
+            context = {'login_session': login_session, 'company_sheet': company_sheet, 'page_obj': page_obj,
+                       'sort': sort, 'search_sort': search_sort, 'query': query}
         print('끝')
         return render(request, 'assheet/as_list.html', context)
     elif request.method == 'POST':
         print('포스트인가')
         print("리스트 끝")
         return redirect('asregister:as_list')
-
-
-
 
 
 # AS 파일 업로드/다운로드
@@ -165,7 +187,7 @@ def AsUploadFile(request, pk):
                     title=fileTitle,
                     uploadedFile=uploadedFile,
                     sheet_no=sheet_no,
-                    menu = menu
+                    menu=menu
                 )
                 uploadfile.save()
     else:
@@ -183,17 +205,18 @@ def AsUploadFile(request, pk):
     return render(request, "assheet/asfile_upload.html", context={
         "files": uploadfile, "login_session": login_session, 'detailView': detailView})
 
+
 # AS 엑셀 다운로드
 def AS_excel(request):
     login_session = request.session.get('login_session')
 
     print("다운로드 시작")
-    #데이터 db에서 불러옴
+    # 데이터 db에서 불러옴
     data = ASsheet.objects.all()
     response = HttpResponse(content_type="application/vnd.ms-excel")
     # 다운로드 받을 때 생성될 파일명 설정
     response["Content-Disposition"] = 'attachment; filename=' \
-                                      +str(datetime.date.today()) + '_AS.xls'
+                                      + str(datetime.date.today()) + '_AS.xls'
     print("다운 중간")
     # 인코딩 설정
     wb = xlwt.Workbook(encoding='utf-8')
@@ -215,12 +238,23 @@ def AS_excel(request):
     query = request.GET.get('query')
     if query:
         if login_session == 'insung':
-            #엑셀에 쓸 데이터 리스트화
-            rows = ASsheet.objects.all().filter(Q(product_name__icontains=query) | Q(memo__icontains=query) | Q(cname__icontains=query) | Q(
-                finish__icontains=query) | Q(option__icontains=query)).values_list('no', 'cname', 'rg_date', 'rp_date', 'product_name', 'memo', 'option', 'finish')
+            # 엑셀에 쓸 데이터 리스트화
+            rows = ASsheet.objects.all().filter(
+                Q(product_name__icontains=query) | Q(memo__icontains=query) | Q(cname__icontains=query) | Q(
+                    finish__icontains=query) | Q(option__icontains=query)).values_list('no', 'cname', 'rg_date',
+                                                                                       'rp_date', 'product_name',
+                                                                                       'memo', 'option', 'finish')
         else:
-            rows = ASsheet.objects.filter(Q(product_name__icontains=query) | Q(memo__icontains=query) | Q(cname__icontains=query) | Q(
-                finish__icontains=query) | Q(option__icontains=query), cname=login_session).values_list('no', 'cname', 'rg_date', 'rp_date', 'product_name', 'memo', 'option', 'finish')
+            rows = ASsheet.objects.filter(
+                Q(product_name__icontains=query) | Q(memo__icontains=query) | Q(cname__icontains=query) | Q(
+                    finish__icontains=query) | Q(option__icontains=query), cname=login_session).values_list('no',
+                                                                                                            'cname',
+                                                                                                            'rg_date',
+                                                                                                            'rp_date',
+                                                                                                            'product_name',
+                                                                                                            'memo',
+                                                                                                            'option',
+                                                                                                            'finish')
     else:
         if login_session == 'insung':
             # 엑셀에 쓸 데이터 리스트화
@@ -251,7 +285,6 @@ def AS_excel(request):
     return response
 
 
-
 # as 파일 삭제
 def ASfile_delete(request, pk):
     login_session = request.session.get('login_session')
@@ -270,7 +303,6 @@ def ASfile_delete(request, pk):
         print('post로 옴')
 
 
-
 # AS 접수서 상세 뷰
 def as_detail(request, pk):
     if request.method == 'GET':
@@ -280,7 +312,8 @@ def as_detail(request, pk):
 
         try:
             upfile = ASUploadFile.objects.filter(sheet_no_id=pk)
-            context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile, 'user_name': user_name}
+            context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile,
+                       'user_name': user_name}
             print("성공")
         except:
             context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name}

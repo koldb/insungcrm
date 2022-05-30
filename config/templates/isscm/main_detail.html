@@ -1,0 +1,191 @@
+{% extends "base/base2.html" %}
+{% block content %}
+{% load humanize %}
+{% load filter %}
+<style>
+  table {
+    width: 100%;
+    border: 1px solid #dcdcdc;
+    border-collapse: collapse;
+  }
+  th, td {
+    border: 1px solid #dcdcdc;
+    text-align: center;
+  }
+  tr.m:hover{
+    background-color: #98bee0;
+    cursor:pointer;
+  }
+  textarea {
+    width: 100%;
+    height: 15em;
+  }
+</style>
+
+
+<script type="text/javascript">
+
+    $(function() {
+    $("input:text").keydown(function(evt) {
+        if (evt.keyCode == 13) return false; });
+    });
+
+ //콤마찍기
+    function comma(str) {
+        str = String(str);
+        return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+    }
+    //콤마풀기
+    function uncomma(str) {
+        str = String(str);
+        return str.replace(/[^\d]+/g, '');
+    }
+    function inputNumberFormat(obj) {
+        obj.value = comma(uncomma(obj.value));
+    }
+
+    //곱하기
+    function def(){
+        var quantity = document.getElementById('quantity');
+        var per_price = document.getElementById('per_price');
+        var total_price = document.getElementById('total_price');
+    total_price.value = comma(Number(uncomma(quantity.value))*Number(uncomma(per_price.value)));
+    }
+
+</script>
+
+
+<div class="container my-3">
+    <form method="post" action="{% url 'isscm:main_detail' detailView.id %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <input type="submit" class="btn btn-primary" value="수정 저장">
+            <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:main_delete' detailView.id %}'" value="삭제">
+        </div>
+
+        <div class="mb-3">
+            <label for="rg_date">등록 일자</label>
+            <input type="date" class="form-control" name="rg_date" id="rg_date" value="{{ detailView.rg_date | date:'Y-m-d' }}" readonly>
+        </div>
+        <div class="mb-3">
+            <label for="rp_date">마감 요청일자</label>
+            <input type="date" class="form-control" name="rp_date" id="rp_date" value="{{ detailView.rp_date | date:'Y-m-d' }}">
+        </div>
+        <div class="mb-3">
+            <label for="main_title">견적명</label>
+            <input type="text" class="form-control" name="main_title" id="main_title" value="{{ detailView.main_title }}">
+        </div>
+        <div class="mb-3">
+            <label for="cname">업체명</label>
+            <input type="text" class="form-control" name="cname" id="cname" value="{{ detailView.cname }}" readonly>
+        </div>
+        <div class="mb-3">
+            <label for="total_price">총 금액</label>
+            {% if detailView.total_price == None %}
+            <input type="text" class="form-control" name="total_price" id="total_price" value="0" onkeyup="inputNumberFormat(this)">
+            {% else %}
+            <input type="text" class="form-control" name="total_price" id="total_price" value="{{ detailView.total_price|intcomma }}"
+                   onkeyup="inputNumberFormat(this)">
+            {% endif%}
+        </div>
+        <div class="mb-3">
+            <label for="requests">요청 사항</label>
+            <textarea class="form-control" name="requests" id="requests" style="resize: none;" >{{ detailView.requests }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="finish">종결 여부</label>
+            {% if login_session == 'insung' %}
+            <select name="finish" id="finish">
+                {% else %}
+                <select name="finish" id="finish" disabled>
+                    {% endif %}
+                    {% if detailView.finish == '진행 중' %}
+                    <option value="{{ detailView.finish }}" selected>{{ detailView.finish }}</option>
+                    <option value="종료" >종료</option>
+                    {% elif detailView.finish == '종료' %}
+                    <option value="진행 중" >진행 중</option>
+                    <option value="{{ detailView.finish }}" selected>{{ detailView.finish }}</option>
+                    {% else %}
+                    <option value="" ></option>
+                    <option value="진행 중" >진행 중</option>
+                    <option value="종료" >종료</option>
+                    {% endif %}
+                </select>
+            </select>
+        </div>
+
+        <input type="hidden" value="{{ user_name }}" name="user_name" id="user_name">
+        <input type="hidden" value="{{ user_dept }}" name="user_dept" id="user_dept">
+
+        <div class="mb-3">
+            {% if login_session == 'insung' %}
+            <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:sub_insert' detailView.id %}'" value="제품 입력" style="float: right;">
+            {% endif %}
+            <a href="{% url 'isscm:sub_excel' %}?id={{ detailView.id }}" style="color:white"><button type="button" class="btn btn-primary" >EXCEL DOWN</button></a>
+            <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:main_uploadFile' detailView.id %}'" value="파일 업로드">
+            {% if files %}
+            {% for file in files %}
+            <input type="button" value="{{ file.title }}" class="btn btn-primary" disabled >
+            {% endfor %}
+            {% else %}
+            <td>첨부 파일 없음</td>
+            {% endif %}
+        </div>
+
+    </form>
+</div>
+
+<hr style="border: 1px;">
+
+
+<div>
+    <table class="board">
+        <thead>
+        {% if sub %}
+        <tr class="header" style="text-align:center;">
+            <th style="width:5%;">순번</th>
+            <th style="width:5%;">제품명</th>
+            <th style="width:5%;">수량</th>
+            <th style="width:5%;">개당 단가</th>
+            <th style="width:5%;">부가세</th>
+            <th style="width:5%;">총 금액</th>
+            <th style="width:5%;">생산 일자</th>
+            <th style="width:5%;">출고 일자</th>
+            <th style="width:5%;">업체명</th>
+            <th style="width:5%;">시리얼</th>
+            <th style="width:5%;">보증 기간</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for list in sub %}
+        {% if login_session == 'insung' %}
+        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'isscm:sub_modify' list.id list.m_id_id %}'">
+            {% else %}
+        <tr class="m" style="text-align:center;" >
+            {% endif %}
+            <td>{{ forloop.counter  }}</td>
+            <td>{{ list.product_name }}</td>
+            <td>{{ list.quantity|intcomma }}</td>
+            <td>{{ list.per_price|intcomma }}</td>
+            <td>{{ list.tax|intcomma }}</td>
+            <td>{{ list.total_price|intcomma }}</td>
+            <td>{{ list.production_date|date:'Y-m-d' }}</td>
+            <td>{{ list.release_date|date:'Y-m-d' }}</td>
+            <td>{{ list.cname }}</td>
+            <td>{{ list.serial }}</td>
+            <td>{{ list.warranty|date:'Y-m-d' }}</td>
+        </tr>
+        {% endfor %}
+
+        {% else %}
+        {% endif %}
+        </tbody>
+    </table>
+
+</div>
+
+
+
+{% endblock %}

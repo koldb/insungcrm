@@ -22,7 +22,17 @@
 <div>
     <form action="{% url 'question:que_list' %}" method="GET">
         {% csrf_token %}
-        <input type="search" placeholder="제품명 / 구분 / 업체명 / 종료 여부 검색 가능" class="form-control mr-sm-2" name="q" value="{{ query }}">
+        <select name="search_sort" id="search_sort">
+            <option value="title" id="title">제목</option>
+            {% if login_session == 'insung' %}
+            <option value="cname" id="cname">업체명</option>
+            {% else %}
+            {% endif %}
+            <option value="type" id="type">유형</option>
+            <option value="content" id="content">내용</option>
+            <option value="all" id="all">전체</option>
+        </select>
+        <input type="search" placeholder="검색" class="form-control mr-sm-2" name="q" value="{{ query }}">
         <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
     </form>
 </div>
@@ -90,8 +100,8 @@
 <div class = "container" id="paging">
     {#first previous#}
     {% if page_obj.has_previous %}
-    <a href="?query={{ query }}&page_obj={{ page_obj }}&page=1&sort={{sort}}">First</a>
-    <a href="?query={{ query }}&page_obj={{ page_obj }}&page={{page_obj.previous_page_number}}&sort={{sort}}">Previous</a>
+    <a href="?q={{ query }}&page_obj={{ page_obj }}&page=1&sort={{sort}}&search_sort={{search_sort}}">First</a>
+    <a href="?q={{ query }}&page_obj={{ page_obj }}&page={{page_obj.previous_page_number}}&sort={{sort}}}&search_sort={{search_sort}}">Previous</a>
     {% endif %}
     {# 3of4 #}
     <span>{{page_obj.number}}</span>
@@ -99,8 +109,8 @@
     <span>{{page_obj.paginator.num_pages}}</span>
     {# Next Last #}
     {% if page_obj.has_next %}
-    <a href="?query={{ query }}&page_obj={{ page_obj }}&page={{page_obj.next_page_number}}&sort={{sort}}">Next</a>
-    <a href="?query={{ query }}&page_obj={{ page_obj }}&page={{page_obj.paginator.num_pages}}&sort={{sort}}">Last</a>
+    <a href="?q={{ query }}&page_obj={{ page_obj }}&page={{page_obj.next_page_number}}&sort={{sort}}}&search_sort={{search_sort}}">Next</a>
+    <a href="?q={{ query }}&page_obj={{ page_obj }}&page={{page_obj.paginator.num_pages}}&sort={{sort}}}&search_sort={{search_sort}}">Last</a>
     {%endif%}
 </div>
 
@@ -116,7 +126,6 @@
         </select>
         <button class="btn btn-primary" type="submit" value="">정렬</button>
         <!--엑셀 다운로드-->
-        <!--<a href="{% url 'isscm:es_excel' %}" style="color:white"><button type="button" class="btn btn-primary">EXCEL DOWN</button></a>-->
 
     </form>
 </div>

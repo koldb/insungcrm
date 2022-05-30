@@ -83,6 +83,7 @@ def que_list(request):
     if request.method == 'GET':
         if login_session == 'insung':
             sort = request.GET.get('sort', '')
+            query = request.GET.get('q', '')
             if sort == 'rg_date':
                 company_sheet = question_sheet.objects.all().order_by('rg_date', '-rg_date')
             elif sort == 'type':
@@ -92,9 +93,17 @@ def que_list(request):
             elif sort == 'all':
                 company_sheet = question_sheet.objects.all().order_by('-rg_date', '-cname')
             else:
-                if 'q' in request.GET:
-                    query = request.GET.get('q')
-                    print('get?')
+                print("리스트 조회 겸 목록 조회")
+                search_sort = request.GET.get('search_sort', '')
+                if search_sort == 'cname':
+                    company_sheet = question_sheet.objects.all().filter(Q(cname__icontains=query)).order_by('-rg_date', '-cname')
+                elif search_sort == 'type':
+                    company_sheet = question_sheet.objects.all().filter(Q(type__icontains=query)).order_by('-rg_date', '-cname')
+                elif search_sort == 'title':
+                    company_sheet = question_sheet.objects.all().filter(Q(title__icontains=query)).order_by('-rg_date', '-cname')
+                elif search_sort == 'content':
+                    company_sheet = question_sheet.objects.all().filter(Q(content__icontains=query)).order_by('-rg_date', '-cname')
+                elif search_sort == 'all':
                     company_sheet = question_sheet.objects.all().filter(
                         Q(title__icontains=query) | Q(type__icontains=query) | Q(cname__icontains=query) | Q(
                             content__icontains=query)).order_by('-rg_date', '-cname')
@@ -107,10 +116,11 @@ def que_list(request):
             page_obj = paginator.get_page(page)
             print("insung GET 페이징 끝")
 
-            context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort}
+            context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort, 'query': query, 'search_sort': search_sort}
 
         else:
             sort = request.GET.get('sort', '')
+            query = request.GET.get('q', '')
             if sort == 'rg_date':
                 company_sheet = question_sheet.objects.filter(cname=login_session).order_by('rg_date', '-rg_date')
             elif sort == 'type':
@@ -120,8 +130,18 @@ def que_list(request):
             elif sort == 'all':
                 company_sheet = question_sheet.objects.filter(cname=login_session).order_by('-rg_date', '-cname')
             else:
-                if 'q' in request.GET:
-                    query = request.GET.get('q')
+                print("리스트 조회 겸 목록 조회")
+                search_sort = request.GET.get('search_sort', '')
+                if search_sort == 'type':
+                    company_sheet = question_sheet.objects.all().filter(Q(type__icontains=query), cname=login_session).order_by('-rg_date',
+                                                                                                           '-cname')
+                elif search_sort == 'title':
+                    company_sheet = question_sheet.objects.all().filter(Q(title__icontains=query), cname=login_session).order_by('-rg_date',
+                                                                                                            '-cname')
+                elif search_sort == 'content':
+                    company_sheet = question_sheet.objects.all().filter(Q(content__icontains=query), cname=login_session).order_by('-rg_date',
+                                                                                                      '-cname')
+                elif search_sort == 'all':
                     company_sheet = question_sheet.objects.all().filter(
                         Q(title__icontains=query) | Q(type__icontains=query) | Q(cname__icontains=query) | Q(
                             content__icontains=query), cname=login_session).order_by('-rg_date', '-cname')
@@ -132,7 +152,7 @@ def que_list(request):
             paginator = Paginator(company_sheet, 7)
             page_obj = paginator.get_page(page)
             print("일반 GET 페이징 끝")
-            context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort}
+            context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort, 'query': query}
 
         print('끝')
         return render(request, 'question/que_list.html', context)

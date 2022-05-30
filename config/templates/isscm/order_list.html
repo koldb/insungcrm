@@ -23,7 +23,15 @@
 <div>
     <form action="{% url 'isscm:order_list' %}" method="GET">
         {% csrf_token %}
-        <input type="search" placeholder="발주명 / 제품명 / 구분 / 업체명 / 담당 팀 검색 가능" class="form-control mr-sm-2" name="q" value="{{ query }}">
+         <select name="search_sort" id="search_sort">
+            <option value="odtitle" id="odtitle">발주명</option>
+            <option value="product_name" id="product_name">제품명</option>
+            <option value="new_old" id="new_old">구분</option>
+            <option value="cname" id="cname">업체명</option>
+            <option value="user_dept" id="user_dept">부서명</option>
+            <option value="all" id="all">전체</option>
+        </select>
+        <input type="search" placeholder="검색" class="form-control mr-sm-2" name="q" value="{{ query }}">
         <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
     </form>
 </div>
@@ -92,8 +100,8 @@
 <div class = "container" id="paging">
     {#first previous#}
     {% if page_obj.has_previous %}
-    <a href="?query={{ query }}&page_obj={{ page_obj }}&page=1&sort={{sort}}">First</a>
-    <a href="?query={{ query }}&page_obj={{ page_obj }}&page={{page_obj.previous_page_number}}&sort={{sort}}">Previous</a>
+    <a href="?q={{ query }}&page_obj={{ page_obj }}&page=1&sort={{sort}}&search_sort={{search_sort}}">First</a>
+    <a href="?q={{ query }}&page_obj={{ page_obj }}&page={{page_obj.previous_page_number}}&sort={{sort}}&search_sort={{search_sort}}">Previous</a>
     {% endif %}
     {# 3of4 #}
     <span>{{page_obj.number}}</span>
@@ -101,8 +109,8 @@
     <span>{{page_obj.paginator.num_pages}}</span>
     {# Next Last #}
     {% if page_obj.has_next %}
-    <a href="?query={{ query }}&page_obj={{ page_obj }}&page={{page_obj.next_page_number}}&sort={{sort}}">Next</a>
-    <a href="?query={{ query }}&page_obj={{ page_obj }}&page={{page_obj.paginator.num_pages}}&sort={{sort}}">Last</a>
+    <a href="?q={{ query }}&page_obj={{ page_obj }}&page={{page_obj.next_page_number}}&sort={{sort}}&search_sort={{search_sort}}">Next</a>
+    <a href="?q={{ query }}&page_obj={{ page_obj }}&page={{page_obj.paginator.num_pages}}&sort={{sort}}&search_sort={{search_sort}}">Last</a>
     {%endif%}
 </div>
 

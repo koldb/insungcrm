@@ -100,7 +100,7 @@ const comm_save = (no) => {
 </script>
 
 
-
+<!--본문 부분-->
 <div class="container my-3">
     <form method="post" >
         {% csrf_token %}
@@ -126,7 +126,7 @@ const comm_save = (no) => {
         </div>
 
 
-
+        <!--파일 업로드 부분-->
         <div class="mb-3">
             <input type="button" class="btn btn-primary" onclick="location.href='{% url 'question:que_uploadFile' detailView.no %}'" value="파일 업로드">
 
@@ -139,6 +139,7 @@ const comm_save = (no) => {
             {% endif %}
 
         </div>
+        <!--수정 삭제 부분-->
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'question:que_modify' detailView.no %}'" value="수정">
         {% if login_session == detailView.cname or login_session == 'insung' %}
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'question:que_delete' detailView.no %}'" value="삭제">
@@ -146,7 +147,7 @@ const comm_save = (no) => {
     </form>
 
 
-
+    <!--댓글 표출 / 수정 / 삭제 부분-->
     {% for comment in comments %}
     <br><br>
     <div>
@@ -158,7 +159,6 @@ const comm_save = (no) => {
         <input type="text" value="{{ comment.content }}" style="border:0 solid black; font-size:25px;" id="comm_content{{comment.no}}" readonly >
         <div>
             [ {{ comment.rg_date | date:'Y-m-d H:i:s' }} ] -  <b>{{ comment.register }}</b>
-
             <input type="button" class="btn btn-primary" value="수정" name="comm_modify" id="comm_modify{{comment.no}}" onclick="comment_update({{comment.no}})" >
             <input type="button" class="btn btn-primary" value="저장" name="comm_sava" id="comm_save{{comment.no}}" style="display:none" onclick="comm_save({{ comment.no }})">
             <input type="button" class="btn btn-primary" value="취소" name="comm_cancel" id="comm_cancel{{comment.no}}" style="display:none" onclick="comment_cancel({{ comment.no }})">
@@ -171,6 +171,7 @@ const comm_save = (no) => {
 
 
     <br><br>
+    <!--댓글 입력 부분-->
     <div class="mb-3" style="background-color: #E9ECEF">
         <label for="comment_ins">댓글 입력</label>
         <form method="POST" id="comment_ins" name="comment_ins" action="{% url 'question:comment_create' detailView.no %}" onsubmit="return sub();">

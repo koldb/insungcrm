@@ -131,6 +131,7 @@ def main_insert(request):
 
 
 def main_detail(request, pk):
+    global context
     login_session = request.session.get('login_session')
     user_name = request.session.get('user_name')
     user_dept = request.session.get('user_dept')

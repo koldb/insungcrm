@@ -131,7 +131,6 @@ def main_insert(request):
 
 
 def main_detail(request, pk):
-    global context
     login_session = request.session.get('login_session')
     user_name = request.session.get('user_name')
     user_dept = request.session.get('user_dept')
@@ -145,9 +144,21 @@ def main_detail(request, pk):
             paginator = Paginator(sub, 10)
             page_obj = paginator.get_page(page)
             print("insung GET main 페이징 끝")
-            upload_file = UploadFile.objects.filter(main_id_id=pk)
+            try:
+                # upfile = UploadFile.objects.filter(sheet_no_id=pk)
+                # 잠시 보류
+                print('get 파일 있음')
+                upload_file = UploadFile.objects.filter(main_id_id=pk)
+                context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name,
+                           'user_dept': user_dept, 'sub': sub, 'files': upload_file}
+            except:
+                print('get 파일 없음')
+                context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name,
+                           'user_dept': user_dept, 'sub': sub}
+        else:
+            print('sub 없음')
             context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name,
-                       'user_dept': user_dept, 'sub': sub, 'files': upload_file}
+                       'user_dept': user_dept}
         print("디테일 뷰 끝")
         return render(request, 'isscm/main_detail.html', context)
     else:

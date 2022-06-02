@@ -15,6 +15,10 @@
     width: 100%;
     height: 15em;
   }
+  div#m:hover{
+    background-color: #98bee0;
+    cursor:pointer;
+  }
 
 
 </style>
@@ -22,39 +26,39 @@
 {% if login_session == 'insung' %}
 <div class="container-fluid">
     <!-- 1일 기준 신규 접수 현황 -->
-    <div class="row">
+    <div class="row" >
         <h2>금일 진행 현황</h2>
         <!--일별 견적 접수 현황-->
         <div class="col-xl-3 col-md-6 mb-4"  style="width: 33%;">
-            <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card border-left-primary shadow h-100 py-2" onclick="location.href='{% url 'isscm:main_list' %}'" id="m">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                접수 / 진행 / 종료</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"><b>{{ es_count }}  / {{ es_icount }} / {{ es_fcount }}</b></div>
+                                접수 / 미확인 / 진행 / 종료</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><b>{{ es_count }}  / {{ es_xcount }} / {{ es_icount }} / {{ es_fcount }}</b></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <!--일별 AS 접수 현황-->
-        <div class="col-xl-3 col-md-6 mb-4" style="width: 33%;">
-            <div class="card border-left-primary shadow h-100 py-2">
+        <div class="col-xl-3 col-md-6 mb-4" style="width: 33%;" >
+            <div class="card border-left-primary shadow h-100 py-2" onclick="location.href='{% url 'asregister:as_list' %}'"  id="m">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                AS 접수 / 완료 </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"><b>{{ as_count }}  /  {{ as_fcount }}</b></div>
+                                AS 접수 / 미확인 / 진행 중 / 완료 </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><b>{{ as_count }}  / {{ as_xcount }} / {{ as_icount }} / {{ as_fcount }}</b></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <!--일별 문의 접수 현황-->
-        <div class="col-xl-3 col-md-6 mb-4" style="width: 33%;">
-            <div class="card border-left-primary shadow h-100 py-2">
+        <div class="col-xl-3 col-md-6 mb-4" style="width: 33%;" >
+            <div class="card border-left-primary shadow h-100 py-2" onclick="location.href='{% url 'question:que_list' %}'"  id="m">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
@@ -238,57 +242,43 @@
 
 <div class="container-fluid">
     <div class="row">
-        <h2>신규 등록 현황_전일 기준</h2>
+        <h2>금일 현황</h2>
         <!--일별 견적 접수 현황-->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
+        <div class="col-xl-3 col-md-6 mb-4" style="width: 33%;">
+            <div class="card border-left-primary shadow h-100 py-2" onclick="location.href='{% url 'isscm:main_list' %}'" id="m">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                신규 견적</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"><b>{{ es_pcount }}</b></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!--일별 발주 접수 현황-->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                신규 발주</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"><b>{{ or_pcount }}</b></div>
+                                접수 / 미확인 / 진행 / 종료</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><b>{{ es_pcount }}  / {{ es_pxcount }} / {{ es_picount }} / {{ es_pfcount }}</b></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <!--일별 AS 접수 현황-->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
+        <div class="col-xl-3 col-md-6 mb-4" style="width: 33%;">
+            <div class="card border-left-primary shadow h-100 py-2" onclick="location.href='{% url 'asregister:as_list' %}'"  id="m">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                신규 AS</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"><b>{{ as_pcount }}</b></div>
+                                AS 접수 / 미확인 / 진행 중 / 완료 </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><b>{{ as_pcount }}  / {{ as_pxcount }} / {{ as_picount }} / {{ as_pfcount }}</b></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <!--일별 문의 접수 현황-->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
+        <div class="col-xl-3 col-md-6 mb-4" style="width: 33%;">
+            <div class="card border-left-primary shadow h-100 py-2" onclick="location.href='{% url 'question:que_list' %}'"  id="m">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                신규 문의</div>
+                                문의 사항</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800"><b>{{ que_pcount }}</b></div>
                         </div>
                     </div>

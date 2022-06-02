@@ -1,0 +1,107 @@
+{% extends "base/base2.html" %}
+{% block content %}
+{% load humanize %}
+{% load filter %}
+<style>
+    tr, td, th{
+        border : 1px solid #dcdcdc;
+        width : 350px%;
+        margin: 0 auto;
+    }
+    table {
+    text-align: center;
+    margin-left:auto;
+    margin-right:auto;
+    width : 100%;
+    }
+    caption {
+    caption-side: top;
+    text-align: left;
+    font-weight : bold;
+    color : #2478FF;
+    font-size : 30px;
+    }
+</style>
+
+<script type="text/javascript">
+</script>
+
+
+{% if login_session == 'insung' %}
+<div>
+    <form action="{% url 'isscm:product_modify' sub_detailView.id %}" method="post">
+        {% csrf_token %}
+        <table class="board">
+            <thead>
+            <tr class="header" style="text-align:center;">
+                <th style="width:15%;">제품명</th>
+                <th style="width:5%;">업체명</th>
+                <th style="width:5%;">시리얼</th>
+                <th style="width:5%;">생산 일자</th>
+                <th style="width:5%;">출고 일자</th>
+                <th style="width:5%;">SUB ID</th>
+                <th style="width:5%;">수량</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="m" style="text-align:center;" >
+                <input type="hidden" value="{{ sub_detailView.product_name }}" name="product_name" id="product_name">
+                <td>{{ sub_detailView.product_name }}</td>
+                <input type="hidden" value="{{ sub_detailView.cname }}" name="cname" id="cname">
+                <td>{{ sub_detailView.cname }}</td>
+                <td><input type="text" name="serial" id="serial"></td>
+                <td><input type="date" name="production_date" id="production_date"></td>
+                <td><input type="date" name="release_date" id="release_date"></td>
+                <td>{{ sub_detailView.id }}</td>
+                <td>{{ sub_detailView.quantity }}</td>
+
+            </tr>
+            </tbody>
+        </table>
+        <input type="submit" value="품목 저장" class="btn btn-primary" onclick="alert('입력 완료')"  style="float: right;">
+    </form>
+</div>
+{% endif %}
+
+<div>
+
+    <table class="board" >
+        <caption>제품 정보</caption>
+        <thead>
+        <tr class="header" style="text-align:center;">
+            <th style="width:5%;">순번</th>
+            <th style="width:5%;">등록 일자</th>
+            <th style="width:15%;">제품명</th>
+            <th style="width:5%;">업체명</th>
+            <th style="width:5%;">시리얼</th>
+            <th style="width:5%;">생산 일자</th>
+            <th style="width:5%;">출고 일자</th>
+            <th style="width:5%;">보증 만료일</th>
+            <th style="width:5%;">SUB ID</th>
+            <th style="width:5%;">삭제</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for list in product_view %}
+        <tr class="m" style="text-align:center;" >
+            <td>{{ forloop.counter }}</td>
+            <td>{{ list.rg_date | date:'Y-m-d' }}</td>
+            <td>{{ list.product_name }}</td>
+            <td>{{ list.cname }}</td>
+            <td>{{ list.serial }}</td>
+            <td>{{ list.production_date| date:'Y-m-d'}}</td>
+            <td>{{ list.release_date | date:'Y-m-d' }}</td>
+            <td>{{ list.warranty | date:'Y-m-d' }}</td>
+            <td>{{ list.s_id_id }}</td>
+            <td><input type="button" value="delete" class="btn btn-primary" onclick="location.href='{% url 'isscm:product_delete' list.id  sub_detailView.id%}'"></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+
+{% endblock %}

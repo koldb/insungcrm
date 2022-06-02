@@ -20,6 +20,9 @@ urlpatterns = [
     path('main_list/', views.main_list, name='main_list'),
     path('sub_insert/<int:pk>/', views.sub_insert, name='sub_insert'),
     path('sub_modify/<int:pk>/<int:mid>/', views.sub_modify, name='sub_modify'),
+    path('product_list/', views.product_list, name='product_list'),
+    path('product_modify/<int:pk>/', views.product_modify, name='product_modify'),
+    path('product_delete/<int:pk>/<int:sid>/', views.product_delete, name='product_delete'),
 
 ]
 

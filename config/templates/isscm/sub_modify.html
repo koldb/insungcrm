@@ -103,26 +103,6 @@
             <input type="text" class="form-control" name="total_price" id="total_price"  value="{{sub_detailView.total_price}}"
                    onkeyup="inputNumberFormat(this);def(); def();">
         </div>
-        <div>
-            <label for="production_date">생산 일자</label>
-            {% if sub_detailView.production_date == None %}
-            <input type="date"  name="production_date" id="production_date" value="{{sub_detailView.production_date|date:'Y-m-d'}}">
-            {% else %}
-            <input type="date" value="{{ sub_detailView.production_date|date:'Y-m-d' }}" name="production_date" id="production_date" >
-            {% endif %}
-        </div>
-        <div>
-            <label for="release_date">출고 일자</label>
-            {% if sub_detailView.release_date == None %}
-            <input type="date"  name="release_date" id="release_date"  value="{{sub_detailView.release_date|date:'Y-m-d'}}">
-            {% else %}
-            <input type="date" value="{{ sub_detailView.release_date|date:'Y-m-d' }}" name="release_date" id="release_date" >
-            {% endif %}
-        </div>
-        <div class="mb-3">
-            <label for="serial">시리얼</label>
-            <input type="text" class="form-control" name="serial" id="serial" value="{{sub_detailView.serial}}">
-        </div>
 
 
         <div>

@@ -38,14 +38,12 @@
         {% csrf_token %}
         <select name="search_sort" id="search_sort">
             <option value="main_title" id="main_title">견적명</option>
+            <option value="product_name" id="product_name">제품명</option>
             <option value="requests" id="requests">요청사항</option>
             <option value="finish" id="finish">종결 여부</option>
-            <option value="serial" id="serial">시리얼</option>
-            {% if login_session == 'insung' %}
             <option value="user_dept" id="user_dept">담당 팀</option>
             <option value="user_name" id="user_name">담당자</option>
             <option value="cname" id="cname">업체명</option>
-            {% endif %}
             <option value="all" id="all">전체</option>
         </select>
         <input type="search"placeholder="검색"  class="form-control mr-sm-2" name="q" value="{{ query }}">
@@ -63,6 +61,7 @@
             <th style="width:5%;">순번</th>
             <th style="width:9%">등록 일자</th>
             <th style="width:9%">마감 요청일자</th>
+            <th style="width:7%">종료 일자</th>
             <th style="width:10%">견적명</th>
             <th style="width:10%">업체명</th>
             <th style="width:15%">요청사항</th>
@@ -82,6 +81,7 @@
             {% else %}
             <td>{{ list.rp_date|date:'Y-m-d' }}</td>
             {% endif %}
+            <td>{{ list.end_date|date:'Y-m-d' }}</td>
             <td>{{ list.main_title }}</td>
             <td>{{ list.cname }}</td>
             <td>{{ list.requests | truncatewords:10 }}</td>
@@ -102,9 +102,7 @@
         </tr>
         {% endfor %}
         {% else %}
-        <tr>
         <tr><h2>등록 된 글이 없습니다.</h2></tr>
-        </tr>
         {% endif %}
         </tbody>
     </table>
@@ -190,16 +188,14 @@
     <form method="GET" action="{% url 'isscm:main_list' %}">
         <select name="sort" id="sort">
             <option value="rg_date" id="rg_date">고객 접수 일자</option>
-            <option value="rp_date" id="rp_date">회신 완료 일자</option>
+            <option value="rp_date" id="rp_date">마감 요청 일자</option>
             <option value="main_title" id="main_title">견적명</option>
             <option value="cname" id="cname">업체명</option>
             <option value="requests" id="requests">요청 사항</option>
             <option value="finish" id="finish">종결 여부</option>
             <option value="total_price" id="total_price">총 금액</option>
-            {% if login_session == 'insung' %}
             <option value="user_dept" id="user_dept">담당 팀</option>
             <option value="user_name" id="user_name">담당자</option>
-            {% endif %}
             <option value="all" id="all">전체</option>
         </select>
         <button class="btn btn-primary" type="submit" value="">정렬</button>
@@ -209,10 +205,12 @@
     </form>
 </div>
 <hr style="border: 1px;">
-{% if over_date %}
+
+<!--한달 이상 미처리 내역 -->
 <div>
-    <table>
+    <table class="board">
         <caption>한달 이상 미처리건 목록</caption>
+        <thead>
         <tr class="header" style="text-align:center;">
             <th style="width:5%;">순번</th>
             <th style="width:9%">등록 일자</th>
@@ -225,6 +223,9 @@
             <th style="width:5%">담당 팀</th>
             <th style="width:5%">담당자</th>
         </tr>
+        </thead>
+        <tbody>
+        {% if over_date %}
         {% for list in over_date reversed %}
         <tr class="m" style="text-align:center;" onclick="location.href='{% url 'isscm:main_detail' list.id %}'">
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
@@ -232,7 +233,7 @@
             {% if list.rp_date == None %}
             <td> </td>
             {% else %}
-            <td>{{ list.rp_date }}</td>
+            <td>{{ list.rp_date |date:'Y-m-d' }}</td>
             {% endif %}
             <td>{{ list.main_title }}</td>
             <td>{{ list.cname }}</td>
@@ -252,10 +253,17 @@
             <td>{{ list.user_name }} </td>
             {% endif %}
         </tr>
-        {% endfor %}
 
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td></td>
+        </tr>
+        {% endif %}
+        </tbody>
     </table>
 </div>
-{% endif %}
+
+
 
 {% endblock %}

@@ -209,4 +209,5 @@ class LoginForm(forms.Form):
             self.login_session = user.cname
             self.user_dept = user.user_dept
             self.user_name = user.user_name
+            self.user_phone = user.user_phone
 

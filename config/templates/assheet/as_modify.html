@@ -40,27 +40,25 @@
             <input type="text" class="form-control" name="cname" id="cname" value="{{ detailView.cname }}" readonly>
         </div>
         <div class="mb-3">
-            <div>
-                <label for="rg_date">고객 접수 일자</label>
-                {% if login_session == 'insung' %}
-                <input type="date" value="{{ detailView.rg_date|date:'Y-m-d' }}" name="rg_date" id="rg_date" >
-                {% else %}
-                <input type="date" value="{{ detailView.rg_date|date:'Y-m-d' }}" name="rg_date" id="rg_date"  readonly>
-                {% endif %}
-            </div>
-            <div>
-                <label for="rp_date">처리 완료 일자</label>
-                {% if detailView.rp_date == None %}
-                <input type="date" value="{{ detailView.rp_date }}" name="rp_date" >
-                {% else %}
-                <input type="date" value="{{ detailView.rp_date }}" name="rp_date" id="rp_date" >
-                {% endif %}
-            </div>
+            <label for="rg_date">접수 일자</label>
+            <input type="date" class="form-control" name="rg_date" id="rg_date" value="{{ detailView.rg_date | date:'Y-m-d' }}" readonly>
         </div>
 
         <div class="mb-3">
             <label for="product_name">제품명</label>
             <input type="text" class="form-control" name="product_name" id="product_name" value="{{ detailView.product_name }}" >
+        </div>
+        <div class="mb-3">
+            <label for="serial">시리얼</label>
+            <input type="text" class="form-control" name="serial" id="serial" value="{{ detailView.serial }}" readonly>
+        </div>
+        <div class="mb-3">
+            <label for="site">현장 명</label>
+            <input type="text" class="form-control" name="site" id="site" value="{{ detailView.site }}" readonly>
+        </div>
+        <div class="mb-3">
+            <label for="symptom">증상</label>
+            <input type="text" class="form-control" name="symptom" id="symptom" value="{{ detailView.symptom }}" readonly>
         </div>
         <div class="mb-3">
             <label for="quantity">수량</label>

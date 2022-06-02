@@ -46,7 +46,9 @@ def login(request):
     loginform = LoginForm()
     login_session = request.session.get('login_session')
     user_name = request.session.get('user_name')
-    context = { 'forms': loginform, 'login_session': login_session, 'user_name':user_name }
+    user_phone = request.session.get('user_phone')
+    user_dept = request.session.get('user_dept')
+    context = { 'forms': loginform, 'login_session': login_session, 'user_name':user_name, 'user_phone': user_phone, 'user_dept': user_dept }
 
     if request.method == 'GET':
         print("로그인 시작 겟방식")
@@ -58,6 +60,7 @@ def login(request):
             request.session['login_session']= loginform.login_session
             request.session['user_dept']= loginform.user_dept
             request.session['user_name']= loginform.user_name
+            request.session['user_phone']= loginform.user_phone
             request.session.set_expiry(0)
             context = {}
             login_session = request.session.get('login_session', '')
@@ -66,12 +69,15 @@ def login(request):
                 context['login_session'] = 'insung'
                 context['user_dept'] = request.session.get('user_dept')
                 context['user_name'] = request.session.get('user_name')
+                context['user_phone'] = request.session.get('user_phone')
                 print('포스트, 인성로그인')
                 return redirect('isscm:index')
+                #return render(request, 'isscm/index.html', context)
             else:
                 login_session = request.session.get('login_session')
                 user_name = request.session.get('user_name')
-                context = {'forms': loginform, 'login_session': login_session, 'user_name': user_name}
+                user_phone = request.session.get('user_phone')
+                context = {'forms': loginform, 'login_session': login_session, 'user_name': user_name, 'user_phone': user_phone}
                 print("포스트, 일반 로그인")
                 return redirect('isscm:index')
         else:

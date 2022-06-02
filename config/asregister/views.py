@@ -27,30 +27,39 @@ def index(request):
 def as_insert(request):
     print('as 입력 도달')
     login_session = request.session.get('login_session')
+    user_name = request.session.get('user_name')
+    user_phone = request.session.get('user_phone')
+    print(user_name)
+    print(user_phone)
     # render context로 넘길때 key:value 로 넘겨야 넘어가고 받아진다
-    context = {'login_session': login_session}
 
     if request.method == 'GET':
         print('겟 도달')
-        login_session = request.session.get('login_session')
         # render context로 넘길때 key:value 로 넘겨야 넘어가고 받아진다
-        context = {'login_session': login_session}
+        context = {'login_session': login_session, 'user_name': user_name, 'user_phone': user_phone}
         print('겟 끝나 나감')
         return render(request, 'assheet/as_insert.html', context)
     elif request.method == 'POST':
         print("입력 시작")
         insert = ASsheet()
+        insert.rp_date = request.POST['rp_date']
         insert.cname = request.POST['cname']
+        insert.cuser = request.POST['cuser']
+        insert.cphone = request.POST['cphone']
         insert.product_name = request.POST['product_name']
         insert.quantity = request.POST['quantity']
         insert.memo = request.POST['memo']
+        insert.serial = request.POST['serial']
+        insert.site = request.POST['site']
+        insert.symptom = request.POST['symptom']
 
         insert.save()
 
         login_session = request.session.get('login_session')
         context = {'login_session': login_session}
         print('입력 끝나 나감')
-        return render(request, 'assheet/as_insert.html', context)
+        #return render(request, 'assheet/as_insert.html', context)
+        return redirect('asregister:as_list')
 
 
 # AS 접수건 리스트
@@ -95,7 +104,7 @@ def as_list(request):
                         Q(product_name__icontains=query) | Q(memo__icontains=query) | Q(cname__icontains=query) | Q(
                             finish__icontains=query) | Q(option__icontains=query)).order_by('-rg_date', 'finish')
                 else:
-                    company_sheet = ASsheet.objects.all().order_by('-rg_date', 'finish')
+                    company_sheet = ASsheet.objects.all().order_by('-rg_date')
 
             # 한달이상 미처리건 조회
             over_as = ASsheet.objects.filter(rg_date__lte=date.today() - relativedelta(months=1)).exclude(
@@ -138,13 +147,13 @@ def as_list(request):
                 search_sort = request.GET.get('search_sort', '')
                 if search_sort == 'product_name':
                     company_sheet = ASsheet.objects.all().filter(Q(product_name__icontains=query), cname=login_session).order_by('-rg_date',
-                                                                                                            'finish')
+                                                                                                                                 'finish')
                 elif search_sort == 'finish':
                     company_sheet = ASsheet.objects.all().filter(Q(finish__icontains=query), cname=login_session).order_by('-rg_date',
-                                                                                                      'finish')
+                                                                                                                           'finish')
                 elif search_sort == 'memo':
                     company_sheet = ASsheet.objects.all().filter(Q(memo__icontains=query), cname=login_session).order_by('-rg_date',
-                                                                                                    'finish')
+                                                                                                                         'finish')
                 elif search_sort == 'all':
                     company_sheet = ASsheet.objects.all().filter(
                         Q(product_name__icontains=query) | Q(memo__icontains=query) | Q(cname__icontains=query) | Q(
@@ -308,15 +317,16 @@ def as_detail(request, pk):
     if request.method == 'GET':
         login_session = request.session.get('login_session')
         user_name = request.session.get('user_name')
+        user_phone = request.session.get('user_phone')
         detailView = get_object_or_404(ASsheet, no=pk)
 
         try:
             upfile = ASUploadFile.objects.filter(sheet_no_id=pk)
             context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile,
-                       'user_name': user_name}
+                       'user_name': user_name, 'user_phone': user_phone}
             print("성공")
         except:
-            context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name}
+            context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name, 'user_phone': user_phone}
             print("실패")
 
     else:
@@ -342,7 +352,6 @@ def as_modify(request, pk):
     elif request.method == 'POST':
 
         # 수정 내용 저장
-        detailView.rp_date = request.POST['rp_date']
         detailView.rg_date = request.POST['rg_date']
         detailView.product_name = request.POST['product_name']
         detailView.quantity = request.POST['quantity']
@@ -350,6 +359,8 @@ def as_modify(request, pk):
         detailView.memo = request.POST['memo']
         detailView.option = request.POST['option']
         detailView.finish = request.POST['finish']
+        if request.POST['finish'] == '종료':
+            detailView.end_date = date.today()
         detailView.save()
 
         login_session = request.session.get('login_session')

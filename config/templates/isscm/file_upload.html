@@ -33,16 +33,21 @@
 </script>
 
 <body>
-{% if login_session %}
-<form action="{% url 'isscm:main_uploadFile' detailView.id %}" method="POST" enctype="multipart/form-data">
-    <input type="text" name="fileTitle" placeholder="Enter a title">
-    <input type="file" name="uploadedFile">
-    <input type="hidden" name="cname" value="{{ login_session }}">
-    <input type="hidden" name="menu" value="main">
-    {% csrf_token %}
-    <input type="submit" value="Upload">
-    {% endif %}
-</form>
+<div>
+    {% if login_session %}
+    <form action="{% url 'isscm:main_uploadFile' detailView.id %}" method="POST" enctype="multipart/form-data">
+        <input type="text" name="fileTitle" placeholder="Enter a title">
+        <input type="file" name="uploadedFile">
+        <input type="hidden" name="cname" value="{{ login_session }}">
+        <input type="hidden" name="menu" value="main">
+        {% csrf_token %}
+        <input type="submit" value="Upload" class="btn btn-primary">
+        {% endif %}
+        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:main_detail' detailView.id %}'" value="뒤로가기" style="float: right;">
+    </form>
+
+</div>
+
 <table>
     <tr>
         <th>Title</th>
@@ -57,8 +62,8 @@
         <td>{{ file.title }}</td>
         <td>{{ file.dateTimeOfUpload }}</td>
         <!--<td><a href="{{ file.uploadedFile.url }}">DOWN</a></td>-->
-        <td><a href="{% url 'isscm:main_downloadfile' file.no %}">DOWN</a></td>
-        <td><input type="button" onclick="location.href='{% url 'isscm:main_file_delete' file.no %}'" value="Delete"></td>
+        <td><a href="{% url 'isscm:main_downloadfile' file.no %}"><button class="btn btn-primary">DOWN</button></a></td>
+        <td><input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:main_file_delete' file.no %}'" value="Delete"></td>
     </tr>
     {% else %}
     {% endif %}

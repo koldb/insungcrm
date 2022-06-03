@@ -12,7 +12,7 @@ import xlwt
 from django.http import HttpResponse
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
-
+from django.contrib import messages
 
 # Create your views here.
 
@@ -55,10 +55,8 @@ def as_insert(request):
 
         insert.save()
 
-        login_session = request.session.get('login_session')
-        context = {'login_session': login_session}
         print('입력 끝나 나감')
-        #return render(request, 'assheet/as_insert.html', context)
+        # return render(request, 'assheet/as_insert.html', context)
         return redirect('asregister:as_list')
 
 
@@ -146,18 +144,22 @@ def as_list(request):
                 print("리스트 조회 겸 목록 조회")
                 search_sort = request.GET.get('search_sort', '')
                 if search_sort == 'product_name':
-                    company_sheet = ASsheet.objects.all().filter(Q(product_name__icontains=query), cname=login_session).order_by('-rg_date',
-                                                                                                                                 'finish')
+                    company_sheet = ASsheet.objects.all().filter(Q(product_name__icontains=query),
+                                                                 cname=login_session).order_by('-rg_date',
+                                                                                               'finish')
                 elif search_sort == 'finish':
-                    company_sheet = ASsheet.objects.all().filter(Q(finish__icontains=query), cname=login_session).order_by('-rg_date',
-                                                                                                                           'finish')
+                    company_sheet = ASsheet.objects.all().filter(Q(finish__icontains=query),
+                                                                 cname=login_session).order_by('-rg_date',
+                                                                                               'finish')
                 elif search_sort == 'memo':
-                    company_sheet = ASsheet.objects.all().filter(Q(memo__icontains=query), cname=login_session).order_by('-rg_date',
-                                                                                                                         'finish')
+                    company_sheet = ASsheet.objects.all().filter(Q(memo__icontains=query),
+                                                                 cname=login_session).order_by('-rg_date',
+                                                                                               'finish')
                 elif search_sort == 'all':
                     company_sheet = ASsheet.objects.all().filter(
                         Q(product_name__icontains=query) | Q(memo__icontains=query) | Q(cname__icontains=query) | Q(
-                            finish__icontains=query) | Q(option__icontains=query), cname=login_session).order_by('-rg_date', 'finish')
+                            finish__icontains=query) | Q(option__icontains=query), cname=login_session).order_by(
+                        '-rg_date', 'finish')
                 else:
                     company_sheet = ASsheet.objects.filter(cname=login_session).order_by('-rg_date', 'finish')
 
@@ -326,7 +328,8 @@ def as_detail(request, pk):
                        'user_name': user_name, 'user_phone': user_phone}
             print("성공")
         except:
-            context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name, 'user_phone': user_phone}
+            context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name,
+                       'user_phone': user_phone}
             print("실패")
 
     else:
@@ -337,17 +340,17 @@ def as_detail(request, pk):
 # AS 접수건 응대 / 업데이트
 def as_modify(request, pk):
     login_session = request.session.get('login_session')
+    user_name = request.session.get('user_name')
+    user_phone = request.session.get('user_phone')
     # render context로 넘길때 key:value 로 넘겨야 넘어가고 받아진다
 
     detailView = get_object_or_404(ASsheet, no=pk)
-    context = {'detailView': detailView, 'login_session': login_session}
 
     if request.method == 'GET':
         # get으로 오면 다시 수정페이지로 넘김
-        login_session = request.session.get('login_session')
         detailView = get_object_or_404(ASsheet, no=pk)
 
-        context = {'detailView': detailView, 'login_session': login_session}
+        context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name, 'user_phone': user_phone}
         return render(request, 'assheet/as_modify.html', context)
     elif request.method == 'POST':
 
@@ -363,9 +366,8 @@ def as_modify(request, pk):
             detailView.end_date = date.today()
         detailView.save()
 
-        login_session = request.session.get('login_session')
         detailView = get_object_or_404(ASsheet, no=pk)
-        context = {'detailView': detailView, 'login_session': login_session}
+        context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name, 'user_phone': user_phone}
         return render(request, 'assheet/as_detail.html', context)
 
 

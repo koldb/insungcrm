@@ -10,7 +10,7 @@ class ASsheet(models.Model):
     cname = models.CharField(max_length=100, verbose_name='업체명', null=True, blank=True)
     cuser = models.CharField(max_length=20, verbose_name='성함', null=True, blank=True)
     phoneNumberRegex = RegexValidator(regex='\d{2,3}-\d{3,4}-\d{4}')
-    cphone = models.CharField(validators=[phoneNumberRegex], max_length=30, unique=True, null=True, blank=True, verbose_name='연락처')
+    cphone = models.CharField(validators=[phoneNumberRegex], max_length=30, null=True, blank=True, verbose_name='연락처')
     rg_date = models.DateTimeField(auto_now_add=True, verbose_name='고객 접수일')
     rp_date = models.DateField(null=True, blank=True, max_length=50, verbose_name='마감 요청일')
     end_date = models.DateField(null=True, blank=True, max_length=50, verbose_name='종료일자')

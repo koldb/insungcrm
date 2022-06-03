@@ -22,11 +22,12 @@ def index(request):
 @login_required
 def que_insert(request):
     print('as 입력 도달')
-
+    login_session = request.session.get('login_session')
+    user_name = request.session.get('user_name')
     if request.method == 'GET':
         print('겟 도달')
         login_session = request.session.get('login_session')
-        context = {'login_session': login_session}
+        context = {'login_session': login_session, 'user_name':user_name}
         print('겟 끝나 나감')
         return render(request, 'question/que_insert.html', context)
     elif request.method == 'POST':
@@ -38,11 +39,9 @@ def que_insert(request):
         insert.content = request.POST['content']
 
         insert.save()
-
-        login_session = request.session.get('login_session')
-        context = {'login_session': login_session}
+        context = {'login_session': login_session, 'user_name': user_name}
         print('입력 끝나 나감')
-        return render(request, 'question/que_insert.html', context)
+        return redirect('question:que_list')
 
 
 # 문의글 상세 뷰
@@ -80,6 +79,7 @@ def que_detail(request, pk):
 def que_list(request):
     print("문의글 리스트 시작")
     login_session = request.session.get('login_session')
+    user_name = request.session.get('user_name')
     if request.method == 'GET':
         if login_session == 'insung':
             sort = request.GET.get('sort', '')
@@ -116,7 +116,8 @@ def que_list(request):
             page_obj = paginator.get_page(page)
             print("insung GET 페이징 끝")
 
-            context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort, 'query': query, 'search_sort': search_sort}
+            context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort, 'query': query, 'search_sort': search_sort,
+                       'user_name': user_name}
 
         else:
             sort = request.GET.get('sort', '')
@@ -152,7 +153,7 @@ def que_list(request):
             paginator = Paginator(company_sheet, 7)
             page_obj = paginator.get_page(page)
             print("일반 GET 페이징 끝")
-            context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort, 'query': query}
+            context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort, 'query': query, 'user_name': user_name}
 
         print('끝')
         return render(request, 'question/que_list.html', context)
@@ -197,13 +198,14 @@ def searchResult(request):
 # 문의글 수정
 def que_modify(request, pk):
     login_session = request.session.get('login_session')
+    user_name = request.session.get('user_name')
     detailView = get_object_or_404(question_sheet, no=pk)
 
     if request.method == 'GET':
         # get으로 오면 다시 수정페이지로 넘김
         detailView = get_object_or_404(question_sheet, no=pk)
 
-        context = {'detailView': detailView, 'login_session': login_session}
+        context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name}
 
         print("겟으로 들어왓다 나감")
         return render(request, 'question/que_modify.html', context)
@@ -217,7 +219,7 @@ def que_modify(request, pk):
         print("바로 저장으로")
         detailView.save()
 
-    context = {'detailView': detailView, 'login_session': login_session}
+    context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name}
     print("저장하고 나감")
     return render(request, 'question/que_detail.html', context)
 
@@ -238,6 +240,7 @@ def que_delete(request, pk):
 def que_uploadFile(request, pk):
     print("오나요")
     login_session = request.session.get('login_session')
+    user_name = request.session.get('user_name')
     print("여기 오나요")
 
     if request.method == "POST":
@@ -267,14 +270,14 @@ def que_uploadFile(request, pk):
         uploadfile = models.que_UploadFile.objects.all()
         no = pk
 
-        context = {'login_session': login_session, 'no': no, 'detailView': detailView, 'files': uploadfile}
+        context = {'login_session': login_session, 'no': no, 'detailView': detailView, 'files': uploadfile, 'user_name': user_name}
         print("겟 다 나갓나")
         return render(request, "question/que_file_upload.html", context)
 
     uploadfile = models.que_UploadFile.objects.all()
     detailView = get_object_or_404(question_sheet, no=pk)
 
-    return render(request, "question/que_file_upload.html", context={
+    return render(request, "question/que_file_upload.html", context={'user_name': user_name,
         "files": uploadfile, "login_session": login_session, 'detailView': detailView})
 
 

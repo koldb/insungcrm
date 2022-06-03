@@ -16,6 +16,7 @@
     width: 100%;
     height: 10em;
   }
+
 </style>
 
 <!--수량*개당 단가 / 콤마 추가 jquery 부분-->
@@ -31,6 +32,50 @@
           source: '{% url 'isscm:searchData' %}',
           minLength: 1
        });
+
+    //빈칸 입력시 모달창 띄우기
+       // Get the modal
+        var modal = document.getElementById('myModal');
+
+        // Get the button that opens the modal
+        var btn = document.getElementById("myBtn");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        // When the user clicks on the button, open the modal
+        btn.onclick = function(e) {
+            e.preventDefault();
+            var frm = $("#frm");
+            var inputform = $(".form-control");
+            let com = 0;
+            $.each(inputform, function (index, value) {
+                    console.log('값은 : ' + $(value).val());
+                    var test = $(value).val()
+                    if (test != ''){
+                        com += 1;
+                    }
+            });
+            console.log(com)
+            if(com == 6) {
+             frm.submit();}
+             else {
+              modal.style.display = "block";
+              }
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
     });
 
  //콤마찍기
@@ -72,7 +117,7 @@
 
 <!--제품등록 페이지-->
 <div class="container my-3">
-    <form method="post" action="{% url 'isscm:sub_insert' detailView.id  %}" name="mf">
+    <form method="post" action="{% url 'isscm:sub_insert' detailView.id  %}" id="frm">
         {% csrf_token %}
         <div class="mb-3">
             <label for="cname">업체명</label>
@@ -107,9 +152,19 @@
         </div>
 
         <div >
-            <button type="submit" class="btn btn-primary" onclick="alert('입력 완료')" name="fbtn">제출</button>
+            <button type="submit" class="btn btn-primary" onclick="alert('입력 완료')" id="myBtn">제출</button>
         </div>
     </form>
+</div>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>미입력 항목이 있습니다. <br> 입력 부탁드립니다.</p>
+    </div>
+
 </div>
 
 

@@ -65,6 +65,7 @@ def as_insert(request):
 def as_list(request):
     print("리스트 시작")
     login_session = request.session.get('login_session')
+    user_name = request.session.get('user_name')
 
     if request.method == 'GET':
         if login_session == 'insung':
@@ -124,7 +125,7 @@ def as_list(request):
                 Sum('quantity'))
             context = {'login_session': login_session, 'company_sheet': company_sheet, 'page_obj': page_obj,
                        'sort': sort, 'as_wnum': as_wnum, 'as_mnum': as_mnum, 'as_wnum_sum': as_wnum_sum,
-                       'as_mnum_sum': as_mnum_sum,
+                       'as_mnum_sum': as_mnum_sum, 'user_name': user_name,
                        'over_as': over_as, 'query': query}
 
         else:
@@ -168,7 +169,7 @@ def as_list(request):
             page_obj = paginator.get_page(page)
             print("GET 페이징 끝")
             context = {'login_session': login_session, 'company_sheet': company_sheet, 'page_obj': page_obj,
-                       'sort': sort, 'search_sort': search_sort, 'query': query}
+                       'sort': sort, 'search_sort': search_sort, 'query': query, 'user_name': user_name}
         print('끝')
         return render(request, 'assheet/as_list.html', context)
     elif request.method == 'POST':
@@ -180,7 +181,7 @@ def as_list(request):
 # AS 파일 업로드/다운로드
 def AsUploadFile(request, pk):
     login_session = request.session.get('login_session')
-
+    user_name = request.session.get('user_name')
     if request.method == "POST":
         if request.FILES.get('uploadedFile') is not None:
             if get_object_or_404(ASsheet, no=pk):
@@ -207,13 +208,13 @@ def AsUploadFile(request, pk):
         uploadfile = models.ASUploadFile.objects.all()
         no = pk
 
-        context = {'login_session': login_session, 'no': no, 'detailView': detailView, 'files': uploadfile}
+        context = {'login_session': login_session, 'no': no, 'detailView': detailView, 'files': uploadfile, 'user_name': user_name}
         return render(request, "assheet/asfile_upload.html", context)
 
     uploadfile = models.ASUploadFile.objects.all()
     detailView = get_object_or_404(ASsheet, no=pk)
 
-    return render(request, "assheet/asfile_upload.html", context={
+    return render(request, "assheet/asfile_upload.html", context={'user_name': user_name,
         "files": uploadfile, "login_session": login_session, 'detailView': detailView})
 
 

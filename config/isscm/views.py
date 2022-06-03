@@ -507,7 +507,7 @@ def main_excel(request):
               'time': xlwt.easyxf(num_format_str='hh:mm:ss'),
               'default': xlwt.Style.default_style}
     # 첫번째 열에 들어갈 컬럼명 설정
-    col_names = ['등록 일자', '마감 요청 일자', '견적명', '업체명', '요청 사항', '총 금액', '종료 여부', '담당 팀', '담당자']
+    col_names = ['등록 일자', '마감 요청 일자', '종료일자', '견적명', '업체명', '요청 사항', '총 금액', '종료 여부', '담당 팀', '담당자']
 
     query = request.GET.get('q')
     print('que : ', query)
@@ -520,6 +520,7 @@ def main_excel(request):
             if search_sort == 'main_title':
                 rows = main_sheet.objects.all().filter(main_title__icontains=query).values_list('rg_date',
                                                                                                 'rp_date',
+                                                                                                'end_date',
                                                                                                 'main_title',
                                                                                                 'cname', 'requests',
                                                                                                 'total_price',
@@ -529,6 +530,7 @@ def main_excel(request):
             elif search_sort == 'requests':
                 rows = main_sheet.objects.all().filter(requests__icontains=query).values_list('rg_date',
                                                                                               'rp_date',
+                                                                                              'end_date',
                                                                                               'main_title', 'cname',
                                                                                               'requests',
                                                                                               'total_price',
@@ -537,6 +539,7 @@ def main_excel(request):
             elif search_sort == 'cname':
                 rows = main_sheet.objects.all().filter(cname__icontains=query).values_list('rg_date',
                                                                                            'rp_date',
+                                                                                           'end_date',
                                                                                            'main_title', 'cname',
                                                                                            'requests', 'total_price',
                                                                                            'finish', 'user_dept',
@@ -544,6 +547,7 @@ def main_excel(request):
             elif search_sort == 'finish':
                 rows = main_sheet.objects.all().filter(finish__icontains=query).values_list('rg_date',
                                                                                             'rp_date',
+                                                                                            'end_date',
                                                                                             'main_title', 'cname',
                                                                                             'requests',
                                                                                             'total_price',
@@ -552,6 +556,7 @@ def main_excel(request):
             elif search_sort == 'user_dept':
                 rows = main_sheet.objects.all().filter(user_dept__icontains=query).values_list('rg_date',
                                                                                                'rp_date',
+                                                                                               'end_date',
                                                                                                'main_title', 'cname',
                                                                                                'requests',
                                                                                                'total_price',
@@ -560,6 +565,7 @@ def main_excel(request):
             elif search_sort == 'user_name':
                 rows = main_sheet.objects.all().filter(user_name__icontains=query).values_list('rg_date',
                                                                                                'rp_date',
+                                                                                               'end_date',
                                                                                                'main_title', 'cname',
                                                                                                'requests',
                                                                                                'total_price',
@@ -573,6 +579,7 @@ def main_excel(request):
                     sm = i.m_id_id
                     ms = main_sheet.objects.filter(id__icontains=sm).values_list('rg_date',
                                                                                  'rp_date',
+                                                                                 'end_date',
                                                                                  'main_title', 'cname',
                                                                                  'requests',
                                                                                  'total_price',
@@ -584,28 +591,28 @@ def main_excel(request):
                 rows = main_sheet.objects.all().filter(
                     Q(requests__icontains=query) | Q(cname__icontains=query) | Q(finish__icontains=query) |
                     Q(main_title__icontains=query) | Q(user_dept__icontains=query) |
-                    Q(user_name__icontains=query)).values_list('rg_date', 'rp_date',
+                    Q(user_name__icontains=query)).values_list('rg_date', 'rp_date','end_date',
                                                                'main_title', 'cname', 'requests', 'total_price',
                                                                'finish', 'user_dept', 'user_name')
         else:
             print('일반 search 다운')
             if search_sort == 'main_title':
                 rows = main_sheet.objects.all().filter(main_title__icontains=query,
-                                                       cname=login_session).values_list('rg_date', 'rp_date',
+                                                       cname=login_session).values_list('rg_date', 'rp_date', 'end_date',
                                                                                         'main_title', 'cname',
                                                                                         'requests', 'total_price',
                                                                                         'finish', 'user_dept',
                                                                                         'user_name')
             elif search_sort == 'requests':
                 rows = main_sheet.objects.all().filter(requests__icontains=query,
-                                                       cname=login_session).values_list('rg_date', 'rp_date',
+                                                       cname=login_session).values_list('rg_date', 'rp_date', 'end_date',
                                                                                         'main_title', 'cname',
                                                                                         'requests', 'total_price',
                                                                                         'finish', 'user_dept',
                                                                                         'user_name')
             elif search_sort == 'finish':
                 rows = main_sheet.objects.all().filter(finish__icontains=query, cname=login_session).values_list(
-                    'rg_date', 'rp_date',
+                    'rg_date', 'rp_date', 'end_date',
                     'main_title', 'cname', 'requests', 'total_price',
                     'finish', 'user_dept', 'user_name')
             elif search_sort == 'product_name':
@@ -616,6 +623,7 @@ def main_excel(request):
                     sm = i.m_id_id
                     ms = main_sheet.objects.filter(id__icontains=sm).values_list('rg_date',
                                                                                  'rp_date',
+                                                                                 'end_date',
                                                                                  'main_title', 'cname',
                                                                                  'requests',
                                                                                  'total_price',
@@ -626,17 +634,17 @@ def main_excel(request):
             elif search_sort == 'all':
                 rows = main_sheet.objects.filter(Q(requests__icontains=query) | Q(finish__icontains=query) |
                                                  Q(main_title__icontains=query), cname=login_session).values_list(
-                    'rg_date', 'rp_date',
+                    'rg_date', 'rp_date', 'end_date',
                     'main_title', 'cname', 'requests', 'total_price',
                     'finish', 'user_dept', 'user_name')
     else:
         print('전체 다운로드')
         if login_session == 'insung':
-            rows = main_sheet.objects.all().values_list('rg_date', 'rp_date',
+            rows = main_sheet.objects.all().values_list('rg_date', 'rp_date', 'end_date',
                                                         'main_title', 'cname', 'requests', 'total_price',
                                                         'finish', 'user_dept', 'user_name')
         else:
-            rows = main_sheet.objects.all().filter(cname=login_session).values_list('rg_date', 'rp_date',
+            rows = main_sheet.objects.all().filter(cname=login_session).values_list('rg_date', 'rp_date', 'end_date',
                                                                                     'main_title', 'cname', 'requests',
                                                                                     'total_price',
                                                                                     'finish', 'user_dept', 'user_name')
@@ -851,6 +859,7 @@ def product_list(request):
                     else:
                         sub_list = sub_sheet.objects.all().order_by('-rg_date', 'id')
                 else:
+                    search_sort = request.GET.get('search_sort', '')
                     sub_list = sub_sheet.objects.all().order_by('-rg_date', 'id')
         else:
             print('일반 리스트 시작')

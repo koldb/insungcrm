@@ -87,17 +87,20 @@ def as_list(request):
                 print("리스트 조회 겸 목록 조회")
                 search_sort = request.GET.get('search_sort', '')
                 if search_sort == 'cname':
-                    company_sheet = ASsheet.objects.all().filter(Q(cname__icontains=query)).order_by('-rg_date',
+                    company_sheet = ASsheet.objects.all().filter(cname__icontains=query).order_by('-rg_date',
                                                                                                      'finish')
                 elif search_sort == 'product_name':
-                    company_sheet = ASsheet.objects.all().filter(Q(product_name__icontains=query)).order_by('-rg_date',
+                    company_sheet = ASsheet.objects.all().filter(product_name__icontains=query).order_by('-rg_date',
                                                                                                             'finish')
                 elif search_sort == 'finish':
-                    company_sheet = ASsheet.objects.all().filter(Q(finish__icontains=query)).order_by('-rg_date',
+                    company_sheet = ASsheet.objects.all().filter(finish__icontains=query).order_by('-rg_date',
                                                                                                       'finish')
                 elif search_sort == 'memo':
-                    company_sheet = ASsheet.objects.all().filter(Q(memo__icontains=query)).order_by('-rg_date',
+                    company_sheet = ASsheet.objects.all().filter(memo__icontains=query).order_by('-rg_date',
                                                                                                     'finish')
+                elif search_sort == 'serial':
+                    company_sheet = ASsheet.objects.all().filter(serial__icontains=query).order_by('-rg_date',
+                                                                                                 'finish')
                 elif search_sort == 'all':
                     company_sheet = ASsheet.objects.all().filter(
                         Q(product_name__icontains=query) | Q(memo__icontains=query) | Q(cname__icontains=query) | Q(

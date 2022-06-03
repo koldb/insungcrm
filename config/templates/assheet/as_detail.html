@@ -47,11 +47,13 @@
             <label for="end_date">종료 일자</label>
             <input type="date" class="form-control" name="end_date" id="end_date" value="{{ detailView.end_date | date:'Y-m-d' }}" readonly>
         </div>
-
-
         <div class="mb-3">
             <label for="product_name">제품명</label>
             <input type="text" class="form-control" name="product_name" id="product_name" value="{{ detailView.product_name }}" readonly>
+        </div>
+        <div class="mb-3">
+            <label for="quantity">수량</label>
+            <input type="text" class="form-control" name="quantity" id="quantity" value="{{ detailView.quantity }}" readonly>
         </div>
         <div class="mb-3">
             <label for="serial">시리얼</label>

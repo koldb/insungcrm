@@ -42,7 +42,8 @@
             {% endif %}
             <option value="serial" id="serial">시리얼</option>
             <option value="m_title" id="m_title">메인 Title</option>
-            <option value="all" id="all">전체</option>
+            <option value="user_name" id="user_name">담당자</option>
+            <option value="all" id="all">전체(시리얼 제외)</option>
         </select>
         <input type="search"placeholder="검색"  class="form-control mr-sm-2" name="q" value="{{ query }}">
         <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
@@ -65,6 +66,7 @@
             <th style="width:5%;">업체명</th>
             <th style="width:5%;">메인 번호</th>
             <th style="width:5%;">메인 Title</th>
+            <th style="width:5%;">담당자</th>
         </tr>
         </thead>
         <tbody>
@@ -82,6 +84,7 @@
             <td>{{ list.cname }}</td>
             <td>{{ list.m_id_id }}</td>
             <td>{{ list.m_title }}</td>
+            <td>{{ list.user_name }}</td>
         </tr>
         {% endfor %}
 
@@ -122,7 +125,7 @@
         </select>
         <button class="btn btn-primary" type="submit" value="">정렬</button>
         <!--엑셀 다운로드-->
-        <a href="{% url 'isscm:main_excel' %}?q={{ query }}&search_sort={{search_sort}}" style="color:white"><button type="button" class="btn btn-primary">EXCEL DOWN</button></a>
+        <a href="{% url 'isscm:sub_list_excel' %}?q={{ query }}&search_sort={{search_sort}}" style="color:white"><button type="button" class="btn btn-primary">EXCEL DOWN</button></a>
     </form>
 </div>
 

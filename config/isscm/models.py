@@ -58,6 +58,7 @@ class sub_sheet(models.Model):
     tax = models.IntegerField(null=True, blank=True, default=0, verbose_name='부가세')
     total_price = models.IntegerField(null=True, blank=True, default=0, verbose_name='총금액')
     cname = models.CharField(max_length=100, verbose_name='업체명', null=True, blank=True)
+    user_name = models.CharField(max_length=20, verbose_name='담당자', null=True, blank=True)
 
     class Meta:
         managed = True
@@ -76,6 +77,7 @@ class product_info(models.Model):
     production_date = models.DateField(null=True, blank=True, verbose_name='생산일자')
     release_date = models.DateField(null=True, blank=True, verbose_name='출고일자')
     warranty = models.DateField(null=True, blank=True, verbose_name='보증만료일')
+    user_name = models.CharField(max_length=20, verbose_name='담당자', null=True, blank=True)
 
     class Meta:
         managed = True

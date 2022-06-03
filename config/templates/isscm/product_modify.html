@@ -49,7 +49,7 @@
                 <td>{{ sub_detailView.product_name }}</td>
                 <input type="hidden" value="{{ sub_detailView.cname }}" name="cname" id="cname">
                 <td>{{ sub_detailView.cname }}</td>
-                <td><input type="text" name="serial" id="serial"></td>
+                <td><input type="text" name="serial" id="serial" placeholder="시리얼 입력"></td>
                 <td><input type="date" name="production_date" id="production_date"></td>
                 <td><input type="date" name="release_date" id="release_date"></td>
                 <td>{{ sub_detailView.id }}</td>
@@ -58,9 +58,13 @@
             </tr>
             </tbody>
         </table>
+        <!--엑셀 다운로드-->
+        <a href="{% url 'isscm:product_info_excel' %}?sid={{ sub_detailView.id }}" style="color:white" ><button type="button" class="btn btn-primary" >EXCEL DOWN</button></a>
         <input type="submit" value="품목 저장" class="btn btn-primary" onclick="alert('입력 완료')"  style="float: right;">
     </form>
 </div>
+{% else %}
+<a href="{% url 'isscm:product_info_excel' %}?sid={{ sub_detailView.id }}" style="color:white" ><button type="button" class="btn btn-primary" >EXCEL DOWN</button></a>
 {% endif %}
 
 <div>
@@ -78,6 +82,7 @@
             <th style="width:5%;">출고 일자</th>
             <th style="width:5%;">보증 만료일</th>
             <th style="width:5%;">SUB ID</th>
+            <th style="width:5%;">담당자</th>
             <th style="width:5%;">삭제</th>
         </tr>
         </thead>
@@ -94,6 +99,7 @@
             <td>{{ list.release_date | date:'Y-m-d' }}</td>
             <td>{{ list.warranty | date:'Y-m-d' }}</td>
             <td>{{ list.s_id_id }}</td>
+            <td>{{ list.user_name }}</td>
             <td><input type="button" value="delete" class="btn btn-primary" onclick="location.href='{% url 'isscm:product_delete' list.id  sub_detailView.id%}'"></td>
         </tr>
         {% endfor %}

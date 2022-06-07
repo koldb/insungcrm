@@ -1,0 +1,85 @@
+{% extends "base/base2.html" %}
+{% block content %}
+
+<style>
+    #paging{
+        width:150px;
+        margin:0 auto;
+    }
+    tr, td, th{
+        border : 1px solid #dcdcdc;
+        width : 350px;
+        margin: 0 auto;
+    }
+    tr.m:hover{
+     background-color: #98bee0;
+     cursor:pointer;
+    }
+    table {
+    text-align: center;
+    margin-left:auto;
+    margin-right:auto;
+    }
+    caption {
+    caption-side: top;
+    text-align: left;
+    font-weight : bold;
+    color : #2478FF;
+    font-size : 21px;
+    }
+    .board {
+    min-width:700px;
+    }
+    @media screen and (max-width:768px) {
+    /*normal*/
+    .table-box {
+    overflow-x:auto;
+    }
+</style>
+
+
+<div>
+    <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:product_db_insert' %}'" value="신규 제품 DB 입력">
+</div>
+
+<div class="table-box">
+    <table class="board">
+        <thead>
+        <tr class="header" style="text-align:center;">
+            <th style="width:1%;">순번</th>
+            <th style="width:3%;">센터 코드</th>
+            <th style="width:6%;">센터명</th>
+            <th style="width:3%;">창고 코드</th>
+            <th style="width:4%;">창고명</th>
+            <th style="width:4%;">상품 코드</th>
+            <th style="width:4%;">상품 번호</th>
+            <th style="width:4%;">스캔 코드</th>
+            <th style="width:15%;">상품명</th>
+            <th style="width:3%;">거래처코드</th>
+            <th style="width:5%;">삭제</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for list in productlist %}
+        <tr class="m" style="text-align:center;" >
+            <td>{{ forloop.counter }}</td>
+            <td>{{ list.center_code }}</td>
+            <td>{{ list.center }}</td>
+            <td>{{ list.warehouse_code }}</td>
+            <td>{{ list.warehouse_name }}</td>
+            <td>{{ list.product_code }}</td>
+            <td>{{ list.product_num }}</td>
+            <td>{{ list.scan_code }}</td>
+            <td>{{ list.product_name }}</td>
+            <td>{{ list.account_code }}</td>
+            <td><input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:product_db_delete' list.no %}'" value="Delete"></td>
+        {% endfor %}
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+
+
+
+{% endblock %}

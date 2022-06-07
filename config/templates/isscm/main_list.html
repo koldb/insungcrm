@@ -16,17 +16,25 @@
      background-color: #98bee0;
      cursor:pointer;
     }
-    table {
-    text-align: center;
-    margin-left:auto;
-    margin-right:auto;
-    }
+        table {
+        text-align: center;
+        margin-left:auto;
+        margin-right:auto;
+        }
     caption {
     caption-side: top;
     text-align: left;
     font-weight : bold;
     color : #2478FF;
     font-size : 21px;
+    }
+    .board {
+    min-width:700px;
+    }
+    @media screen and (max-width:768px) {
+    /*normal*/
+    .table-box {
+    overflow-x:auto;
     }
 </style>
 
@@ -53,7 +61,7 @@
 
 <!--회사 아이디 일때 리스트-->
 {% if login_session == 'insung' %}
-<div>
+<div class="table-box">
     <table class="board">
         <thead>
         {% if page_obj %}
@@ -112,7 +120,7 @@
 
 {% else %}
 <!--업체 아이디일때 리스트-->
-<div>
+<div class="table-box">
     <table class="board">
         <thead>
         {% if page_obj %}
@@ -209,14 +217,15 @@
 <hr style="border: 1px;">
 
 <!--한달 이상 미처리 내역 -->
-<div>
+<div class="table-box">
     <table class="board">
         <caption>한달 이상 미처리건 목록</caption>
         <thead>
         <tr class="header" style="text-align:center;">
             <th style="width:5%;">순번</th>
-            <th style="width:9%">등록 일자</th>
-            <th style="width:9%">마감 요청일자</th>
+            <th style="width:5%">등록 일자</th>
+            <th style="width:6%">마감 요청일자</th>
+            <th style="width:5%">종료 일자</th>
             <th style="width:10%">견적명</th>
             <th style="width:10%">업체명</th>
             <th style="width:15%">요청사항</th>
@@ -237,6 +246,7 @@
             {% else %}
             <td>{{ list.rp_date |date:'Y-m-d' }}</td>
             {% endif %}
+            <td>{{ list.end_date |date:'Y-m-d' }}</td>
             <td>{{ list.main_title }}</td>
             <td>{{ list.cname }}</td>
             <td>{{ list.requests | truncatewords:10 }}</td>

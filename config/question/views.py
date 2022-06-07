@@ -4,11 +4,11 @@ from .models import question_sheet, question_comment, que_UploadFile
 from django.core.paginator import Paginator
 from django.db.models import Q
 from . import models
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 import mimetypes
 import shutil
 import json
-
+from django.urls import reverse
 
 # Create your views here.
 
@@ -66,10 +66,11 @@ def que_detail(request, pk):
         # upfile = get_object_or_404(UploadFile, sheet_no_id=pk)
         try:
             upfile = que_UploadFile.objects.filter(que_no=pk)
-            context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile, 'user_name': user_name}
+            context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile, 'user_name': user_name,
+                       'comments': comments}
             print("post 성공")
         except:
-            context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name}
+            context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name, 'comments': comments}
             print("실패")
     return render(request, 'question/que_detail.html', context)
 
@@ -306,9 +307,6 @@ def que_file_delete(request, pk):
 
 # 문의글 댓글/대댓글
 def comment_create(request, pk):
-    login_session = request.session.get('login_session')
-    que_sheet = get_object_or_404(question_sheet, no=pk)
-    comments = question_comment.objects.filter(que_no_id=pk)
     comment_count = question_comment.objects.filter(que_no_id=pk).count()+1
     quecom = get_object_or_404(question_sheet, no=pk)
     print("댓글 시작")
@@ -324,7 +322,8 @@ def comment_create(request, pk):
         print('댓글수 저장')
         quecom.comm = comment_count
         quecom.save()
-        return render(request, 'question/que_detail.html', {'detailView': que_sheet, 'comments': comments, 'login_session': login_session})
+        #return render(request, 'question/que_detail.html', {'detailView': que_sheet, 'comments': comments, 'login_session': login_session})
+        return HttpResponseRedirect(reverse('question:que_detail', args=[pk]))
     else:
         print('GET 들어옴 / 댓글 조회')
 

@@ -28,6 +28,22 @@
     color : #2478FF;
     font-size : 21px;
     }
+    .board {
+    min-width:700px;
+    }
+    @media screen and (max-width:768px) {
+    /*normal*/
+    .table-box {
+    overflow-x:auto;
+    }
+    #fdiv{
+    min-width:350px;
+    }
+    @media screen and (max-width : 768px) {
+    #fdiv {
+    float : none;
+    width : 100%;
+    }
 </style>
 
 <!--검색창 부분-->
@@ -52,7 +68,7 @@
 
 <!--회사 아이디 일때 리스트-->
 {% if login_session == 'insung' %}
-<div>
+<div class="table-box">
     <table class="board">
         <thead>
         {% if page_obj %}
@@ -107,7 +123,7 @@
 
 {% else %}
 <!--업체 아이디일때 리스트-->
-<div>
+<div class="table-box">
     <table class="board">
         <thead>
         {% if page_obj %}
@@ -210,8 +226,8 @@
 
 
 <!--한달 이상 미처리 내역 -->
-<div>
-    <table>
+<div class="table-box">
+    <table class="board">
         <caption>한달 이상 미처리건 목록</caption>
         <tr style="text-align:center;">
             <th style="width:3%;">순번</th>
@@ -251,7 +267,7 @@
 {% if login_session == 'insung' %}
 <!--AS 제품별 주간, 월간 현황-->
 <div class="row" style="padding: 20px 0px 20px 20px; width: 100%;">
-    <div class="col-xl-3 col-md-6 mb-4" style="float:left; width: 50%; ">
+    <div class="col-xl-3 col-md-6 mb-4" style="float:left; width: 50%; " id="fdiv">
         <div class="card border-left-primary shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
@@ -279,7 +295,7 @@
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-md-6 mb-4" style="float:right; width: 50%;">
+    <div class="col-xl-3 col-md-6 mb-4" style="float:right; width: 50%;" id="fdiv">
         <div class="card border-left-primary shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">

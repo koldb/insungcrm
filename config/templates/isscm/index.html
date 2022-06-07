@@ -20,6 +20,14 @@
     cursor:pointer;
   }
 
+    .col-xl-3{
+    min-width:350px;
+    }
+    @media screen and (max-width : 768px) {
+    .col-xl-3 {
+    float : none;
+    width : 100%;
+    }
 
 </style>
 
@@ -72,7 +80,7 @@
         </div>
     </div>
     <!-- 주간 / 월간 실적 현황 -->
-    <div class="row"  style="float:left; width: 50%; text-align : center;">
+    <div class="row"  style="float:left; width: 50%; text-align : center;" id="frow2">
         <h2 style="display:inline;">주간 실적 현황</h2>
         <!--주간 견적 실적-->
         <div class="col-xl-3 col-md-6 mb-4" style="width: 100%; ">
@@ -92,7 +100,7 @@
         </div>
     </div>
 
-    <div class="row" style="float:right; width: 50%; text-align : center">
+    <div class="row" style="float:right; width: 50%; text-align : center" id="frow">
         <h2 style="display:inline;">월간 실적 현황</h2>
         <!--월간 견적 실적-->
         <div class="col-xl-3 col-md-6 mb-4" style="width: 100%;">

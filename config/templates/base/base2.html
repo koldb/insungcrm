@@ -31,9 +31,13 @@ textarea.autosize { min-height: 50px; }
         .modal {
             display: none; /* Hidden by default */
             position: fixed; /* Stay in place */
+            justify-content:center; //수평 중앙정렬
+            align-items:center;     //수직 중앙정렬
             z-index: 1; /* Sit on top */
             left: 0;
             top: 0;
+            right:0;
+            bottom:0;
             width: 100%; /* Full width */
             height: 100%; /* Full height */
             overflow: auto; /* Enable scroll if needed */
@@ -47,7 +51,7 @@ textarea.autosize { min-height: 50px; }
             margin: 15% auto; /* 15% from the top and centered */
             padding: 20px;
             border: 1px solid #888;
-            width: 20%; /* Could be more or less, depending on screen size */
+            width: 100%; /* Could be more or less, depending on screen size */
             text-align: center;
         }
         /* The Close Button */

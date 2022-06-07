@@ -1275,9 +1275,13 @@ def product_db_insert(request):
 
 @login_required
 def product_db_list(request):
+    login_session = request.session.get('login_session')
+    user_name = request.session.get('user_name')
+    user_dept = request.session.get('user_dept')
+
     productlist = ProductDb.objects.all().order_by('no')
 
-    context = {'productlist': productlist}
+    context = {'productlist': productlist, 'login_session': login_session, 'user_name': user_name, 'user_dept': user_dept}
 
     return render(request, 'isscm/product_db_list.html', context)
 

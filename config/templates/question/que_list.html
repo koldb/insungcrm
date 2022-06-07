@@ -16,6 +16,14 @@
      background-color: #98bee0;
      cursor:pointer;
     }
+     .board {
+    min-width:700px;
+    }
+    @media screen and (max-width:768px) {
+    /*normal*/
+    .table-box {
+    overflow-x:auto;
+    }
 </style>
 
 <!--검색창 부분-->
@@ -38,7 +46,7 @@
 </div>
 
 <!--리스트 출력 부분-->
-<div>
+<div class="table-box">
     <table class="board">
         <thead>
 

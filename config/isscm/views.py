@@ -799,6 +799,7 @@ def main_file_delete(request, pk):
 
 
 # sub 보증기간 리스트
+@login_required
 def product_list(request):
     login_session = request.session.get('login_session')
     user_name = request.session.get('user_name')

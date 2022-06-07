@@ -8,7 +8,7 @@ import os
 
 # 제품명 db 테스트
 class ProductDb(models.Model):
-    no = models.IntegerField(auto_created=True, primary_key=True)
+    no = models.AutoField(auto_created=True, primary_key=True)
     center_code = models.TextField(blank=True, null=True)
     center = models.TextField(blank=True, null=True)
     warehouse_code = models.TextField(blank=True, null=True)

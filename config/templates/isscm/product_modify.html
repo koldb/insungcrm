@@ -50,16 +50,18 @@
                 <input type="hidden" value="{{ sub_detailView.cname }}" name="cname" id="cname">
                 <td>{{ sub_detailView.cname }}</td>
                 <td><input type="text" name="serial" id="serial" placeholder="시리얼 입력"></td>
-                <td><input type="date" name="production_date" id="production_date"></td>
-                <td><input type="date" name="release_date" id="release_date"></td>
+                <td><input type="date" name="production_date" id="datepicker"></td>
+                <td><input type="date" name="release_date" id="datepicker2"></td>
                 <td>{{ sub_detailView.id }}</td>
                 <td>{{ sub_detailView.quantity }}</td>
 
             </tr>
             </tbody>
         </table>
+        <br>
         <!--엑셀 다운로드-->
         <a href="{% url 'isscm:product_info_excel' %}?sid={{ sub_detailView.id }}" style="color:white" ><button type="button" class="btn btn-primary" >EXCEL DOWN</button></a>
+        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:product_list' %}'" value="목록으로">
         <input type="submit" value="품목 저장" class="btn btn-primary" onclick="alert('입력 완료')"  style="float: right;">
     </form>
 </div>

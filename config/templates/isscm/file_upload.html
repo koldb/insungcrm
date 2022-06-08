@@ -36,8 +36,7 @@
 <div>
     {% if login_session %}
     <form action="{% url 'isscm:main_uploadFile' detailView.id %}" method="POST" enctype="multipart/form-data">
-        <input type="text" name="fileTitle" placeholder="Enter a title">
-        <input type="file" name="uploadedFile">
+        <input type="file" name="uploadedFile" multiple="multiple">
         <input type="hidden" name="cname" value="{{ login_session }}">
         <input type="hidden" name="menu" value="main">
         {% csrf_token %}

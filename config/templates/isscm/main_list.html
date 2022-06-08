@@ -114,6 +114,8 @@
         {% endif %}
         </tbody>
     </table>
+    <br>
+    <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:main_insert' %}'" value="견적글 작성" style="float:right;">
 </div>
 
 <br>
@@ -169,6 +171,8 @@
         {% endif %}
         </tbody>
     </table>
+    <br>
+    <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:main_insert' %}'" value="견적글 작성" style="float:right;">
 </div>
 
 <br>
@@ -190,6 +194,7 @@
     <a href="?q={{ query }}&page_obj={{ page_obj }}&page={{page_obj.next_page_number}}&sort={{sort}}&search_sort={{search_sort}}">Next</a>
     <a href="?q={{ query }}&page_obj={{ page_obj }}&page={{page_obj.paginator.num_pages}}&sort={{sort}}&search_sort={{search_sort}}">Last</a>
     {%endif%}
+
 </div>
 
 
@@ -211,11 +216,11 @@
         <button class="btn btn-primary" type="submit" value="">정렬</button>
         <!--엑셀 다운로드-->
         <a href="{% url 'isscm:main_excel' %}?q={{ query }}&search_sort={{search_sort}}" style="color:white"><button type="button" class="btn btn-primary">EXCEL DOWN</button></a>
-
     </form>
 </div>
 <hr style="border: 1px;">
 
+{% if login_session == 'insung' %}
 <!--한달 이상 미처리 내역 -->
 <div class="table-box">
     <table class="board">
@@ -275,6 +280,7 @@
         </tbody>
     </table>
 </div>
+{% endif %}
 
 
 

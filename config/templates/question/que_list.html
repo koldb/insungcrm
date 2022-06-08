@@ -120,8 +120,9 @@
     <a href="?q={{ query }}&page_obj={{ page_obj }}&page={{page_obj.next_page_number}}&sort={{sort}}}&search_sort={{search_sort}}">Next</a>
     <a href="?q={{ query }}&page_obj={{ page_obj }}&page={{page_obj.paginator.num_pages}}&sort={{sort}}}&search_sort={{search_sort}}">Last</a>
     {%endif%}
-</div>
 
+</div>
+  <input type="button" class="btn btn-primary"  onclick="location.href='{% url 'question:que_insert' %}'" value="문의글 작성" style="float: right;">
 
 <!--정렬-->
 <div class="col-4">

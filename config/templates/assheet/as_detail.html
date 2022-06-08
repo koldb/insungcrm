@@ -96,9 +96,7 @@
         <div class="mb-3">
             <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:AsUploadFile' detailView.no %}'" value="파일 업로드">
             {% if upfile %}
-            {% for file in upfile %}
-            <input type="button" value="{{ file.title }}" class="btn btn-primary" disabled >
-            {% endfor %}
+            <input type="button" value="첨부파일 {{ upfile }} 개" class="btn btn-primary" disabled >
             {% else %}
             <td>첨부 파일 없음</td>
             {% endif %}
@@ -107,6 +105,7 @@
         {% if login_session == detailView.cname or login_session == 'insung' %}
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_delete' detailView.no %}'" value="삭제">
         {% endif %}
+        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_list' %}'" value="목록으로">
     </form>
 </div>
 

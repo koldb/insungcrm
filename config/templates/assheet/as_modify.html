@@ -189,13 +189,17 @@
                 <select name="finish" onFocus="this.initialSelect = this.selectedIndex;" onChange="this.selectedIndex = this.initialSelect;">
                     {% endif %}
                     {% if detailView.finish == "진행 중" %}
+                    <option value="접수 중" >접수 중</option>
                     <option value="{{ detailView.finish }}">{{ detailView.finish }}</option>
                     <option value="종료">종료</option>
-                    {% elif detailView.finish == None %}
+                    {% elif detailView.finish == '' %}
                     <option value="" selected> </option>
+                    <option value="접수 중" >접수 중</option>
                     <option value="진행 중" >진행 중</option>
                     <option value="종료">종료</option>
                     {% else %}
+                    <option value="" > </option>
+                    <option value="접수 중" >접수 중</option>
                     <option value="진행 중" >진행 중</option>
                     <option value="종료" selected>종료</option>
                     {% endif %}

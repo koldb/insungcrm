@@ -9,7 +9,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q, Count, Sum
 import datetime
 import xlwt
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
@@ -66,7 +66,7 @@ def as_list(request):
     print("리스트 시작")
     login_session = request.session.get('login_session')
     user_name = request.session.get('user_name')
-
+    global search_sort
     if request.method == 'GET':
         if login_session == 'insung':
             sort = request.GET.get('sort', '')
@@ -189,22 +189,25 @@ def AsUploadFile(request, pk):
         if request.FILES.get('uploadedFile') is not None:
             if get_object_or_404(ASsheet, no=pk):
                 # 템플릿에서 데이터 가져오기
-                login_session = request.session.get('login_session')
                 cname = login_session
-                fileTitle = request.POST["fileTitle"]
-                uploadedFile = request.FILES.get('uploadedFile')
                 sheet_no = ASsheet.objects.get(no=pk)
                 menu = request.POST["menu"]
 
-                # DB에 저장
-                uploadfile = models.ASUploadFile(
-                    cname=cname,
-                    title=fileTitle,
-                    uploadedFile=uploadedFile,
-                    sheet_no=sheet_no,
-                    menu=menu
-                )
-                uploadfile.save()
+                files = request.FILES.getlist('uploadedFile')
+
+                for f in files:
+                    fileTitle = f
+                    uploadedFile = f
+                    # DB에 저장
+                    uploadfile = models.ASUploadFile(
+                        cname=cname,
+                        title=fileTitle,
+                        uploadedFile=uploadedFile,
+                        sheet_no=sheet_no,
+                        menu=menu
+                    )
+                    uploadfile.save()
+                return HttpResponseRedirect(reverse('asregister:AsUploadFile', args=[pk]))
     else:
         login_session = request.session.get('login_session')
         detailView = get_object_or_404(ASsheet, no=pk)
@@ -327,7 +330,7 @@ def as_detail(request, pk):
         detailView = get_object_or_404(ASsheet, no=pk)
 
         try:
-            upfile = ASUploadFile.objects.filter(sheet_no_id=pk)
+            upfile = ASUploadFile.objects.filter(sheet_no_id=pk).count()
             context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile,
                        'user_name': user_name, 'user_phone': user_phone}
             print("성공")

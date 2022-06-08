@@ -117,6 +117,8 @@
         {% endif %}
         </tbody>
     </table>
+    <br>
+    <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_insert' %}'" value="AS접수 작성" style="float:right;">
 </div>
 
 <br>
@@ -178,6 +180,8 @@
         {% endif %}
         </tbody>
     </table>
+    <br>
+    <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_insert' %}'" value="AS접수 작성" style="float:right;">
 </div>
 
 <br>
@@ -224,7 +228,7 @@
 
 <hr style="border: 1px;">
 
-
+{% if login_session == 'insung' %}
 <!--한달 이상 미처리 내역 -->
 <div class="table-box">
     <table class="board">
@@ -263,6 +267,7 @@
     </table>
 </div>
 <hr style="border: 1px;">
+{% endif %}
 
 {% if login_session == 'insung' %}
 <!--AS 제품별 주간, 월간 현황-->

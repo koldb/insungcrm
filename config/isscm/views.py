@@ -43,9 +43,9 @@ def index(request):
     es_picount = main_sheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1),
                                            finish="진행 중", cname=login_session).count()
     es_xcount = main_sheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1),
-                                          finish="").count()
+                                          finish="접수 중").count()
     es_pxcount = main_sheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1),
-                                           finish="", cname=login_session).count()
+                                           finish="접수 중", cname=login_session).count()
     as_count = ASsheet.objects.filter(rg_date__gte=date.today()).count()
     as_pcount = ASsheet.objects.filter(rg_date__gte=date.today(),
                                        cname=login_session).count()
@@ -54,8 +54,8 @@ def index(request):
     as_icount = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1), finish="진행 중").count()
     as_picount = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1), finish="진행 중",
                                         cname=login_session).count()
-    as_xcount = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1), finish="").count()
-    as_pxcount = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1), finish="",
+    as_xcount = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1), finish="접수 중").count()
+    as_pxcount = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1), finish="접수 중",
                                         cname=login_session).count()
     que_count = question_sheet.objects.filter(rg_date__gte=date.today()).count()
     que_pcount = question_sheet.objects.filter(rg_date__gte=date.today(),
@@ -169,7 +169,8 @@ def main_detail(request, pk):
                 # upfile = UploadFile.objects.filter(sheet_no_id=pk)
                 # 잠시 보류
                 print('get 파일 있음')
-                upload_file = UploadFile.objects.filter(main_id_id=pk)
+                upload_file = UploadFile.objects.filter(main_id_id=pk).count()
+                print('업로드 파일', upload_file)
                 context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name,
                            'user_dept': user_dept, 'sub': sub, 'files': upload_file}
             except:
@@ -178,8 +179,9 @@ def main_detail(request, pk):
                            'user_dept': user_dept, 'sub': sub}
         else:
             print('sub 없음')
+            upload_file = UploadFile.objects.filter(main_id_id=pk).count()
             context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name,
-                       'user_dept': user_dept}
+                       'user_dept': user_dept, 'files': upload_file}
         print("디테일 뷰 끝")
         return render(request, 'isscm/main_detail.html', context)
     else:
@@ -741,21 +743,25 @@ def main_uploadFile(request, pk):
             if get_object_or_404(main_sheet, id=pk):
                 print("pk 왓나요", pk)
                 # 템플릿에서 데이터 가져오기
+
                 cname = login_session
-                fileTitle = request.POST["fileTitle"]
-                uploadedFile = request.FILES.get('uploadedFile')
                 main_id = main_sheet.objects.get(id=pk)
                 menu = request.POST["menu"]
 
-                # DB에 저장
-                uploadfile = models.UploadFile(
-                    cname=cname,
-                    title=fileTitle,
-                    uploadedFile=uploadedFile,
-                    main_id=main_id,
-                    menu=menu
-                )
-                uploadfile.save()
+                files = request.FILES.getlist('uploadedFile')
+
+                for f in files:
+                    fileTitle = f
+                    uploadedFile = f
+                    # DB에 저장
+                    uploadfile = models.UploadFile(
+                        cname=cname,
+                        title=fileTitle,
+                        uploadedFile=uploadedFile,
+                        main_id=main_id,
+                        menu=menu
+                    )
+                    uploadfile.save()
                 return HttpResponseRedirect(reverse('isscm:main_uploadFile', args=[pk]))
     else:
         print("get 으로 왓나", pk)

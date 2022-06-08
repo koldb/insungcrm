@@ -10,6 +10,7 @@ urlpatterns = [
     path('as_insert', views.as_insert, name='as_insert'),
     path('as_list', views.as_list, name='as_list'),
     path('AsUploadFile/<int:pk>/', views.AsUploadFile, name='AsUploadFile'),
+    path('as_downloadfile/<int:pk>/', views.as_downloadfile, name='as_downloadfile'),
     path('ASfile_delete/<int:pk>/', views.ASfile_delete, name='ASfile_delete'),
     path('as_detail/<int:pk>/', views.as_detail, name='as_detail'),
     path('as_modify/<int:pk>/', views.as_modify, name='as_modify'),

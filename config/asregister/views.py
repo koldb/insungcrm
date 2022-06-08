@@ -12,7 +12,8 @@ import xlwt
 from django.http import HttpResponse, HttpResponseRedirect
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
-from django.contrib import messages
+import mimetypes
+import shutil
 
 # Create your views here.
 
@@ -222,6 +223,17 @@ def AsUploadFile(request, pk):
 
     return render(request, "assheet/asfile_upload.html", context={'user_name': user_name,
         "files": uploadfile, "login_session": login_session, 'detailView': detailView})
+
+# as파일 다운로드
+def as_downloadfile(request, pk):
+    upload_file = get_object_or_404(ASUploadFile, no=pk)
+    file = upload_file.uploadedFile
+    name = file.name
+    response = HttpResponse(content_type=mimetypes.guess_type(name)[0] or 'application/octet-stream')
+    response['Content-Disposition'] = f'attachment; filename={name}'
+    shutil.copyfileobj(file, response)
+    return response
+
 
 
 # AS 엑셀 다운로드

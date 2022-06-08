@@ -115,6 +115,7 @@ def searchData(request):
         pname = list()
         for product in qs:
             pname.append(product.product_name)
+            print(pname)
         return JsonResponse(pname, safe=False)
     return render(request, 'isscm/index.html')
 

@@ -25,8 +25,7 @@ def login_ok(func):
             return func(request, *args, **kwargs)
         else:
             messages.info(request, "접근 권한이 없습니다.")
-            return redirect('/isscm/index')
-        return func(request, *args, **kwargs)
+            return redirect('isscm:index')
     return wrapper
 
 

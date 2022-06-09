@@ -56,7 +56,7 @@
             <tr>
             <td>{{ file.title }}</td>
             <td>{{ file.dateTimeOfUpload }}</td>
-            </td><td><a href="{% url 'asregister:as_downloadfile' file.no %}"><button class="btn btn-primary">DOWN</button></a></td>
+            <td><a href="{% url 'asregister:as_downloadfile' file.no %}"><button class="btn btn-primary">DOWN</button></a></td>
             <td><input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:ASfile_delete' file.no %}'" value="Delete"></td>
             </tr>
         {% else %}

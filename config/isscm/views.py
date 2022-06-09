@@ -5,7 +5,7 @@ import sys
 sys.path.append('..')
 from asregister.models import ASsheet
 from question.models import question_sheet
-from .models import UploadFile, ProductDb, main_sheet, sub_sheet, product_info
+from .models import UploadFile, ProductDb, main_sheet, sub_sheet, product_info, notice
 from . import models
 from django.core.paginator import Paginator
 from django.db.models import Q, Sum, Count
@@ -93,6 +93,11 @@ def index(request):
     as_cnum_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values(
         'cname').order_by('cname').annotate(count=Count('cname')).aggregate(Sum('count'))
 
+    notice_list = notice.objects.all().order_by('-rg_date')
+    page = request.GET.get('page', '1')
+    paginator = Paginator(notice_list, 3)
+    page_obj = paginator.get_page(page)
+
     context = {'login_session': login_session, 'es_count': es_count, 'as_count': as_count,
                'que_count': que_count, 'es_icount': es_icount,
                'es_week1': es_week1, 'es_week2': es_week2,
@@ -104,7 +109,7 @@ def index(request):
                'as_pcount': as_pcount, 'que_pcount': que_pcount, 'es_num_sum': es_num_sum,
                'as_num_sum': as_num_sum, 'es_cnum_sum': es_cnum_sum,
                'as_cnum_sum': as_cnum_sum, 'es_pfcount': es_pfcount, 'es_picount': es_picount, 'es_pxcount': es_pxcount,
-               'as_pfcount': as_pfcount, 'as_picount': as_picount, 'as_pxcount': as_pxcount, 'user_name': user_name}
+               'as_pfcount': as_pfcount, 'as_picount': as_picount, 'as_pxcount': as_pxcount, 'user_name': user_name, 'page_obj': page_obj}
     return render(request, 'isscm/index.html', context)
 
 
@@ -1256,6 +1261,7 @@ def product_info_excel(request):
     return response
 
 
+# 제품명 DB
 def product_db_insert(request):
     login_session = request.session.get('login_session')
     user_name = request.session.get('user_name')
@@ -1280,7 +1286,10 @@ def product_db_insert(request):
         product.save()
         return HttpResponseRedirect(reverse('isscm:product_db_list'))
 
+
+# 제품명 DB 리스트
 @login_required
+@login_ok
 def product_db_list(request):
     login_session = request.session.get('login_session')
     user_name = request.session.get('user_name')
@@ -1288,14 +1297,75 @@ def product_db_list(request):
 
     productlist = ProductDb.objects.all().order_by('no')
 
-    context = {'productlist': productlist, 'login_session': login_session, 'user_name': user_name, 'user_dept': user_dept}
+    context = {'productlist': productlist, 'login_session': login_session, 'user_name': user_name,
+               'user_dept': user_dept}
 
     return render(request, 'isscm/product_db_list.html', context)
 
 
+# 제품명 DB 삭제
 def product_db_delete(request, pk):
     product_pick = get_object_or_404(ProductDb, no=pk)
     product_pick.delete()
     print('삭제 완료')
 
     return redirect('isscm:product_db_list')
+
+
+# 공지사항 입력
+@login_required
+@login_ok
+def notice_insert(request):
+    login_session = request.session.get('login_session')
+    user_name = request.session.get('user_name')
+    user_dept = request.session.get('user_dept')
+
+    if request.method == 'GET':
+        print('공지사항 입력 get')
+        context = {'login_session': login_session, 'user_name': user_name, 'user_dept': user_dept}
+        return render(request, 'isscm/notice_insert.html', context)
+    else:
+        noticeview = notice()
+        noticeview.title = request.POST['title']
+        noticeview.user_dept = request.POST['user_dept']
+        noticeview.user_name = request.POST['user_name']
+        noticeview.start_date = request.POST['start_date']
+        noticeview.end_date = request.POST['end_date']
+        noticeview.content = request.POST['content']
+
+        noticeview.save()
+        print('공지사항 입력 완료')
+        return HttpResponseRedirect(reverse('isscm:index'))
+
+# 공지사항 뷰
+def notice_view(request, pk):
+    login_session = request.session.get('login_session')
+    user_name = request.session.get('user_name')
+    user_dept = request.session.get('user_dept')
+    notice_view = get_object_or_404(notice, no=pk)
+
+    if request.method == 'GET':
+        print('공지사항 뷰')
+        context = {'notice_view': notice_view, 'login_session': login_session, 'user_name': user_name, 'user_dept': user_dept}
+        return render(request, 'isscm/notice_view.html', context)
+    else:
+        print('공지사항 수정')
+        notice_view.title = request.POST['title']
+        notice_view.user_dept = request.POST['user_dept']
+        notice_view.user_name = request.POST['user_name']
+        notice_view.start_date = request.POST['start_date']
+        notice_view.end_date = request.POST['end_date']
+        notice_view.content = request.POST['content']
+
+        notice_view.save()  
+        print('공지사항 수정 완료')
+
+        return HttpResponseRedirect(reverse('isscm:notice_view', args=[pk]))
+    
+# 공지사항 삭제
+def notice_delete(request, pk):
+    notice_pick = get_object_or_404(notice, no=pk)
+    notice_pick.delete()
+    print('삭제 완료')
+
+    return redirect('isscm:index')

@@ -101,3 +101,21 @@ class UploadFile(models.Model):
         db_table = 'uploadfile'
         verbose_name = '업로드'
         verbose_name_plural = '업로드'
+
+
+# 공지사항
+class notice(models.Model):
+    no = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=100, null=True, blank=True, verbose_name='제목')
+    user_dept = models.CharField(null=True, blank=True, max_length=10, verbose_name='부서명')
+    user_name = models.CharField(null=True, blank=True, max_length=10, verbose_name='작성자')
+    start_date = models.DateField(null=True, blank=True, max_length=50, verbose_name='시작일자')
+    end_date = models.DateField(null=True, blank=True, max_length=50, verbose_name='종료일자')
+    rg_date = models.DateTimeField(auto_now_add=True, verbose_name='등록일자')
+    content = models.TextField(verbose_name='내용', null=True, blank=True)
+
+    class Meta:
+        managed = True
+        db_table = 'notice'
+        verbose_name = '공지사항'
+        verbose_name_plural = '공지사항'

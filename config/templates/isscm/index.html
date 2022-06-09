@@ -11,6 +11,10 @@
     border: 1px solid #dcdcdc;
     text-align: center;
   }
+  tr#n:hover{
+     background-color: #98bee0;
+     cursor:pointer;
+    }
   textarea {
     width: 100%;
     height: 15em;
@@ -20,16 +24,59 @@
     cursor:pointer;
   }
 
-    .col-xl-3{
-    min-width:400px;
+  #con {
+        width: 100%;
+        text-align: center;y
     }
-    @media screen and (max-width : 768px) {
-    .col-xl-3 {
-    float : none;
-    width : 100%;
-    }
+  #paging{
+      display: inline-block;
+  }
+  .col-xl-3{
+  min-width:400px;
+  }
+  @media screen and (max-width : 768px) {
+  .col-xl-3 {
+  float : none;
+  width : 100%;
+  }
+  }
 
 </style>
+<br>
+<div id="con" class="container-fluid card border-left-primary shadow h-100 py-2">
+    <div>
+        <h2>공지사항</h2>
+    </div>
+    <table style=" border: 0px;">
+        {% for list in page_obj %}
+        <tr onclick="location.href='{% url 'isscm:notice_view' list.no %}'" id="n">
+            <th style=" border: 0px; width: 50%;" >{{ list.title }}</th>
+            <td style=" border: 0px; width: 30%;">{{ list.user_name }}</td>
+            <td style=" border: 0px; width: 20%;">{{ list.rg_date| date:'Y-m-d H:i:s' }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!--페이징 부분-->
+    <div  id="paging">
+        {#first previous#}
+        {% if page_obj.has_previous %}
+        <a href="?page_obj={{ page_obj }}&page=1">First</a>
+        <a href="?page_obj={{ page_obj }}&page={{page_obj.previous_page_number}}">Previous</a>
+        {% endif %}
+        {# 3of4 #}
+        <span>{{page_obj.number}}</span>
+        <span>of</span>
+        <span>{{page_obj.paginator.num_pages}}</span>
+        {# Next Last #}
+        {% if page_obj.has_next %}
+        <a href="?page_obj={{ page_obj }}&page={{page_obj.next_page_number}}">Next</a>
+        <a href="?page_obj={{ page_obj }}&page={{page_obj.paginator.num_pages}}">Last</a>
+        {%endif%}
+    </div>
+
+</div>
+
 
 {% if login_session == 'insung' %}
 <div class="container-fluid">

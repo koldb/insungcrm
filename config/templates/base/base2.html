@@ -67,14 +67,46 @@ textarea.autosize { min-height: 50px; }
             text-decoration: none;
             cursor: pointer;
         }
-</style>
 
-<!--<script>-->
-<!--function resize(obj) {-->
-<!--  obj.style.height = "1px";-->
-<!--  obj.style.height = (12+obj.scrollHeight)+"px";-->
-<!--}-->
-<!--</script>-->
+.dropbtn {
+    background-color: #f9f9f9;
+    color: gray;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+//메뉴 개별 색
+.dropdown-content a:hover {
+    background-color: #f1f1f1
+}
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+.dropdown:hover .dropbtn {
+    background-color: #f9f9f9;
+}
+
+
+</style>
 <script>
 
  $(function() {
@@ -114,10 +146,6 @@ textarea.autosize { min-height: 50px; }
             $("#datepicker").datepicker();
             $("#datepicker2").datepicker();
 
-            //초기값을 오늘 날짜로 설정
-            $('#datepicker').datepicker('setDate', 'today'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, -1M:한달후, -1Y:일년후)
-            $('#datepicker2').datepicker('setDate', 'today'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, -1M:한달후, -1Y:일년후)
-            $('#datepicker3').datepicker('setDate', 'today'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, -1M:한달후, -1Y:일년후)
         });
 </script>
 
@@ -172,13 +200,16 @@ textarea.autosize { min-height: 50px; }
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'question:que_list' %}">기타 문의 목록</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'isscm:product_db_list' %}">제품명 DB List</a>
+
+                {% if login_session == 'insung' %}
+                <li class="dropdown ">
+                    <a class="nav-link">관리</a>
+                    <div class="dropdown-content">
+                        <a class="nav-link" href="{% url 'isscm:product_db_list' %}">제품명 DB List</a>
+                        <a class="nav-link" href="{% url 'isscm:notice_insert' %}">공지사항 입력</a>
+                    </div>
                 </li>
-
-
-
-
+                {% endif %}
 
 
                 {% if login_session != '' %}
@@ -213,6 +244,13 @@ textarea.autosize { min-height: 50px; }
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'isscm:order_history_list' %}">발주 이력 관리</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'isscm:product_db_list' %}">제품명 DB List</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'isscm:notice_insert' %}">공지사항 입력</a>
+                </li>
+
                 {% else %}
                 {% endif %}
 

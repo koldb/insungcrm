@@ -28,6 +28,9 @@ urlpatterns = [
     path('product_db_insert/', views.product_db_insert, name='product_db_insert'),
     path('product_db_list/', views.product_db_list, name='product_db_list'),
     path('product_db_delete/<int:pk>/', views.product_db_delete, name='product_db_delete'),
+    path('notice_insert/', views.notice_insert, name='notice_insert'),
+    path('notice_view/<int:pk>/', views.notice_view, name='notice_view'),
+    path('notice_delete/<int:pk>/', views.notice_delete, name='notice_delete'),
 
 ]
 

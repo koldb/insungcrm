@@ -36,12 +36,13 @@
     .table-box {
     overflow-x:auto;
     }
+    form{display:inline}
 </style>
 
 
 <!--검색창 부분-->
-<div>
-    <form action="{% url 'isscm:product_list' %}" method="GET">
+<div class="container">
+    <form action="{% url 'isscm:product_list' %}" method="GET" style="float:left">
         {% csrf_token %}
         <select name="search_sort" id="search_sort">
             <option value="product_name" id="product_name">제품명</option>
@@ -53,7 +54,17 @@
             <option value="user_name" id="user_name">담당자</option>
             <option value="all" id="all">전체(시리얼 제외)</option>
         </select>
-        <input type="search"placeholder="검색"  class="form-control mr-sm-2" name="q" value="{{ query }}">
+        <input type="search"placeholder="검색"  name="q" value="{{ query }}">
+        <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
+    </form>
+
+     <form action="{% url 'isscm:product_list' %}" method="GET" style="float:right">
+        {% csrf_token %}
+        <select name="search_sort" id="search_sort">
+            <option value="rg_date" id="rg_date">등록 일자</option>
+        </select>
+        <input type="text" placeholder="클릭하여 날짜 선택"  name="sdate" id="datepicker3">
+        <input type="text" placeholder="클릭하여 날짜 선택"  name="edate" id="datepicker4">
         <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
     </form>
 </div>

@@ -240,7 +240,7 @@ def main_list(request):
             elif sort == 'requests':
                 m_sheet = main_sheet.objects.all().order_by('-requests', '-rg_date', )
             elif sort == 'cname':
-                m_sheet = main_sheet.objects.all().order_by('-cname', '-rg_date')
+                m_sheet = main_sheet.objects.all().order_by('-cname', '-rg_date', '-finish')
             elif sort == 'finish':
                 m_sheet = main_sheet.objects.all().order_by('-finish', '-rg_date')
             elif sort == 'total_price':

@@ -3,10 +3,13 @@
 {% load humanize %}
 {% load filter %}
 <style>
-    form{display:inline}
     #paging{
         width:150px;
         margin:0 auto;
+    }
+    #search_p, #search_l {
+        margin:0 0 0 120px;
+        display:inline-block;
     }
     tr, td, th{
         border : 1px solid #dcdcdc;
@@ -45,48 +48,52 @@
     float : none;
     width : 100%;
     }
+     #search_p, #search_l {
+        margin:0 auto;
+        display:inline-block;
+    }
 
 
 </style>
 
 <!--검색창 부분-->
 <div class="container" >
-    <form action="{% url 'asregister:as_list' %}" method="GET" style="float:left">
+    <form action="{% url 'asregister:as_list' %}" method="GET" >
         {% csrf_token %}
-        <select name="search_sort" id="search_sort">
-            <option value="product_name" id="product_name">제품명</option>
-            {% if login_session == 'insung' %}
-            <option value="cname" id="cname">업체명</option>
-            {% else %}
-            {% endif %}
-            <option value="serial" id="serial">시리얼</option>
-            <option value="cuser" id="cuser">요청자</option>
-            <option value="cphone" id="cphone">연락처</option>
-            <option value="site" id="site">현장 명</option>
-            <option value="symptom" id="symptom">증상</option>
-            <option value="memo" id="memo">비고</option>
-            <option value="option" id="option">의견</option>
-            <option value="finish" id="finish">완료 여부</option>
-            <option value="all" id="all">전체</option>
-        </select>
-        <input type="search" placeholder="검색"  name="q" value="{{ query }}">
-        <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
-    </form>
+        <div id="search_p">
+            <select name="search_sort" id="search_sort">
+                <option value="product_name" id="product_name">제품명</option>
+                {% if login_session == 'insung' %}
+                <option value="cname" id="cname">업체명</option>
+                {% else %}
+                {% endif %}
+                <option value="serial" id="serial">시리얼</option>
+                <option value="cuser" id="cuser">요청자</option>
+                <option value="cphone" id="cphone">연락처</option>
+                <option value="site" id="site">현장 명</option>
+                <option value="symptom" id="symptom">증상</option>
+                <option value="memo" id="memo">비고</option>
+                <option value="option" id="option">의견</option>
+                <option value="finish" id="finish">완료 여부</option>
+                <option value="all" id="all">전체</option>
+            </select>
+            <input type="search" placeholder="검색"  name="q" value="{{ query }}">
+            <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
+        </div>
+        <div id="search_l">
+            <select name="search_sort" id="search_sort">
+                <option value="rg_date" id="rg_date">접수 일자</option>
+                <option value="rp_date" id="rp_date">마감 일자</option>
+                <option value="end_date" id="end_date">종료 일자</option>
+            </select>
+            <input type="text" placeholder="클릭하여 날짜 선택"  name="sdate" id="datepicker3">
+            <input type="text" placeholder="클릭하여 날짜 선택"  name="edate" id="datepicker4">
+            <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
 
-    <form action="{% url 'asregister:as_list' %}" method="GET" style="float:right">
-        {% csrf_token %}
-        <select name="search_sort" id="search_sort">
-            <option value="rg_date" id="rg_date">접수 일자</option>
-            <option value="rp_date" id="rp_date">마감 일자</option>
-            <option value="end_date" id="end_date">종료 일자</option>
-        </select>
-        <input type="text" placeholder="클릭하여 날짜 선택"  name="sdate" id="datepicker3">
-        <input type="text" placeholder="클릭하여 날짜 선택"  name="edate" id="datepicker4">
-        <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
+        </div>
     </form>
 
 </div>
-<br>
 <br>
 
 <!--회사 아이디 일때 리스트-->

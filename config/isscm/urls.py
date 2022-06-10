@@ -10,6 +10,7 @@ urlpatterns = [
     path('main_uploadFile/<int:pk>/', views.main_uploadFile, name='main_uploadFile'),
     path('main_file_delete/<int:pk>/', views.main_file_delete, name='main_file_delete'),
     path('searchData/', views.searchData, name='searchData'),
+    path('searchPM/', views.searchPM, name='searchPM'),
     path('main_excel/', views.main_excel, name='main_excel'),
     path('sub_excel/', views.sub_excel, name='sub_excel'),
     path('sub_list_excel/', views.sub_list_excel, name='sub_list_excel'),
@@ -31,6 +32,8 @@ urlpatterns = [
     path('notice_insert/', views.notice_insert, name='notice_insert'),
     path('notice_view/<int:pk>/', views.notice_view, name='notice_view'),
     path('notice_delete/<int:pk>/', views.notice_delete, name='notice_delete'),
+    path('pm_insert/', views.pm_insert, name='pm_insert'),
+    path('pm_list/', views.pm_list, name='pm_list'),
 
 ]
 

@@ -7,7 +7,7 @@
         width:150px;
         margin:0 auto;
     }
-    #search_p, #search_l {
+     #search_p, #search_l {
         margin:0 0 0 120px;
         display:inline-block;
     }
@@ -50,36 +50,35 @@
 
 <!--검색창 부분-->
 <div class="container">
-    <form action="{% url 'isscm:product_list' %}" method="GET" >
+    <form action="{% url 'isscm:product_list' %}" method="GET" style="float:left">
         {% csrf_token %}
         <div id="search_p">
-            <select name="search_sort" id="search_sort">
-                <option value="product_name" id="product_name">제품명</option>
-                {% if login_session == 'insung' %}
-                <option value="cname" id="cname">업체명</option>
-                {% endif %}
-                <option value="serial" id="serial">시리얼</option>
-                <option value="m_title" id="m_title">메인 Title</option>
-                <option value="user_name" id="user_name">담당자</option>
-                <option value="all" id="all">전체(시리얼 제외)</option>
-            </select>
-            <input type="search"placeholder="검색"  name="q" value="{{ query }}">
-            <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
+        <select name="search_sort" id="search_sort">
+            <option value="product_name" id="product_name">제품명</option>
+            {% if login_session == 'insung' %}
+            <option value="cname" id="cname">업체명</option>
+            {% endif %}
+            <option value="serial" id="serial">시리얼</option>
+            <option value="m_title" id="m_title">메인 Title</option>
+            <option value="user_name" id="user_name">담당자</option>
+            <option value="all" id="all">전체(시리얼 제외)</option>
+        </select>
+        <input type="search"placeholder="검색"  name="q" value="{{ query }}">
+        <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
         </div>
 
         <div id="search_l">
-            <select name="search_sort" id="search_sort">
-                <option value="rg_date" id="rg_date">등록 일자</option>
-            </select>
-            <input type="text" placeholder="클릭하여 날짜 선택"  name="sdate" id="datepicker3">
-            <input type="text" placeholder="클릭하여 날짜 선택"  name="edate" id="datepicker4">
-            <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
+        <select name="search_sort" id="search_sort">
+            <option value="rg_date" id="rg_date">등록 일자</option>
+        </select>
+        <input type="text" placeholder="클릭하여 날짜 선택"  name="sdate" id="datepicker3">
+        <input type="text" placeholder="클릭하여 날짜 선택"  name="edate" id="datepicker4">
+        <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
         </div>
-
     </form>
 </div>
 <br>
-<!--보증기간 리스트-->
+<!--제품관리 DB 리스트-->
 <div class="table-box">
     <table class="board">
         <thead>
@@ -88,33 +87,21 @@
             <th style="width:5%;">순번</th>
             <th style="width:5%;">등록 일자</th>
             <th style="width:15%;">제품명</th>
-            <th style="width:5%;">수량</th>
-            <th style="width:5%;">출고 수량</th>
-            <th style="width:5%;">개당 단가</th>
-            <th style="width:5%;">부가세</th>
-            <th style="width:5%;">총 금액</th>
-            <th style="width:5%;">업체명</th>
-            <th style="width:5%;">메인 번호</th>
-            <th style="width:5%;">메인 Title</th>
-            <th style="width:5%;">담당자</th>
+            <th style="width:5%;">시리얼</th>
+            <th style="width:5%;">현재 위치</th>
+            <th style="width:5%;">상태</th>
         </tr>
         </thead>
         <tbody>
 
         {% for list in page_obj %}
-        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'isscm:product_modify' list.id  %}'">
+        <tr class="m" style="text-align:center;" >
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.rg_date |date:'Y-m-d' }}</td>
             <td>{{ list.product_name }}</td>
-            <td>{{ list.quantity|intcomma }}</td>
-            <td>{{ list.enter_quantity|intcomma }}</td>
-            <td>{{ list.per_price|intcomma }}</td>
-            <td>{{ list.tax|intcomma }}</td>
-            <td>{{ list.total_price|intcomma }}</td>
-            <td>{{ list.cname }}</td>
-            <td>{{ list.m_id_id }}</td>
-            <td>{{ list.m_title }}</td>
-            <td>{{ list.user_name }}</td>
+            <td>{{ list.serial }}</td>
+            <td>{{ list.current_location }}</td>
+            <td>{{ list.status }}</td>
         </tr>
         {% endfor %}
 
@@ -143,14 +130,13 @@
 </div>
 <!--정렬-->
 <div class="col-4">
-    <form method="GET" action="{% url 'isscm:product_list' %}">
+    <form method="GET" action="{% url 'isscm:pm_list' %}">
         <select name="sort" id="sort">
+            <option value="rg_date" id="rg_date">등록일자</option>
             <option value="product_name" id="product_name">제품명</option>
-            {% if login_session == 'insung' %}
-            <option value="cname" id="cname">업체명</option>
-            {% endif %}
-            <option value="total_price" id="total_price">총 금액</option>
-            <option value="m_title" id="m_title">메인 Title</option>
+            <option value="serial" id="serial">시리얼</option>
+            <option value="current_location" id="current_location">현재 위치</option>
+            <option value="status" id="status">상태</option>
             <option value="all" id="all">전체</option>
         </select>
         <button class="btn btn-primary" type="submit" value="">정렬</button>

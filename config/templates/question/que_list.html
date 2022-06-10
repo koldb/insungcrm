@@ -7,6 +7,10 @@
         width:150px;
         margin:0 auto;
     }
+     #search_p, #search_l {
+        margin:0 0 0 120px;
+        display:inline-block;
+    }
     tr, td, th{
         border : 1px solid #dcdcdc;
         width : 350px;
@@ -24,35 +28,41 @@
     .table-box {
     overflow-x:auto;
     }
+    #search_p, #search_l {
+        margin:0 auto;
+        display:inline-block;
+    }
 </style>
 
 <!--검색창 부분-->
 <div class="container">
-    <form action="{% url 'question:que_list' %}" method="GET" style="float:left">
+    <form action="{% url 'question:que_list' %}" method="GET" >
         {% csrf_token %}
-        <select name="search_sort" id="search_sort">
-            <option value="title" id="title">제목</option>
-            {% if login_session == 'insung' %}
-            <option value="cname" id="cname">업체명</option>
-            {% else %}
-            {% endif %}
-            <option value="type" id="type">유형</option>
-            <option value="content" id="content">내용</option>
-            <option value="all" id="all">전체</option>
-        </select>
-        <input type="search" placeholder="검색"  name="q" value="{{ query }}">
-        <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
+        <div id="search_p">
+            <select name="search_sort" id="search_sort">
+                <option value="title" id="title">제목</option>
+                {% if login_session == 'insung' %}
+                <option value="cname" id="cname">업체명</option>
+                {% else %}
+                {% endif %}
+                <option value="type" id="type">유형</option>
+                <option value="content" id="content">내용</option>
+                <option value="all" id="all">전체</option>
+            </select>
+            <input type="search" placeholder="검색"  name="q" value="{{ query }}">
+            <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
+        </div>
+
+        <div id="search_l">
+            <select name="search_sort" id="search_sort">
+                <option value="rg_date" id="rg_date">등록 일자</option>
+            </select>
+            <input type="text" placeholder="클릭하여 날짜 선택"  name="sdate" id="datepicker3">
+            <input type="text" placeholder="클릭하여 날짜 선택"  name="edate" id="datepicker4">
+            <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
+        </div>
     </form>
 
-     <form action="{% url 'question:que_list' %}" method="GET" style="float:right">
-        {% csrf_token %}
-        <select name="search_sort" id="search_sort">
-            <option value="rg_date" id="rg_date">등록 일자</option>
-        </select>
-        <input type="text" placeholder="클릭하여 날짜 선택"  name="sdate" id="datepicker3">
-        <input type="text" placeholder="클릭하여 날짜 선택"  name="edate" id="datepicker4">
-        <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
-    </form>
 </div>
 
 <!--리스트 출력 부분-->
@@ -132,7 +142,7 @@
     {%endif%}
 
 </div>
-  <input type="button" class="btn btn-primary"  onclick="location.href='{% url 'question:que_insert' %}'" value="문의글 작성" style="float: right;">
+<input type="button" class="btn btn-primary"  onclick="location.href='{% url 'question:que_insert' %}'" value="문의글 작성" style="float: right;">
 
 <!--정렬-->
 <div class="col-4">

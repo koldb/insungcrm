@@ -95,7 +95,7 @@ def index(request):
 
     notice_list = notice.objects.all().order_by('-rg_date')
     page = request.GET.get('page', '1')
-    paginator = Paginator(notice_list, 3)
+    paginator = Paginator(notice_list, 5)
     page_obj = paginator.get_page(page)
 
     context = {'login_session': login_session, 'es_count': es_count, 'as_count': as_count,
@@ -224,6 +224,8 @@ def main_list(request):
     user_name = request.session.get('user_name')
     user_dept = request.session.get('user_dept')
     global search_sort
+    global startdate
+    global enddate
     if request.method == 'GET':
         if login_session == 'insung':
             print('get insung 리스트 시작')
@@ -254,6 +256,7 @@ def main_list(request):
                 search_sort = request.GET.get('search_sort', '')
                 startdate = request.GET.get('sdate', '')
                 enddate = request.GET.get('edate', '')
+                print(enddate)
                 if search_sort == 'main_title':
                     m_sheet = main_sheet.objects.all().filter(main_title__icontains=query).order_by('-rg_date')
                 elif search_sort == 'requests':
@@ -275,7 +278,7 @@ def main_list(request):
                         v = v + list(ms)
                     m_sheet = reduce(lambda acc, cur: acc if cur in acc else acc + [cur], v, [])
                 elif search_sort == 'rg_date':
-                    e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(1)
+                    e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59, seconds=59)
                     m_sheet = main_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by('-rg_date')
                 elif search_sort == 'rp_date':
                     m_sheet = main_sheet.objects.all().filter(rp_date__range=[startdate, enddate]).order_by('-rg_date')
@@ -299,7 +302,8 @@ def main_list(request):
             page_obj = paginator.get_page(page)
             print("insung GET main 페이징 끝")
             context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort, 'over_date': over_date,
-                       'query': query, 'search_sort': search_sort, 'user_name': user_name, 'user_dept': user_dept}
+                       'query': query, 'search_sort': search_sort, 'user_name': user_name, 'user_dept': user_dept,
+                       'sdate': startdate, 'edate': enddate }
 
         else:
             sort = request.GET.get('sort', '')
@@ -341,7 +345,8 @@ def main_list(request):
                     m_sheet = main_sheet.objects.all().filter(user_name__icontains=query, cname=login_session).order_by(
                         '-rg_date')
                 elif search_sort == 'rg_date':
-                    e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(1)
+                    e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
+                                                                                                  seconds=59)
                     m_sheet = main_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date, cname=login_session).order_by('-rg_date')
                 elif search_sort == 'rp_date':
                     m_sheet = main_sheet.objects.all().filter(rp_date__range=[startdate, enddate], cname=login_session).order_by('-rg_date')
@@ -369,7 +374,7 @@ def main_list(request):
             page_obj = paginator.get_page(page)
             print("일반 GET main 페이징 끝")
             context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort, 'query': query,
-                       'search_sort': search_sort,
+                       'search_sort': search_sort, 'sdate': startdate, 'edate': enddate,
                        'user_name': user_name, 'user_dept': user_dept}
 
         print('메인 리스트 끝')
@@ -515,6 +520,9 @@ def main_excel(request):
     search_sort = request.GET.get('search_sort', '')
     print('search : ', search_sort)
     if search_sort:
+        startdate = request.GET.get('sdate', '')
+        enddate = request.GET.get('edate', '')
+        print('enddate : ', enddate)
         print('검색으로 다운로드')
         if login_session == 'insung':
             print('insung search 다운')
@@ -595,6 +603,19 @@ def main_excel(request):
                     Q(user_name__icontains=query)).values_list('rg_date', 'rp_date', 'end_date',
                                                                'main_title', 'cname', 'requests', 'total_price',
                                                                'finish', 'user_dept', 'user_name')
+            elif search_sort == 'rg_date':
+                e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
+                                                                                              seconds=59)
+                print('엑셀다운 등록일자', e_date)
+                rows = main_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by('-rg_date') \
+                    .values_list('rg_date', 'rp_date', 'end_date',
+                                 'main_title', 'cname', 'requests', 'total_price','finish', 'user_dept', 'user_name')
+            elif search_sort == 'rp_date':
+                rows = main_sheet.objects.all().filter(rp_date__range=[startdate, enddate]).order_by('-rg_date').values_list('rg_date', 'rp_date', 'end_date',
+                                                                                                                             'main_title', 'cname', 'requests', 'total_price','finish', 'user_dept', 'user_name')
+            elif search_sort == 'end_date':
+                rows = main_sheet.objects.all().filter(end_date__range=[startdate, enddate]).order_by('-rg_date').values_list('rg_date', 'rp_date', 'end_date',
+                                                                                                                              'main_title', 'cname', 'requests', 'total_price','finish', 'user_dept', 'user_name')
         else:
             print('일반 search 다운')
             if search_sort == 'main_title':
@@ -640,6 +661,19 @@ def main_excel(request):
                     'rg_date', 'rp_date', 'end_date',
                     'main_title', 'cname', 'requests', 'total_price',
                     'finish', 'user_dept', 'user_name')
+            elif search_sort == 'rg_date':
+                e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
+                                                                                              seconds=59)
+                print('엑셀다운 등록일자', e_date)
+                rows = main_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date, cname=login_session).order_by('-rg_date') \
+                    .values_list('rg_date', 'rp_date', 'end_date',
+                                 'main_title', 'cname', 'requests', 'total_price','finish', 'user_dept', 'user_name')
+            elif search_sort == 'rp_date':
+                rows = main_sheet.objects.all().filter(rp_date__range=[startdate, enddate], cname=login_session).order_by('-rg_date').values_list('rg_date', 'rp_date', 'end_date',
+                                                                                                                                                  'main_title', 'cname', 'requests', 'total_price','finish', 'user_dept', 'user_name')
+            elif search_sort == 'end_date':
+                rows = main_sheet.objects.all().filter(end_date__range=[startdate, enddate], cname=login_session).order_by('-rg_date').values_list('rg_date', 'rp_date', 'end_date',
+                                                                                                                                                   'main_title', 'cname', 'requests', 'total_price','finish', 'user_dept', 'user_name')
     else:
         print('전체 다운로드')
         if login_session == 'insung':
@@ -813,6 +847,8 @@ def product_list(request):
     user_dept = request.session.get('user_dept')
     print("제품관리 리스트 시작")
     global search_sort
+    global startdate
+    global enddate
 
     if request.method == 'GET':
         if login_session == 'insung':
@@ -867,7 +903,8 @@ def product_list(request):
                         Q(m_title__icontains=query) | Q(user_name__icontains=query)).order_by('-user_name',
                                                                                               '-rg_date')
                 elif search_sort == 'rg_date':
-                    e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(1)
+                    e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
+                                                                                                  seconds=59)
                     sub_list = sub_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by(
                         '-rg_date')
                 else:
@@ -879,8 +916,8 @@ def product_list(request):
             page_obj = paginator.get_page(page)
             print("insung GET main 페이징 끝")
 
-            context ={'login_session': login_session, 'user_dept': user_dept, 'user_name': user_name, 'sort': sort,
-                      'query': query, 'search_sort': search_sort, 'page_obj': page_obj}
+            context = {'login_session': login_session, 'user_dept': user_dept, 'user_name': user_name, 'sort': sort,
+                       'query': query, 'search_sort': search_sort, 'page_obj': page_obj, 'sdate': startdate, 'edate': enddate}
         else:
             print('일반 리스트 시작')
             sort = request.GET.get('sort', '')
@@ -943,7 +980,7 @@ def product_list(request):
             print("insung GET main 페이징 끝")
 
             context = {'page_obj': page_obj, 'login_session': login_session, 'user_name': user_name, 'user_dept': user_dept,
-                       'search_sort': search_sort, 'query': query}
+                       'search_sort': search_sort, 'query': query, 'sdate': startdate, 'edate': enddate}
         return render(request, 'isscm/product_list.html', context)
     elif request.method == 'POST':
         print('post 확인 필요')
@@ -1045,6 +1082,8 @@ def sub_list_excel(request):
     print('search : ', search_sort)
     if search_sort:
         print('검색으로 다운로드')
+        startdate = request.GET.get('sdate', '')
+        enddate = request.GET.get('edate', '')
         if login_session == 'insung':
             print('insung search 다운')
             if search_sort == 'product_name':
@@ -1113,6 +1152,13 @@ def sub_list_excel(request):
                     'rg_date', 'product_name', 'quantity',
                     'enter_quantity', 'per_price', 'tax', 'total_price',
                     'cname', 'm_id', 'm_title', 'user_name')
+            elif search_sort == 'rg_date':
+                e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
+                                                                                              seconds=59)
+
+                rows = sub_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by('-rg_date').values_list(
+                    'rg_date', 'product_name', 'quantity', 'enter_quantity', 'per_price', 'tax', 'total_price',
+                    'cname', 'm_id', 'm_title', 'user_name')
         else:
             print('일반 search 다운')
             if search_sort == 'product_name':
@@ -1164,6 +1210,13 @@ def sub_list_excel(request):
                                                                                                       'cname', 'm_id',
                                                                                                       'm_title',
                                                                                                       'user_name')
+            elif search_sort == 'rg_date':
+                e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
+                                                                                              seconds=59)
+
+                rows = sub_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date, cname=login_session).order_by('-rg_date').values_list(
+                    'rg_date', 'product_name', 'quantity', 'enter_quantity', 'per_price', 'tax', 'total_price',
+                    'cname', 'm_id', 'm_title', 'user_name')
     else:
         print('전체 다운로드')
         if login_session == 'insung':
@@ -1367,11 +1420,11 @@ def notice_view(request, pk):
         notice_view.end_date = request.POST['end_date']
         notice_view.content = request.POST['content']
 
-        notice_view.save()  
+        notice_view.save()
         print('공지사항 수정 완료')
 
         return HttpResponseRedirect(reverse('isscm:notice_view', args=[pk]))
-    
+
 # 공지사항 삭제
 def notice_delete(request, pk):
     notice_pick = get_object_or_404(notice, no=pk)

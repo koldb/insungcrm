@@ -67,8 +67,8 @@
             <option value="rp_date" id="rp_date">마감 일자</option>
             <option value="end_date" id="end_date">종료 일자</option>
         </select>
-        <input type="text" placeholder="클릭하여 날짜 선택"  name="sdate" id="datepicker3">
-        <input type="text" placeholder="클릭하여 날짜 선택"  name="edate" id="datepicker4">
+        <input type="text" placeholder="클릭하여 날짜 선택"  name="sdate" id="datepicker3" required>
+        <input type="text" placeholder="클릭하여 날짜 선택"  name="edate" id="datepicker4" required>
         <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
     </form>
 
@@ -230,7 +230,8 @@
         </select>
         <button class="btn btn-primary" type="submit" value="">정렬</button>
         <!--엑셀 다운로드-->
-        <a href="{% url 'isscm:main_excel' %}?q={{ query }}&search_sort={{search_sort}}" style="color:white"><button type="button" class="btn btn-primary">EXCEL DOWN</button></a>
+        <a href="{% url 'isscm:main_excel' %}?q={{ query }}&search_sort={{ search_sort }}&sdate={{ sdate }}&edate={{ edate }}" style="color:white">
+            <button type="button" class="btn btn-primary">EXCEL DOWN</button></a>
     </form>
 </div>
 <hr style="border: 1px;">

@@ -9,6 +9,7 @@ import mimetypes
 import shutil
 import json
 from django.urls import reverse
+import datetime
 
 # Create your views here.
 
@@ -96,6 +97,8 @@ def que_list(request):
             else:
                 print("리스트 조회 겸 목록 조회")
                 search_sort = request.GET.get('search_sort', '')
+                startdate = request.GET.get('sdate', '')
+                enddate = request.GET.get('edate', '')
                 if search_sort == 'cname':
                     company_sheet = question_sheet.objects.all().filter(Q(cname__icontains=query)).order_by('-rg_date', '-cname')
                 elif search_sort == 'type':
@@ -108,12 +111,17 @@ def que_list(request):
                     company_sheet = question_sheet.objects.all().filter(
                         Q(title__icontains=query) | Q(type__icontains=query) | Q(cname__icontains=query) | Q(
                             content__icontains=query)).order_by('-rg_date', '-cname')
+                elif search_sort == 'rg_date':
+                    e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
+                                                                                                  seconds=59)
+                    company_sheet = question_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by(
+                        '-rg_date')
                 else:
                     company_sheet = question_sheet.objects.all().order_by('-rg_date', '-cname')
 
             # 페이징
             page = request.GET.get('page', '1')
-            paginator = Paginator(company_sheet, 7)
+            paginator = Paginator(company_sheet, 10)
             page_obj = paginator.get_page(page)
             print("insung GET 페이징 끝")
 
@@ -134,6 +142,8 @@ def que_list(request):
             else:
                 print("리스트 조회 겸 목록 조회")
                 search_sort = request.GET.get('search_sort', '')
+                startdate = request.GET.get('sdate', '')
+                enddate = request.GET.get('edate', '')
                 if search_sort == 'type':
                     company_sheet = question_sheet.objects.all().filter(Q(type__icontains=query), cname=login_session).order_by('-rg_date',
                                                                                                            '-cname')
@@ -147,11 +157,17 @@ def que_list(request):
                     company_sheet = question_sheet.objects.all().filter(
                         Q(title__icontains=query) | Q(type__icontains=query) | Q(cname__icontains=query) | Q(
                             content__icontains=query), cname=login_session).order_by('-rg_date', '-cname')
+                elif search_sort == 'rg_date':
+                    e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
+                                                                                                  seconds=59)
+                    company_sheet = question_sheet.objects.all().filter(rg_date__gte=startdate,
+                                                                        rg_date__lte=e_date, cname=login_session).order_by(
+                        '-rg_date')
                 else:
                     company_sheet = question_sheet.objects.filter(cname=login_session).order_by('-rg_date', '-cname')
 
             page = request.GET.get('page', '1')
-            paginator = Paginator(company_sheet, 7)
+            paginator = Paginator(company_sheet, 10)
             page_obj = paginator.get_page(page)
             print("일반 GET 페이징 끝")
             context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort, 'query': query, 'user_name': user_name}
@@ -176,7 +192,7 @@ def searchResult(request):
                 content__icontains=query))
         print("여기 왓나")
         page = request.GET.get('page', '1')
-        paginator = Paginator(searchlist, 5)
+        paginator = Paginator(searchlist, 10)
         page_obj = paginator.get_page(page)
         print("지나갓나")
         return render(request, 'question/que_list.html',
@@ -189,7 +205,7 @@ def searchResult(request):
             Q(title__icontains=query) | Q(type__icontains=query) | Q(cname__icontains=query) | Q(
                 content__icontains=query))
         page = request.GET.get('page', '1')
-        paginator = Paginator(searchlist, 5)
+        paginator = Paginator(searchlist, 10)
         page_obj = paginator.get_page(page)
         context = {'query': query, 'page_obj': page_obj, 'login_session': login_session}
         print('포스트 나갓나')

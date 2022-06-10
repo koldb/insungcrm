@@ -5,7 +5,7 @@ import sys
 sys.path.append('..')
 from asregister.models import ASsheet
 from question.models import question_sheet
-from .models import UploadFile, ProductDb, main_sheet, sub_sheet, product_info, notice
+from .models import UploadFile, ProductDb, main_sheet, sub_sheet, product_info, notice, Product_Management
 from . import models
 from django.core.paginator import Paginator
 from django.db.models import Q, Sum, Count
@@ -122,7 +122,25 @@ def searchData(request):
             pname.append(product.product_name)
             print(pname)
         return JsonResponse(pname, safe=False)
-    return render(request, 'isscm/index.html')
+
+# 제품명 검색 자동완성
+def searchPM(request):
+    if 'term' in request.GET:
+        qs = Product_Management.objects.filter(serial__icontains=request.GET.get('term'))
+        pname = list()
+        pmlist = []
+        print(qs.values())
+        for product in qs:
+            n = product.product_name
+            s = product.serial
+            print("name : ", n)
+            print("serial : ", s)
+            # data = {
+            #     'name' : n,
+            #     'ser' : s
+            # }
+            pname.append(n)
+        return JsonResponse(pname, safe=False)
 
 
 # 메인 입력
@@ -256,7 +274,6 @@ def main_list(request):
                 search_sort = request.GET.get('search_sort', '')
                 startdate = request.GET.get('sdate', '')
                 enddate = request.GET.get('edate', '')
-                print(enddate)
                 if search_sort == 'main_title':
                     m_sheet = main_sheet.objects.all().filter(main_title__icontains=query).order_by('-rg_date')
                 elif search_sort == 'requests':
@@ -1432,3 +1449,146 @@ def notice_delete(request, pk):
     print('삭제 완료')
 
     return redirect('isscm:index')
+
+
+# 제품관리 DB 입력
+@login_required
+@login_ok
+def pm_insert(request):
+    login_session = request.session.get('login_session')
+    user_name = request.session.get('user_name')
+    user_dept = request.session.get('user_dept')
+
+    if request.method == 'GET':
+
+        context = {'login_session': login_session, 'user_name': user_name, 'user_dept': user_dept}
+        return render(request, 'isscm/pm_insert.html', context)
+    else:
+        pm = Product_Management()
+        pm.product_name = request.POST['product_name']
+        pm.serial = request.POST['serial']
+        pm.current_location = request.POST['current_location']
+        pm.status = request.POST['status']
+
+        pm.save()
+        return HttpResponseRedirect(reverse('isscm:pm_list'))
+
+
+
+# 제품관리 DB 리스트
+@login_required
+@login_ok
+def pm_list(request):
+    login_session = request.session.get('login_session')
+    user_name = request.session.get('user_name')
+    user_dept = request.session.get('user_dept')
+    global search_sort
+    global startdate
+    global enddate
+
+    if request.method == 'GET':
+        if login_session == 'insung':
+            print('get insung 리스트 시작')
+            sort = request.GET.get('sort', '')
+            query = request.GET.get('q', '')
+            if sort == 'rg_date':
+                pm_sheet = Product_Management.objects.all().order_by('-rg_date')
+            elif sort == 'product_name':
+                pm_sheet = Product_Management.objects.all().order_by('-product_name', '-rg_date')
+            elif sort == 'serial':
+                pm_sheet = Product_Management.objects.all().order_by('-serial', '-rg_date')
+            elif sort == 'current_location':
+                pm_sheet = Product_Management.objects.all().order_by('-current_location', '-rg_date', )
+            elif sort == 'status':
+                pm_sheet = Product_Management.objects.all().order_by('-status', '-rg_date')
+            elif sort == 'all':
+                pm_sheet = Product_Management.objects.all().order_by('-rg_date')
+            else:
+                print("리스트 조회 겸 목록 조회")
+                search_sort = request.GET.get('search_sort', '')
+                startdate = request.GET.get('sdate', '')
+                enddate = request.GET.get('edate', '')
+                if search_sort == 'product_name':
+                    pm_sheet = Product_Management.objects.all().filter(product_name__icontains=query).order_by('-rg_date')
+                elif search_sort == 'serial':
+                    pm_sheet = Product_Management.objects.all().filter(serial__icontains=query).order_by('-rg_date')
+                elif search_sort == 'current_location':
+                    pm_sheet = Product_Management.objects.all().filter(current_location__icontains=query).order_by('-rg_date')
+                elif search_sort == 'status':
+                    pm_sheet = Product_Management.objects.all().filter(status__icontains=query).order_by('-rg_date')
+                elif search_sort == 'rg_date':
+                    e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59, seconds=59)
+                    pm_sheet = Product_Management.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by('-rg_date')
+                elif search_sort == 'all':
+                    pm_sheet = Product_Management.objects.filter(
+                        Q(product_name__icontains=query) | Q(serial__icontains=query) | Q(current_location__icontains=query)
+                        | Q(status__icontains=query)).order_by('-rg_date')
+                else:
+                    pm_sheet = Product_Management.objects.all().order_by('-rg_date')
+
+            # 페이징f
+            page = request.GET.get('page', '1')
+            paginator = Paginator(pm_sheet, 15)
+            page_obj = paginator.get_page(page)
+            print("insung GET main 페이징 끝")
+            context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort,
+                       'query': query, 'search_sort': search_sort, 'user_name': user_name, 'user_dept': user_dept,
+                       'sdate': startdate, 'edate': enddate }
+
+        else:
+            sort = request.GET.get('sort', '')
+            query = request.GET.get('q', '')
+            if sort == 'rg_date':
+                pm_sheet = Product_Management.objects.all().filter(cname=login_session).order_by('-rg_date')
+            elif sort == 'product_name':
+                pm_sheet = Product_Management.objects.all().filter(cname=login_session).order_by('-product_name', '-rg_date')
+            elif sort == 'serial':
+                pm_sheet = Product_Management.objects.all().filter(cname=login_session).order_by('-serial', '-rg_date')
+            elif sort == 'current_location':
+                pm_sheet = Product_Management.objects.all().filter(cname=login_session).order_by('-current_location', '-rg_date', )
+            elif sort == 'status':
+                pm_sheet = Product_Management.objects.all().filter(cname=login_session).order_by('-status', '-rg_date')
+            elif sort == 'all':
+                pm_sheet = Product_Management.objects.all().filter(cname=login_session).order_by('-rg_date')
+            else:
+                print("리스트 조회 겸 목록 조회")
+                search_sort = request.GET.get('search_sort', '')
+                startdate = request.GET.get('sdate', '')
+                enddate = request.GET.get('edate', '')
+                if search_sort == 'product_name':
+                    pm_sheet = Product_Management.objects.all().filter(product_name__icontains=query, cname=login_session).order_by(
+                        '-rg_date')
+                elif search_sort == 'serial':
+                    pm_sheet = Product_Management.objects.all().filter(serial__icontains=query, cname=login_session).order_by('-rg_date')
+                elif search_sort == 'current_location':
+                    pm_sheet = Product_Management.objects.all().filter(current_location__icontains=query, cname=login_session).order_by(
+                        '-rg_date')
+                elif search_sort == 'status':
+                    pm_sheet = Product_Management.objects.all().filter(status__icontains=query, cname=login_session).order_by('-rg_date')
+                elif search_sort == 'rg_date':
+                    e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
+                                                                                                  seconds=59)
+                    pm_sheet = Product_Management.objects.all().filter(rg_date__gte=startdate,
+                                                                       rg_date__lte=e_date, cname=login_session).order_by('-rg_date')
+                elif search_sort == 'all':
+                    pm_sheet = Product_Management.objects.filter(
+                        Q(product_name__icontains=query) | Q(serial__icontains=query) | Q(
+                            current_location__icontains=query)
+                        | Q(status__icontains=query), cname=login_session).order_by('-rg_date')
+                else:
+                    pm_sheet = Product_Management.objects.all().filter(cname=login_session).order_by('-rg_date')
+
+            page = request.GET.get('page', '1')
+            paginator = Paginator(pm_sheet, 10)
+            page_obj = paginator.get_page(page)
+            print("일반 GET main 페이징 끝")
+            context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort, 'query': query,
+                       'search_sort': search_sort, 'sdate': startdate, 'edate': enddate,
+                       'user_name': user_name, 'user_dept': user_dept}
+
+        print('PM 리스트 끝')
+        return render(request, 'isscm/pm_list.html', context)
+    else:
+        print("post로 리스트옴 확인요망")
+
+        return redirect('isscm/pm_list')

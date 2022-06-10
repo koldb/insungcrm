@@ -24,6 +24,18 @@
 </style>
 
 <script type="text/javascript">
+  $(function () {
+        $("#serial").autocomplete({
+            source: '{% url 'isscm:searchPM' %}',
+            minLength: 1,
+             select: function( event, ui ) {
+             console.log(ui)
+            $("#product_name").val(ui.item.value);
+            return false;
+            }
+    });
+    });
+
 
 </script>
 
@@ -46,11 +58,13 @@
             </thead>
             <tbody>
             <tr class="m" style="text-align:center;" >
-                <input type="hidden" value="{{ sub_detailView.product_name }}" name="product_name" id="product_name">
-                <td>{{ sub_detailView.product_name }}</td>
+                <!--<input type="hidden" value="{{ sub_detailView.product_name }}" name="product_name" id="product_name">
+                <td>{{ sub_detailView.product_name }}</td>-->
+
+                <td><input type="text" name="product_name" id="product_name" style="width: 100%; text-align:center;" readonly></td>
                 <input type="hidden" value="{{ sub_detailView.cname }}" name="cname" id="cname">
                 <td>{{ sub_detailView.cname }}</td>
-                <td><input type="text" name="serial" id="serial" placeholder="시리얼 입력"></td>
+                <td><input type="text" name="serial" id="serial" placeholder="시리얼 먼저 입력하세요." autofocus></td>
                 <td><input type="text" name="production_date" id="datepicker3" placeholder="클릭하여 날짜를 선택"></td>
                 <td><input type="text" name="release_date" id="datepicker2" placeholder="클릭하여 날짜를 선택"></td>
                 <td>{{ sub_detailView.id }}</td>

@@ -22,16 +22,18 @@
 
 
 <script type="text/javascript">
-   $(function() {
-    $("input:text").keydown(function(evt) {
-        if (evt.keyCode == 13) return false; });
+    $(function() {
+        $("input:text").keydown(function(evt) {
+            if (evt.keyCode == 13) return false; });
     });
 
-        $(function () {
-      $("#product_name").autocomplete({
-          source: '{% url 'isscm:searchData' %}',
-          minLength: 1
-       });
+     $(function () {
+        $("#product_name").autocomplete({
+            source: '{% url 'isscm:searchData' %}',
+            minLength: 1,
+    });
+
+
 
 
             // Get the modal

@@ -6,7 +6,7 @@ import os
 
 # Create your models here.
 
-# 제품명 db 테스트
+# 제품명 db
 class ProductDb(models.Model):
     no = models.AutoField(auto_created=True, primary_key=True)
     center_code = models.TextField(blank=True, null=True)
@@ -119,3 +119,20 @@ class notice(models.Model):
         db_table = 'notice'
         verbose_name = '공지사항'
         verbose_name_plural = '공지사항'
+
+
+# 제품 DB
+class Product_Management(models.Model):
+    no = models.AutoField(primary_key=True)
+    rg_date = models.DateTimeField(auto_now_add=True, verbose_name='등록일자')
+    product_name = models.CharField(null=True, blank=True, max_length=50, verbose_name='제품명')
+    serial = models.CharField(null=True, blank=True, max_length=20, verbose_name='시리얼')
+    current_location = models.CharField(null=True, blank=True, max_length=30, verbose_name='현재 위치')
+    status = models.CharField(null=True, blank=True, max_length=10, verbose_name='상태')
+
+
+    class Meta:
+        managed = True
+        db_table = 'product_management'
+        verbose_name = '제품관리'
+        verbose_name_plural = '제품관리'

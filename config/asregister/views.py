@@ -67,6 +67,7 @@ def as_list(request):
     print("리스트 시작")
     login_session = request.session.get('login_session')
     user_name = request.session.get('user_name')
+    user_phone = request.session.get('user_phone')
     global search_sort
     global startdate
     global enddate
@@ -156,7 +157,7 @@ def as_list(request):
             context = {'login_session': login_session, 'company_sheet': company_sheet, 'page_obj': page_obj,
                        'sort': sort, 'as_wnum': as_wnum, 'as_mnum': as_mnum, 'as_wnum_sum': as_wnum_sum,
                        'as_mnum_sum': as_mnum_sum, 'user_name': user_name, 'search_sort': search_sort,
-                       'over_as': over_as, 'query': query, 'sdate': startdate, 'edate': enddate}
+                       'over_as': over_as, 'query': query, 'sdate': startdate, 'edate': enddate, 'user_phone': user_phone}
 
         else:
             sort = request.GET.get('sort', '')
@@ -227,7 +228,7 @@ def as_list(request):
             paginator = Paginator(company_sheet, 10)
             page_obj = paginator.get_page(page)
             print("GET 페이징 끝")
-            context = {'login_session': login_session, 'company_sheet': company_sheet, 'page_obj': page_obj,
+            context = {'login_session': login_session, 'company_sheet': company_sheet, 'page_obj': page_obj, 'user_phone': user_phone,
                        'sort': sort, 'search_sort': search_sort, 'query': query, 'user_name': user_name, 'sdate': startdate, 'edate': enddate}
         print('끝')
         return render(request, 'assheet/as_list.html', context)

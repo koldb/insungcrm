@@ -118,8 +118,8 @@
 <div class = "container" id="paging">
     {#first previous#}
     {% if page_obj.has_previous %}
-    <a href="?q={{ query }}&page_obj={{ page_obj }}&page=1&sort={{sort}}&search_sort={{search_sort}}">First</a>
-    <a href="?q={{ query }}&page_obj={{ page_obj }}&page={{page_obj.previous_page_number}}&sort={{sort}}}&search_sort={{search_sort}}">Previous</a>
+    <a href="?q={{ query }}&page_obj={{ page_obj }}&page=1&sort={{sort}}&search_sort={{search_sort}}&sdate={{ sdate }}&edate={{ edate }}">First</a>
+    <a href="?q={{ query }}&page_obj={{ page_obj }}&page={{page_obj.previous_page_number}}&sort={{sort}}}&search_sort={{search_sort}}&sdate={{ sdate }}&edate={{ edate }}">Previous</a>
     {% endif %}
     {# 3of4 #}
     <span>{{page_obj.number}}</span>
@@ -127,8 +127,8 @@
     <span>{{page_obj.paginator.num_pages}}</span>
     {# Next Last #}
     {% if page_obj.has_next %}
-    <a href="?q={{ query }}&page_obj={{ page_obj }}&page={{page_obj.next_page_number}}&sort={{sort}}}&search_sort={{search_sort}}">Next</a>
-    <a href="?q={{ query }}&page_obj={{ page_obj }}&page={{page_obj.paginator.num_pages}}&sort={{sort}}}&search_sort={{search_sort}}">Last</a>
+    <a href="?q={{ query }}&page_obj={{ page_obj }}&page={{page_obj.next_page_number}}&sort={{sort}}}&search_sort={{search_sort}}&sdate={{ sdate }}&edate={{ edate }}">Next</a>
+    <a href="?q={{ query }}&page_obj={{ page_obj }}&page={{page_obj.paginator.num_pages}}&sort={{sort}}}&search_sort={{search_sort}}&sdate={{ sdate }}&edate={{ edate }}">Last</a>
     {%endif%}
 
 </div>

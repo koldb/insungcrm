@@ -58,7 +58,7 @@
 
 <!--검색창 부분-->
 <div class="container" >
-    <form action="{% url 'asregister:as_list' %}" method="GET" >
+    <form action="{% url 'asregister:as_list' %}" method="GET">
         {% csrf_token %}
         <div id="search_p">
             <select name="search_sort" id="search_sort">
@@ -80,6 +80,8 @@
             <input type="search" placeholder="검색"  name="q" value="{{ query }}">
             <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
         </div>
+    </form>
+    <form action="{% url 'asregister:as_list' %}" method="GET" >
         <div id="search_l">
             <select name="search_sort" id="search_sort">
                 <option value="rg_date" id="rg_date">접수 일자</option>

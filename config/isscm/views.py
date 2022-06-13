@@ -114,7 +114,7 @@ def index(request):
     return render(request, 'isscm/index.html', context)
 
 
-# 제품명 검색 자동완성
+# 제품명 검색 자동완성(사용하진 않고있음)
 def searchData(request):
     if 'term' in request.GET:
         qs = ProductDb.objects.filter(product_name__icontains=request.GET.get('term'))
@@ -128,35 +128,14 @@ def searchData(request):
 # 제품명 검색 자동완성
 def searchPM(request):
     if 'term' in request.GET:
-        qs = Product_Management.objects.filter(serial__icontains=request.GET.get('term'))
+        qs = Product_Management.objects.filter(serial__icontains=request.GET.get('term')).exclude(status='폐기').values('product_name').distinct()
         pname = list()
         pmlist = []
         print(qs.values())
         for product in qs:
-            n = product.product_name
-            s = product.serial
+            n = product['product_name']
+            #s = product.serial
             print("name : ", n)
-            print("serial : ", s)
-            # data = {
-            #     'name' : n,
-            #     'ser' : s
-            # }
-            pname.append(n)
-        return JsonResponse(pname, safe=False)
-
-
-# 시리얼 -> 제품명 검색 자동완성
-def searchname(request):
-    if 'term' in request.GET:
-        qs = Product_Management.objects.filter(serial__icontains=request.GET.get('term'))
-        pname = list()
-        pmlist = []
-        print(qs.values())
-        for product in qs:
-            n = product.product_name
-            s = product.serial
-            print("name : ", n)
-            print("serial : ", s)
             # data = {
             #     'name' : n,
             #     'ser' : s
@@ -1092,14 +1071,15 @@ def product_modify(request, pk):
         product.user_name = user_name
 
         try:
-            pm_modify = Product_Management()
+            ex_pm = Product_Management.objects.exclude(status='폐기')
+            pm_modify = get_object_or_404(ex_pm, serial=request.POST['serial'])
+            #pm_modify = Product_Management()
             pm_modify.product_name = request.POST['product_name']
             pm_modify.current_location = request.POST['cname']
             pm_modify.status = "출고"
             pm_modify.serial = request.POST['serial']
-            pm_modify.info_id_id = pk
-            pm_modify.save()
 
+            pm_modify.save()
             print("pm 까지 수정 저장완료")
         except:
             print("수정 저장완료")

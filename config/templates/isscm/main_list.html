@@ -3,7 +3,7 @@
 {% load humanize %}
 {% load filter %}
 <style>
-    #paging{
+     #paging{
         width:150px;
         margin:0 auto;
     }
@@ -20,11 +20,11 @@
      background-color: #98bee0;
      cursor:pointer;
     }
-        table {
-        text-align: center;
-        margin-left:auto;
-        margin-right:auto;
-        }
+    table {
+    text-align: center;
+    margin-left:auto;
+    margin-right:auto;
+    }
     caption {
     caption-side: top;
     text-align: left;
@@ -44,7 +44,6 @@
         margin:0 auto;
         display:inline-block;
     }
-
 </style>
 
 
@@ -67,7 +66,8 @@
             <input type="search"placeholder="검색"  name="q" value="{{ query }}">
             <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
         </div>
-
+    </form>
+    <form action="{% url 'isscm:main_list' %}" method="GET" >
         <div id="search_l">
             <select name="search_sort" id="search_sort">
                 <option value="rg_date" id="rg_date">등록 일자</option>
@@ -79,8 +79,6 @@
             <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
         </div>
     </form>
-
-
 </div>
 <br>
 <!--회사 아이디 일때 리스트-->
@@ -167,7 +165,7 @@
         <tbody>
 
         {% for list in page_obj %}
-        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'isscm:main_detail' list.id %}'">
+        <tr class="m" style="   text-align:center;" onclick="location.href='{% url 'isscm:main_detail' list.id %}'">
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
             {% if list.rp_date == None %}

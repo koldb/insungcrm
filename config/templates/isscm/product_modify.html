@@ -65,10 +65,10 @@
                 <!--<input type="hidden" value="{{ sub_detailView.product_name }}" name="product_name" id="product_name">
                 <td>{{ sub_detailView.product_name }}</td>-->
 
-                <td><input type="text" name="product_name" id="product_name" style="width: 100%; text-align:center;" readonly></td>
+                <td><input type="text" name="product_name" id="product_name" style="width: 100%; text-align:center;" readonly required></td>
                 <input type="hidden" value="{{ sub_detailView.cname }}" name="cname" id="cname">
                 <td>{{ sub_detailView.cname }}</td>
-                <td><input type="text" name="serial" id="serial" placeholder="시리얼 먼저 입력하세요." autofocus></td>
+                <td><input type="text" name="serial" id="serial" placeholder="시리얼 먼저 입력하세요." autofocus required></td>
                 <td><input type="text" name="production_date" id="datepicker3" placeholder="클릭하여 날짜를 선택"></td>
                 <td><input type="text" name="release_date" id="datepicker2" placeholder="클릭하여 날짜를 선택"></td>
                 <td>{{ sub_detailView.id }}</td>
@@ -76,12 +76,11 @@
             </tr>
             </tbody>
         </table>
-        <input type="text" value="{{ sub_detailView.id }}" name="id" id="id">
         <br>
         <!--엑셀 다운로드-->
         <a href="{% url 'isscm:product_info_excel' %}?sid={{ sub_detailView.id }}" style="color:white" ><button type="button" class="btn btn-primary" >EXCEL DOWN</button></a>
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:product_list' %}'" value="목록으로">
-        <input type="submit" value="품목 저장" class="btn btn-primary" onclick="alert('입력 완료')"  style="float: right;">
+        <input type="submit" value="품목 저장" class="btn btn-primary"  style="float: right;">
     </form>
 </div>
 {% else %}

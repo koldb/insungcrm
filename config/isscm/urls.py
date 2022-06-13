@@ -11,7 +11,6 @@ urlpatterns = [
     path('main_file_delete/<int:pk>/', views.main_file_delete, name='main_file_delete'),
     path('searchData/', views.searchData, name='searchData'),
     path('searchPM/', views.searchPM, name='searchPM'),
-    path('searchname/', views.searchname, name='searchname'),
     path('main_excel/', views.main_excel, name='main_excel'),
     path('sub_excel/', views.sub_excel, name='sub_excel'),
     path('sub_list_excel/', views.sub_list_excel, name='sub_list_excel'),

@@ -79,9 +79,11 @@ def index(request):
     es_num_sum = sub_sheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).aggregate(
         Sum('quantity'))
     as_num = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values(
-        'product_name').order_by('product_name').annotate(count=Sum('quantity'))
+        'product_name').order_by('product_name').annotate(count=Count('product_name'))
+    print(as_num)
     as_num_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).aggregate(
-        Sum('quantity'))
+        Count('product_name'))
+    print(as_num_sum)
 
     # 업체별 월간 메인, AS 개수
     es_cnum = main_sheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values(

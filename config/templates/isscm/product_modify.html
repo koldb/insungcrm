@@ -121,7 +121,9 @@
             <td>{{ list.warranty | date:'Y-m-d' }}</td>
             <td>{{ list.s_id_id }}</td>
             <td>{{ list.user_name }}</td>
+            {% if login_session == 'insung' %}
             <td><input type="button" value="delete" class="btn btn-primary" onclick="location.href='{% url 'isscm:product_delete' list.id  sub_detailView.id%}'"></td>
+            {% endif %}
         </tr>
         {% endfor %}
         </tbody>

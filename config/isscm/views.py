@@ -1659,3 +1659,42 @@ def pm_list(request):
         print("post로 리스트옴 확인요망")
 
         return redirect('isscm/pm_list')
+
+
+def pm_modify(request, pk):
+    login_session = request.session.get('login_session')
+    user_name = request.session.get('user_name')
+    user_dept = request.session.get('user_dept')
+    detailView = get_object_or_404(Product_Management, no=pk)
+    if request.method == 'GET':
+        print('get sub detail 뷰 시작')
+        context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name,
+                   'user_dept': user_dept}
+        print("디테일 뷰 끝")
+        return render(request, 'isscm/pm_modify.html', context)
+    else:
+        print("post sub detail 뷰 / 수정 시작")
+        # 수정 내용 저장
+
+        detailView.product_name = request.POST['product_name']
+        detailView.serial = request.POST['serial']
+        detailView.current_location = request.POST['current_location']
+        detailView.status = request.POST['status']
+
+        detailView.save()
+
+        print("수정 저장 끝")
+        context = {'login_session': login_session, 'user_name': user_name,
+                   'user_dept': user_dept, 'detailView': detailView}
+        #return render(request, 'isscm/main_detail.html', context)
+        return redirect('isscm:pm_list')
+
+
+def pm_delete(request, pk):
+    pm_view = get_object_or_404(Product_Management, id=pk)
+    pm_view.delete()
+
+    print('삭제완료')
+    return redirect('isscm:pm_list')
+    # return redirect('isscm:product_modify')
+

@@ -34,6 +34,8 @@ urlpatterns = [
     path('notice_delete/<int:pk>/', views.notice_delete, name='notice_delete'),
     path('pm_insert/', views.pm_insert, name='pm_insert'),
     path('pm_list/', views.pm_list, name='pm_list'),
+    path('pm_modify/<int:pk>/', views.pm_modify, name='pm_modify'),
+    path('pm_delete/<int:pk>/', views.pm_delete, name='pm_delete'),
 
 ]
 

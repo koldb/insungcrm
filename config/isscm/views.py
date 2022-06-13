@@ -142,6 +142,25 @@ def searchPM(request):
             pname.append(n)
         return JsonResponse(pname, safe=False)
 
+# 시리얼 -> 제품명 검색 자동완성
+def searchname(request):
+    if 'term' in request.GET:
+        qs = Product_Management.objects.filter(serial__icontains=request.GET.get('term'))
+        pname = list()
+        pmlist = []
+        print(qs.values())
+        for product in qs:
+            n = product.product_name
+            s = product.serial
+            print("name : ", n)
+            print("serial : ", s)
+            # data = {
+            #     'name' : n,
+            #     'ser' : s
+            # }
+            pname.append(n)
+        return JsonResponse(pname, safe=False)
+
 
 # 메인 입력
 @login_required
@@ -1017,6 +1036,7 @@ def product_modify(request, pk):
     entercount = get_object_or_404(sub_sheet, id=pk)
     if request.method == 'GET':
         print('get sub detail 뷰 시작')
+
         context = {'sub_detailView': sub_detailView, 'product_view': product_view, 'login_session': login_session,
                    'user_name': user_name, 'user_dept': user_dept}
         print("디테일 뷰 끝")
@@ -1037,8 +1057,17 @@ def product_modify(request, pk):
         product.s_id_id = pk
         product.user_name = user_name
 
-        print("수정 저장완료")
-        product.save()
+        try:
+            #pm_modify = get_object_or_404(Product_Management, serial=request.POST['serial'])
+            pm_modify = Product_Management()
+            pm_modify.current_location = request.POST['cname']
+            pm_modify.status = "출고"
+            pm_modify.save()
+            product.save()
+            print("pm 까지 수정 저장완료")
+        except:
+            print("수정 저장완료")
+            product.save()
 
         entercount.enter_quantity = sid_count
         entercount.save()
@@ -1054,11 +1083,13 @@ def product_modify(request, pk):
 def product_delete(request, pk, sid):
     product_view = get_object_or_404(product_info, id=pk)
     product_view.delete()
+
     sid_count = product_info.objects.filter(s_id_id=sid).count()
     print('sid : ', sid_count)
     entercount = get_object_or_404(sub_sheet, id=sid)
     entercount.enter_quantity = sid_count
     entercount.save()
+
     print('제품정보 삭제완료')
     return redirect(f'/product_modify/{sid}')
     # return redirect('isscm:product_modify')

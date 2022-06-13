@@ -106,16 +106,17 @@
         {% if page_obj %}
         <tr class="header" style="text-align:center;">
             <th style="width:3%;">순번</th>
-            <th style="width:8%">업체명</th>
+            <th style="width:7%">업체명</th>
             <th style="width:5%">요청자</th>
             <th style="width:5%">접수 일자</th>
             <th style="width:6%">마감 요청 일자</th>
             <th style="width:5%">종료 일자</th>
-            <th style="width:25%">제품명</th>
+            <th style="width:20%">제품명</th>
             <th style="width:6%">시리얼</th>
             <th style="width:15%">비고</th>
-            <th style="width:4%">완료 여부</th>
-            <th style="width:4%">담당자</th>
+            <th style="width:15%">의견</th>
+            <th style="width:5%">완료 여부</th>
+            <th style="width:6%">담당자</th>
         </tr>
         </thead>
         <tbody>
@@ -130,7 +131,8 @@
             <td>{{ list.end_date|date:'Y-m-d'  }}</td>
             <td>{{ list.product_name }}</td>
             <td>{{ list.serial }}</td>
-            <td>{{ list.memo | truncatewords:10}}</td>
+            <td>{{ list.memo | truncatewords:15}}</td>
+            <td>{{ list.option | truncatewords:15}}</td>
             <td>{{ list.finish|default_if_none:"--" }}</td>
             <td>{{ list.user_name|default_if_none:"--" }}</td>
         </tr>
@@ -156,17 +158,18 @@
         <thead>
         {% if page_obj %}
         <tr class="header" style="text-align:center;">
-            <th style="width:5%;">순번</th>
-            <th style="width:10%">업체명</th>
+            <th style="width:3%;">순번</th>
+            <th style="width:7%">업체명</th>
             <th style="width:5%">요청자</th>
             <th style="width:5%">접수 일자</th>
             <th style="width:6%">마감 요청 일자</th>
             <th style="width:5%">종료 일자</th>
-            <th style="width:25%">제품명</th>
+            <th style="width:20%">제품명</th>
             <th style="width:6%">시리얼</th>
             <th style="width:15%">비고</th>
+            <th style="width:15%">의견</th>
             <th style="width:5%">완료 여부</th>
-            <th style="width:4%">담당자</th>
+            <th style="width:6%">담당자</th>
         </tr>
         </thead>
         <tbody>
@@ -186,8 +189,8 @@
             <td>{{ list.end_date|date:'Y-m-d'  }}</td>
             <td>{{ list.product_name }}</td>
             <td>{{ list.serial }}</td>
-            <td>{{ list.quantity }}</td>
-            <td>{{ list.memo | truncatewords:10}}</td>
+            <td>{{ list.memo | truncatewords:15}}</td>
+            <td>{{ list.option | truncatewords:15}}</td>
             <td>{{ list.finish|default_if_none:"--" }}</td>
             <td>{{ list.user_name|default_if_none:"--" }}</td>
         </tr>

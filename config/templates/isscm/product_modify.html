@@ -24,6 +24,29 @@
 </style>
 
 <script type="text/javascript">
+  function searchName() {
+        $("#serial").autocomplete({
+         change: function( event, ui ) {
+         console.log('테스트2');
+         },
+         source: '{% url 'isscm:searchname' %}',
+         select: function( event, ui ) {
+         console.log(ui)
+         $("#product_name").val(ui.item.value);
+         return false;
+         }
+
+    });
+    };
+
+$( ".serial" ).on(
+    "autocompletechange",
+    function( event, ui ) {
+    searchName()
+    }
+);
+
+
   $(function () {
         $("#serial").autocomplete({
             source: '{% url 'isscm:searchPM' %}',
@@ -33,8 +56,11 @@
             $("#product_name").val(ui.item.value);
             return false;
             }
+
     });
     });
+
+
 
 
 </script>

@@ -109,7 +109,8 @@ def index(request):
                'as_pcount': as_pcount, 'que_pcount': que_pcount, 'es_num_sum': es_num_sum,
                'as_num_sum': as_num_sum, 'es_cnum_sum': es_cnum_sum,
                'as_cnum_sum': as_cnum_sum, 'es_pfcount': es_pfcount, 'es_picount': es_picount, 'es_pxcount': es_pxcount,
-               'as_pfcount': as_pfcount, 'as_picount': as_picount, 'as_pxcount': as_pxcount, 'user_name': user_name, 'page_obj': page_obj}
+               'as_pfcount': as_pfcount, 'as_picount': as_picount, 'as_pxcount': as_pxcount, 'user_name': user_name,
+               'page_obj': page_obj}
     return render(request, 'isscm/index.html', context)
 
 
@@ -122,6 +123,7 @@ def searchData(request):
             pname.append(product.product_name)
             print(pname)
         return JsonResponse(pname, safe=False)
+
 
 # 제품명 검색 자동완성
 def searchPM(request):
@@ -141,6 +143,7 @@ def searchPM(request):
             # }
             pname.append(n)
         return JsonResponse(pname, safe=False)
+
 
 # 시리얼 -> 제품명 검색 자동완성
 def searchname(request):
@@ -314,8 +317,10 @@ def main_list(request):
                         v = v + list(ms)
                     m_sheet = reduce(lambda acc, cur: acc if cur in acc else acc + [cur], v, [])
                 elif search_sort == 'rg_date':
-                    e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59, seconds=59)
-                    m_sheet = main_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by('-rg_date')
+                    e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
+                                                                                                  seconds=59)
+                    m_sheet = main_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by(
+                        '-rg_date')
                 elif search_sort == 'rp_date':
                     m_sheet = main_sheet.objects.all().filter(rp_date__range=[startdate, enddate]).order_by('-rg_date')
                 elif search_sort == 'end_date':
@@ -339,7 +344,7 @@ def main_list(request):
             print("insung GET main 페이징 끝")
             context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort, 'over_date': over_date,
                        'query': query, 'search_sort': search_sort, 'user_name': user_name, 'user_dept': user_dept,
-                       'sdate': startdate, 'edate': enddate }
+                       'sdate': startdate, 'edate': enddate}
 
         else:
             sort = request.GET.get('sort', '')
@@ -383,11 +388,14 @@ def main_list(request):
                 elif search_sort == 'rg_date':
                     e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
                                                                                                   seconds=59)
-                    m_sheet = main_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date, cname=login_session).order_by('-rg_date')
+                    m_sheet = main_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date,
+                                                              cname=login_session).order_by('-rg_date')
                 elif search_sort == 'rp_date':
-                    m_sheet = main_sheet.objects.all().filter(rp_date__range=[startdate, enddate], cname=login_session).order_by('-rg_date')
+                    m_sheet = main_sheet.objects.all().filter(rp_date__range=[startdate, enddate],
+                                                              cname=login_session).order_by('-rg_date')
                 elif search_sort == 'end_date':
-                    m_sheet = main_sheet.objects.all().filter(end_date__range=[startdate, enddate], cname=login_session).order_by('-rg_date')
+                    m_sheet = main_sheet.objects.all().filter(end_date__range=[startdate, enddate],
+                                                              cname=login_session).order_by('-rg_date')
                 elif search_sort == 'product_name':
                     s_sheet = sub_sheet.objects.all().filter(product_name__icontains=query,
                                                              cname=login_session).order_by('-rg_date')
@@ -645,13 +653,17 @@ def main_excel(request):
                 print('엑셀다운 등록일자', e_date)
                 rows = main_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by('-rg_date') \
                     .values_list('rg_date', 'rp_date', 'end_date',
-                                 'main_title', 'cname', 'requests', 'total_price','finish', 'user_dept', 'user_name')
+                                 'main_title', 'cname', 'requests', 'total_price', 'finish', 'user_dept', 'user_name')
             elif search_sort == 'rp_date':
-                rows = main_sheet.objects.all().filter(rp_date__range=[startdate, enddate]).order_by('-rg_date').values_list('rg_date', 'rp_date', 'end_date',
-                                                                                                                             'main_title', 'cname', 'requests', 'total_price','finish', 'user_dept', 'user_name')
+                rows = main_sheet.objects.all().filter(rp_date__range=[startdate, enddate]).order_by(
+                    '-rg_date').values_list('rg_date', 'rp_date', 'end_date',
+                                            'main_title', 'cname', 'requests', 'total_price', 'finish', 'user_dept',
+                                            'user_name')
             elif search_sort == 'end_date':
-                rows = main_sheet.objects.all().filter(end_date__range=[startdate, enddate]).order_by('-rg_date').values_list('rg_date', 'rp_date', 'end_date',
-                                                                                                                              'main_title', 'cname', 'requests', 'total_price','finish', 'user_dept', 'user_name')
+                rows = main_sheet.objects.all().filter(end_date__range=[startdate, enddate]).order_by(
+                    '-rg_date').values_list('rg_date', 'rp_date', 'end_date',
+                                            'main_title', 'cname', 'requests', 'total_price', 'finish', 'user_dept',
+                                            'user_name')
         else:
             print('일반 search 다운')
             if search_sort == 'main_title':
@@ -701,15 +713,34 @@ def main_excel(request):
                 e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
                                                                                               seconds=59)
                 print('엑셀다운 등록일자', e_date)
-                rows = main_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date, cname=login_session).order_by('-rg_date') \
+                rows = main_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date,
+                                                       cname=login_session).order_by('-rg_date') \
                     .values_list('rg_date', 'rp_date', 'end_date',
-                                 'main_title', 'cname', 'requests', 'total_price','finish', 'user_dept', 'user_name')
+                                 'main_title', 'cname', 'requests', 'total_price', 'finish', 'user_dept', 'user_name')
             elif search_sort == 'rp_date':
-                rows = main_sheet.objects.all().filter(rp_date__range=[startdate, enddate], cname=login_session).order_by('-rg_date').values_list('rg_date', 'rp_date', 'end_date',
-                                                                                                                                                  'main_title', 'cname', 'requests', 'total_price','finish', 'user_dept', 'user_name')
+                rows = main_sheet.objects.all().filter(rp_date__range=[startdate, enddate],
+                                                       cname=login_session).order_by('-rg_date').values_list('rg_date',
+                                                                                                             'rp_date',
+                                                                                                             'end_date',
+                                                                                                             'main_title',
+                                                                                                             'cname',
+                                                                                                             'requests',
+                                                                                                             'total_price',
+                                                                                                             'finish',
+                                                                                                             'user_dept',
+                                                                                                             'user_name')
             elif search_sort == 'end_date':
-                rows = main_sheet.objects.all().filter(end_date__range=[startdate, enddate], cname=login_session).order_by('-rg_date').values_list('rg_date', 'rp_date', 'end_date',
-                                                                                                                                                   'main_title', 'cname', 'requests', 'total_price','finish', 'user_dept', 'user_name')
+                rows = main_sheet.objects.all().filter(end_date__range=[startdate, enddate],
+                                                       cname=login_session).order_by('-rg_date').values_list('rg_date',
+                                                                                                             'rp_date',
+                                                                                                             'end_date',
+                                                                                                             'main_title',
+                                                                                                             'cname',
+                                                                                                             'requests',
+                                                                                                             'total_price',
+                                                                                                             'finish',
+                                                                                                             'user_dept',
+                                                                                                             'user_name')
     else:
         print('전체 다운로드')
         if login_session == 'insung':
@@ -953,7 +984,8 @@ def product_list(request):
             print("insung GET main 페이징 끝")
 
             context = {'login_session': login_session, 'user_dept': user_dept, 'user_name': user_name, 'sort': sort,
-                       'query': query, 'search_sort': search_sort, 'page_obj': page_obj, 'sdate': startdate, 'edate': enddate}
+                       'query': query, 'search_sort': search_sort, 'page_obj': page_obj, 'sdate': startdate,
+                       'edate': enddate}
         else:
             print('일반 리스트 시작')
             sort = request.GET.get('sort', '')
@@ -989,7 +1021,8 @@ def product_list(request):
                         '-rg_date')
                 elif search_sort == 'serial':
                     sub_list = []
-                    product_list = product_info.objects.filter(serial__icontains=query, cname=login_session).values('s_id').distinct()
+                    product_list = product_info.objects.filter(serial__icontains=query, cname=login_session).values(
+                        's_id').distinct()
                     print('product_list : ', product_list)
                     for i in product_list:
                         sid = i['s_id']
@@ -1005,7 +1038,8 @@ def product_list(request):
                         '-rg_date')
                 elif search_sort == 'rg_date':
                     e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(1)
-                    sub_list = sub_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date, cname=login_session).order_by(
+                    sub_list = sub_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date,
+                                                              cname=login_session).order_by(
                         '-rg_date')
                 else:
                     sub_list = sub_sheet.objects.filter(cname=login_session).order_by('-rg_date', 'id')
@@ -1015,7 +1049,8 @@ def product_list(request):
             page_obj = paginator.get_page(page)
             print("insung GET main 페이징 끝")
 
-            context = {'page_obj': page_obj, 'login_session': login_session, 'user_name': user_name, 'user_dept': user_dept,
+            context = {'page_obj': page_obj, 'login_session': login_session, 'user_name': user_name,
+                       'user_dept': user_dept,
                        'search_sort': search_sort, 'query': query, 'sdate': startdate, 'edate': enddate}
         return render(request, 'isscm/product_list.html', context)
     elif request.method == 'POST':
@@ -1032,7 +1067,6 @@ def product_modify(request, pk):
     sub_detailView = get_object_or_404(sub_sheet, id=pk)
     product_view = product_info.objects.filter(s_id_id=pk)
     sid_count = product_info.objects.filter(s_id_id=pk).count() + 1
-    print(sid_count)
     entercount = get_object_or_404(sub_sheet, id=pk)
     if request.method == 'GET':
         print('get sub detail 뷰 시작')
@@ -1058,16 +1092,20 @@ def product_modify(request, pk):
         product.user_name = user_name
 
         try:
-            #pm_modify = get_object_or_404(Product_Management, serial=request.POST['serial'])
             pm_modify = Product_Management()
+            pm_modify.product_name = request.POST['product_name']
             pm_modify.current_location = request.POST['cname']
             pm_modify.status = "출고"
+            pm_modify.serial = request.POST['serial']
+            pm_modify.info_id_id = pk
             pm_modify.save()
-            product.save()
+
             print("pm 까지 수정 저장완료")
         except:
             print("수정 저장완료")
             product.save()
+
+        product.save()
 
         entercount.enter_quantity = sid_count
         entercount.save()
@@ -1204,7 +1242,8 @@ def sub_list_excel(request):
                 e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
                                                                                               seconds=59)
 
-                rows = sub_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by('-rg_date').values_list(
+                rows = sub_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by(
+                    '-rg_date').values_list(
                     'rg_date', 'product_name', 'quantity', 'enter_quantity', 'per_price', 'tax', 'total_price',
                     'cname', 'm_id', 'm_title', 'user_name')
         else:
@@ -1262,7 +1301,8 @@ def sub_list_excel(request):
                 e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
                                                                                               seconds=59)
 
-                rows = sub_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date, cname=login_session).order_by('-rg_date').values_list(
+                rows = sub_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date,
+                                                      cname=login_session).order_by('-rg_date').values_list(
                     'rg_date', 'product_name', 'quantity', 'enter_quantity', 'per_price', 'tax', 'total_price',
                     'cname', 'm_id', 'm_title', 'user_name')
     else:
@@ -1448,6 +1488,7 @@ def notice_insert(request):
         print('공지사항 입력 완료')
         return HttpResponseRedirect(reverse('isscm:index'))
 
+
 # 공지사항 뷰
 def notice_view(request, pk):
     login_session = request.session.get('login_session')
@@ -1457,7 +1498,8 @@ def notice_view(request, pk):
 
     if request.method == 'GET':
         print('공지사항 뷰')
-        context = {'notice_view': notice_view, 'login_session': login_session, 'user_name': user_name, 'user_dept': user_dept}
+        context = {'notice_view': notice_view, 'login_session': login_session, 'user_name': user_name,
+                   'user_dept': user_dept}
         return render(request, 'isscm/notice_view.html', context)
     else:
         print('공지사항 수정')
@@ -1472,6 +1514,7 @@ def notice_view(request, pk):
         print('공지사항 수정 완료')
 
         return HttpResponseRedirect(reverse('isscm:notice_view', args=[pk]))
+
 
 # 공지사항 삭제
 def notice_delete(request, pk):
@@ -1503,7 +1546,6 @@ def pm_insert(request):
 
         pm.save()
         return HttpResponseRedirect(reverse('isscm:pm_list'))
-
 
 
 # 제품관리 DB 리스트
@@ -1540,19 +1582,24 @@ def pm_list(request):
                 startdate = request.GET.get('sdate', '')
                 enddate = request.GET.get('edate', '')
                 if search_sort == 'product_name':
-                    pm_sheet = Product_Management.objects.all().filter(product_name__icontains=query).order_by('-rg_date')
+                    pm_sheet = Product_Management.objects.all().filter(product_name__icontains=query).order_by(
+                        '-rg_date')
                 elif search_sort == 'serial':
                     pm_sheet = Product_Management.objects.all().filter(serial__icontains=query).order_by('-rg_date')
                 elif search_sort == 'current_location':
-                    pm_sheet = Product_Management.objects.all().filter(current_location__icontains=query).order_by('-rg_date')
+                    pm_sheet = Product_Management.objects.all().filter(current_location__icontains=query).order_by(
+                        '-rg_date')
                 elif search_sort == 'status':
                     pm_sheet = Product_Management.objects.all().filter(status__icontains=query).order_by('-rg_date')
                 elif search_sort == 'rg_date':
-                    e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59, seconds=59)
-                    pm_sheet = Product_Management.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by('-rg_date')
+                    e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
+                                                                                                  seconds=59)
+                    pm_sheet = Product_Management.objects.all().filter(rg_date__gte=startdate,
+                                                                       rg_date__lte=e_date).order_by('-rg_date')
                 elif search_sort == 'all':
                     pm_sheet = Product_Management.objects.filter(
-                        Q(product_name__icontains=query) | Q(serial__icontains=query) | Q(current_location__icontains=query)
+                        Q(product_name__icontains=query) | Q(serial__icontains=query) | Q(
+                            current_location__icontains=query)
                         | Q(status__icontains=query)).order_by('-rg_date')
                 else:
                     pm_sheet = Product_Management.objects.all().order_by('-rg_date')
@@ -1564,7 +1611,7 @@ def pm_list(request):
             print("insung GET main 페이징 끝")
             context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort,
                        'query': query, 'search_sort': search_sort, 'user_name': user_name, 'user_dept': user_dept,
-                       'sdate': startdate, 'edate': enddate }
+                       'sdate': startdate, 'edate': enddate}
 
         else:
             sort = request.GET.get('sort', '')
@@ -1572,11 +1619,13 @@ def pm_list(request):
             if sort == 'rg_date':
                 pm_sheet = Product_Management.objects.all().filter(cname=login_session).order_by('-rg_date')
             elif sort == 'product_name':
-                pm_sheet = Product_Management.objects.all().filter(cname=login_session).order_by('-product_name', '-rg_date')
+                pm_sheet = Product_Management.objects.all().filter(cname=login_session).order_by('-product_name',
+                                                                                                 '-rg_date')
             elif sort == 'serial':
                 pm_sheet = Product_Management.objects.all().filter(cname=login_session).order_by('-serial', '-rg_date')
             elif sort == 'current_location':
-                pm_sheet = Product_Management.objects.all().filter(cname=login_session).order_by('-current_location', '-rg_date', )
+                pm_sheet = Product_Management.objects.all().filter(cname=login_session).order_by('-current_location',
+                                                                                                 '-rg_date', )
             elif sort == 'status':
                 pm_sheet = Product_Management.objects.all().filter(cname=login_session).order_by('-status', '-rg_date')
             elif sort == 'all':
@@ -1587,20 +1636,25 @@ def pm_list(request):
                 startdate = request.GET.get('sdate', '')
                 enddate = request.GET.get('edate', '')
                 if search_sort == 'product_name':
-                    pm_sheet = Product_Management.objects.all().filter(product_name__icontains=query, cname=login_session).order_by(
+                    pm_sheet = Product_Management.objects.all().filter(product_name__icontains=query,
+                                                                       cname=login_session).order_by(
                         '-rg_date')
                 elif search_sort == 'serial':
-                    pm_sheet = Product_Management.objects.all().filter(serial__icontains=query, cname=login_session).order_by('-rg_date')
+                    pm_sheet = Product_Management.objects.all().filter(serial__icontains=query,
+                                                                       cname=login_session).order_by('-rg_date')
                 elif search_sort == 'current_location':
-                    pm_sheet = Product_Management.objects.all().filter(current_location__icontains=query, cname=login_session).order_by(
+                    pm_sheet = Product_Management.objects.all().filter(current_location__icontains=query,
+                                                                       cname=login_session).order_by(
                         '-rg_date')
                 elif search_sort == 'status':
-                    pm_sheet = Product_Management.objects.all().filter(status__icontains=query, cname=login_session).order_by('-rg_date')
+                    pm_sheet = Product_Management.objects.all().filter(status__icontains=query,
+                                                                       cname=login_session).order_by('-rg_date')
                 elif search_sort == 'rg_date':
                     e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
                                                                                                   seconds=59)
                     pm_sheet = Product_Management.objects.all().filter(rg_date__gte=startdate,
-                                                                       rg_date__lte=e_date, cname=login_session).order_by('-rg_date')
+                                                                       rg_date__lte=e_date,
+                                                                       cname=login_session).order_by('-rg_date')
                 elif search_sort == 'all':
                     pm_sheet = Product_Management.objects.filter(
                         Q(product_name__icontains=query) | Q(serial__icontains=query) | Q(

@@ -126,9 +126,9 @@ class Product_Management(models.Model):
     no = models.AutoField(primary_key=True)
     rg_date = models.DateTimeField(auto_now_add=True, verbose_name='등록일자')
     product_name = models.CharField(null=True, blank=True, max_length=300, verbose_name='제품명')
-    serial = models.CharField(null=True, blank=True, max_length=20, verbose_name='시리얼')
-    current_location = models.CharField(null=True, blank=True, max_length=30, verbose_name='현재 위치')
-    status = models.CharField(null=True, blank=True, max_length=10, verbose_name='상태')
+    serial = models.CharField(null=True, blank=True, max_length=300, verbose_name='시리얼')
+    current_location = models.CharField(null=True, blank=True, max_length=200, verbose_name='현재 위치')
+    status = models.CharField(null=True, blank=True, max_length=200, verbose_name='상태')
     info_id = models.ForeignKey(product_info, on_delete=models.CASCADE, null=True, db_column="info_id")
 
     class Meta:

@@ -24,28 +24,6 @@
 </style>
 
 <script type="text/javascript">
-  function searchName() {
-        $("#serial").autocomplete({
-         change: function( event, ui ) {
-         console.log('테스트2');
-         },
-         source: '{% url 'isscm:searchname' %}',
-         select: function( event, ui ) {
-         console.log(ui)
-         $("#product_name").val(ui.item.value);
-         return false;
-         }
-
-    });
-    };
-
-$( ".serial" ).on(
-    "autocompletechange",
-    function( event, ui ) {
-    searchName()
-    }
-);
-
 
   $(function () {
         $("#serial").autocomplete({
@@ -95,10 +73,10 @@ $( ".serial" ).on(
                 <td><input type="text" name="release_date" id="datepicker2" placeholder="클릭하여 날짜를 선택"></td>
                 <td>{{ sub_detailView.id }}</td>
                 <td>{{ sub_detailView.quantity }}</td>
-
             </tr>
             </tbody>
         </table>
+        <input type="text" value="{{ sub_detailView.id }}" name="id" id="id">
         <br>
         <!--엑셀 다운로드-->
         <a href="{% url 'isscm:product_info_excel' %}?sid={{ sub_detailView.id }}" style="color:white" ><button type="button" class="btn btn-primary" >EXCEL DOWN</button></a>

@@ -106,11 +106,7 @@
         <tr class="m" style="text-align:center;" onclick="location.href='{% url 'isscm:main_detail' list.id %}'">
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
-            {% if list.rp_date == None %}
-            <td> </td>
-            {% else %}
-            <td>{{ list.rp_date|date:'Y-m-d' }}</td>
-            {% endif %}
+            <td>{{ list.rp_date|date:'Y-m-d'  }}</td>
             <td>{{ list.end_date|date:'Y-m-d' }}</td>
             <td>{{ list.main_title }}</td>
             <td>{{ list.cname }}</td>
@@ -182,9 +178,9 @@
             {% else %}
             <td>{{ list.total_price|intcomma }}</td>
             {% endif %}
-            <td>{{ list.finish }}</td>
-            <td>{{ list.user_dept }} </td>
-            <td>{{ list.user_name }} </td>
+            <td>{{ list.finish|default_if_none:"--" }}</td>
+            <td>{{ list.user_dept|default_if_none:"--" }} </td>
+            <td>{{ list.user_name|default_if_none:"--" }} </td>
         </tr>
         {% endfor %}
 

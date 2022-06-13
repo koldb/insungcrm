@@ -112,9 +112,10 @@
             <th style="width:6%">마감 요청 일자</th>
             <th style="width:5%">종료 일자</th>
             <th style="width:25%">제품명</th>
-            <th style="width:4%">수량</th>
+            <th style="width:6%">시리얼</th>
             <th style="width:15%">비고</th>
             <th style="width:4%">완료 여부</th>
+            <th style="width:4%">담당자</th>
         </tr>
         </thead>
         <tbody>
@@ -125,20 +126,13 @@
             <td>{{ list.cname }}</td>
             <td>{{ list.cuser }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
-            {% if list.rp_date == None %}
-            <td> </td>
-            {% else %}
-            <td>{{ list.rp_date|date:'Y-m-d'  }}</td>
-            {% endif %}
+            <td>{{ list.rp_date|date:'Y-m-d'   }}</td>
             <td>{{ list.end_date|date:'Y-m-d'  }}</td>
             <td>{{ list.product_name }}</td>
-            <td>{{ list.quantity }}</td>
+            <td>{{ list.serial }}</td>
             <td>{{ list.memo | truncatewords:10}}</td>
-            {% if list.finish == None %}
-            <td> </td>
-            {% else %}
-            <td>{{ list.finish }}</td>
-            {% endif %}
+            <td>{{ list.finish|default_if_none:"--" }}</td>
+            <td>{{ list.user_name|default_if_none:"--" }}</td>
         </tr>
         {% endfor %}
 
@@ -168,10 +162,11 @@
             <th style="width:5%">접수 일자</th>
             <th style="width:6%">마감 요청 일자</th>
             <th style="width:5%">종료 일자</th>
-            <th style="width:10%">제품명</th>
-            <th style="width:4%">수량</th>
+            <th style="width:25%">제품명</th>
+            <th style="width:6%">시리얼</th>
             <th style="width:15%">비고</th>
             <th style="width:5%">완료 여부</th>
+            <th style="width:4%">담당자</th>
         </tr>
         </thead>
         <tbody>
@@ -187,20 +182,14 @@
             <td>{{ list.cname }}</td>
             <td>{{ list.cuser }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
-            {% if list.rp_date == None %}
-            <td> </td>
-            {% else %}
             <td>{{ list.rp_date|date:'Y-m-d'  }}</td>
-            {% endif %}
             <td>{{ list.end_date|date:'Y-m-d'  }}</td>
             <td>{{ list.product_name }}</td>
+            <td>{{ list.serial }}</td>
             <td>{{ list.quantity }}</td>
             <td>{{ list.memo | truncatewords:10}}</td>
-            {% if list.finish == None %}
-            <td> </td>
-            {% else %}
-            <td>{{ list.finish }}</td>
-            {% endif %}
+            <td>{{ list.finish|default_if_none:"--" }}</td>
+            <td>{{ list.user_name|default_if_none:"--" }}</td>
         </tr>
         {% endif %}
         {% endfor %}
@@ -324,7 +313,7 @@
                                 </tr>
                                 {% endfor %}
                                 <td style="font-weight: bold">합계</td>
-                                <td style="font-weight: bold">{{ as_wnum_sum.quantity__sum }}</td>
+                                <td style="font-weight: bold">{{ as_wnum_sum.product_name__count }}</td>
                             </table>
                         </div>
                     </div>
@@ -352,7 +341,7 @@
                                 </tr>
                                 {% endfor %}
                                 <td style="font-weight: bold">합계</td>
-                                <td style="font-weight: bold">{{ as_mnum_sum.quantity__sum }}</td>
+                                <td style="font-weight: bold">{{ as_mnum_sum.product_name__count }}</td>
                             </table>
                         </div>
                     </div>

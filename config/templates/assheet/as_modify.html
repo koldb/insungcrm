@@ -59,11 +59,18 @@
         if (evt.keyCode == 13) return false; });
     });
 
-    $(function () {
-      $("#product_name").autocomplete({
-          source: '{% url 'isscm:searchData' %}',
-          minLength: 1
-       });
+  $(function () {
+        $("#serial").autocomplete({
+            source: '{% url 'isscm:searchPM' %}',
+            minLength: 1,
+             select: function( event, ui ) {
+             console.log(ui)
+            $("#product_name").val(ui.item.value);
+            return false;
+            }
+
+    });
+
 
 
         //빈칸 입력시 모달창 띄우기
@@ -137,15 +144,11 @@
             <input type="text" class="form-control" name="product_name" id="product_name" value="{{ detailView.product_name }}" >
         </div>
         <div class="mb-3">
-            <label for="quantity">수량</label>
-            <input type="text" class="form-control" name="quantity" id="quantity" value="{{ detailView.quantity }}" >
-        </div>
-        <div class="mb-3">
             <label for="serial">시리얼</label>
-            <input type="text" class="form-control" name="serial" id="serial" value="{{ detailView.serial }}">
+            <input type="text" class="form-control" name="serial" id="serial" value="{{ detailView.serial }}" placeholder="시리얼 전체 입력 하세요.">
         </div>
         <div class="mb-3">
-            <label for="site">현장 명</label>
+            <label for="site">프로젝트명</label>
             <input type="text" class="form-control" name="site" id="site" value="{{ detailView.site }}">
         </div>
         <div class="mb-3">

@@ -125,6 +125,7 @@ class notice(models.Model):
 class Product_Management(models.Model):
     no = models.AutoField(primary_key=True)
     rg_date = models.DateTimeField(auto_now_add=True, verbose_name='등록일자')
+    update_date = models.DateTimeField(auto_now=True, verbose_name='수정일자', null=True, blank=True)
     product_name = models.CharField(null=True, blank=True, max_length=300, verbose_name='제품명')
     serial = models.CharField(null=True, blank=True, max_length=300, verbose_name='시리얼')
     current_location = models.CharField(null=True, blank=True, max_length=200, verbose_name='현재 위치')

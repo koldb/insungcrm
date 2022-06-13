@@ -3,6 +3,7 @@ import sys
 
 sys.path.append('..')
 from isscm.decorators import login_required
+from isscm.models import Product_Management
 from . import models
 from .models import ASsheet, ASUploadFile
 from django.core.paginator import Paginator
@@ -52,6 +53,20 @@ def as_insert(request):
         insert.serial = request.POST['serial']
         insert.site = request.POST['site']
         insert.symptom = request.POST['symptom']
+
+        try:
+            ex_pm = Product_Management.objects.exclude(status='폐기')
+            pm_modify = get_object_or_404(ex_pm, serial=request.POST['serial'])
+            pm_modify.product_name = request.POST['product_name']
+            pm_modify.current_location = request.POST['cname']
+            pm_modify.status = "AS"
+            pm_modify.serial = request.POST['serial']
+
+            pm_modify.save()
+            print("pm 까지 수정 저장완료")
+        except:
+            print("수정 저장완료")
+            insert.save()
 
         insert.save()
 

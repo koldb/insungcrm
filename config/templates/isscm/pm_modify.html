@@ -1,0 +1,88 @@
+{% extends "base/base2.html" %}
+{% block content %}
+{% load humanize %}
+{% load filter %}
+<style>
+    tr, td, th{
+        border : 1px solid #dcdcdc;
+        width : 350px%;
+        margin: 0 auto;
+    }
+    table {
+    text-align: center;
+    margin-left:auto;
+    margin-right:auto;
+    width : 100%;
+    }
+    caption {
+    caption-side: top;
+    text-align: left;
+    font-weight : bold;
+    color : #2478FF;
+    font-size : 30px;
+    }
+</style>
+
+<script type="text/javascript">
+
+  $(function () {
+        $("#serial").autocomplete({
+            source: '{% url 'isscm:searchPM' %}',
+            minLength: 1,
+             select: function( event, ui ) {
+             console.log(ui)
+            $("#product_name").val(ui.item.value);
+            return false;
+            }
+
+    });
+    });
+
+
+</script>
+
+
+<div class="container">
+    <form action="{% url 'isscm:pm_modify' detailView.no %}" method="post">
+        {% csrf_token %}
+        <br>
+        <div class="mb-3">
+            <label for="rg_date">등록 일자</label>
+            <input type="date" class="form-control" name="rg_date" id="rg_date" value="{{ detailView.rg_date | date:'Y-m-d' }}" readonly>
+        </div>
+        <div class="mb-3">
+            <label for="product_name">제품명</label>
+            <input type="text" class="form-control" name="product_name" id="product_name" value="{{ detailView.product_name }}">
+        </div>
+         <div class="mb-3">
+            <label for="serial">시리얼</label>
+            <input type="text" class="form-control" name="serial" id="serial" value="{{ detailView.serial }}" >
+        </div>
+        <div class="mb-3">
+            <label for="current_location">현재 위치</label>
+            <input type="text" class="form-control" name="current_location" id="current_location" value="{{ detailView.current_location }}">
+        </div>
+        <div class="mb-3">
+            <label for="status">상태</label>
+            <select name="status" id="status" class="form-control">
+                <option value="{{ detailView.status }}" selected>{{ detailView.status }}</option>
+                <option value="생산/보관" >생산/보관</option>
+                <option value="출고" >출고</option>
+                <option value="회수" >회수</option>
+                <option value="AS" >AS</option>
+                <option value="폐기" >폐기</option>
+            </select>
+        </div>
+
+        <input type="button" class="btn btn-primary" style="float: right;"
+               onclick="location.href='{% url 'isscm:pm_delete' detailView.no %}'" value="삭제">
+        <input type="submit" value="품목 저장" class="btn btn-primary"  style="float: right; margin-right: 10px;">
+
+        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:product_list' %}'" value="목록으로">
+    </form>
+</div>
+
+
+
+
+{% endblock %}

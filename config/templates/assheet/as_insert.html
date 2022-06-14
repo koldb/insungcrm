@@ -27,6 +27,13 @@
             if (evt.keyCode == 13) return false; });
     });
 
+            $(function () {
+      $("#product_name").autocomplete({
+          source: '{% url 'isscm:searchData' %}',
+          minLength: 1
+       });
+       });
+
   $(function () {
         $("#serial").autocomplete({
             source: '{% url 'isscm:searchPM' %}',

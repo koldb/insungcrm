@@ -68,6 +68,7 @@
         <div id="search_l">
             <select name="search_sort" id="search_sort">
                 <option value="rg_date" id="rg_date">등록 일자</option>
+                <option value="update_date" id="update_date">수정 일자</option>
             </select>
             <input type="text" placeholder="클릭하여 날짜 선택"  name="sdate" id="datepicker3">
             <input type="text" placeholder="클릭하여 날짜 선택"  name="edate" id="datepicker4">
@@ -84,6 +85,7 @@
         <tr class="header" style="text-align:center;">
             <th style="width:5%;">순번</th>
             <th style="width:5%;">등록 일자</th>
+            <th style="width:5%;">수정 일자</th>
             <th style="width:15%;">제품명</th>
             <th style="width:5%;">시리얼</th>
             <th style="width:5%;">현재 위치</th>
@@ -96,6 +98,7 @@
         <tr class="m" style="text-align:center;" onclick="location.href='{% url 'isscm:pm_modify' list.no  %}'">
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.rg_date |date:'Y-m-d' }}</td>
+            <td>{{ list.update_date |date:'Y-m-d' }}</td>
             <td>{{ list.product_name }}</td>
             <td>{{ list.serial }}</td>
             <td>{{ list.current_location }}</td>
@@ -107,6 +110,8 @@
         {% endif %}
         </tbody>
     </table>
+    <br>
+    <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:pm_insert' %}'" value="DB 입력" style="float:right;">
 </div>
 
 <!--페이징 부분-->
@@ -139,7 +144,7 @@
         </select>
         <button class="btn btn-primary" type="submit" value="">정렬</button>
         <!--엑셀 다운로드-->
-        <a href="{% url 'isscm:sub_list_excel' %}?q={{ query }}&search_sort={{search_sort}}&sdate={{ sdate }}&edate={{ edate }}" style="color:white"><button type="button" class="btn btn-primary">EXCEL DOWN</button></a>
+        <a href="{% url 'isscm:pm_excel' %}?q={{ query }}&search_sort={{search_sort}}&sdate={{ sdate }}&edate={{ edate }}" style="color:white"><button type="button" class="btn btn-primary">EXCEL DOWN</button></a>
     </form>
 </div>
 

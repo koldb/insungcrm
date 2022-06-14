@@ -50,6 +50,10 @@
             <label for="rg_date">등록 일자</label>
             <input type="date" class="form-control" name="rg_date" id="rg_date" value="{{ detailView.rg_date | date:'Y-m-d' }}" readonly>
         </div>
+         <div class="mb-3">
+            <label for="rg_date">수정 일자</label>
+            <input type="date" class="form-control" name="update_date" id="update_date" value="{{ detailView.update_date | date:'Y-m-d' }}" readonly>
+        </div>
         <div class="mb-3">
             <label for="product_name">제품명</label>
             <input type="text" class="form-control" name="product_name" id="product_name" value="{{ detailView.product_name }}">
@@ -77,7 +81,7 @@
 
         <input type="button" class="btn btn-primary" style="float: right;"
                onclick="location.href='{% url 'isscm:pm_delete' detailView.no %}'" value="삭제">
-        <input type="submit" value="품목 저장" class="btn btn-primary"  style="float: right; margin-right: 10px;">
+        <input type="submit" value="저장" class="btn btn-primary"  style="float: right; margin-right: 10px;">
 
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:product_list' %}'" value="목록으로">
     </form>

@@ -131,8 +131,8 @@
             <td>{{ list.end_date|date:'Y-m-d'  }}</td>
             <td>{{ list.product_name }}</td>
             <td>{{ list.serial }}</td>
-            <td>{{ list.memo | truncatewords:15}}</td>
-            <td>{{ list.option | truncatewords:15}}</td>
+            <td>{{ list.memo |default_if_none:"--"  | truncatewords:15}}</td>
+            <td>{{ list.option|default_if_none:"--"  | truncatewords:15 }}</td>
             <td>{{ list.finish|default_if_none:"--" }}</td>
             <td>{{ list.user_name|default_if_none:"--" }}</td>
         </tr>
@@ -189,8 +189,8 @@
             <td>{{ list.end_date|date:'Y-m-d'  }}</td>
             <td>{{ list.product_name }}</td>
             <td>{{ list.serial }}</td>
-            <td>{{ list.memo | truncatewords:15}}</td>
-            <td>{{ list.option | truncatewords:15}}</td>
+            <td>{{ list.memo |default_if_none:"--" | truncatewords:15}}</td>
+            <td>{{ list.option |default_if_none:"--" | truncatewords:15}}</td>
             <td>{{ list.finish|default_if_none:"--" }}</td>
             <td>{{ list.user_name|default_if_none:"--" }}</td>
         </tr>

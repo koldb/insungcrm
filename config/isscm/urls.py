@@ -36,6 +36,7 @@ urlpatterns = [
     path('pm_list/', views.pm_list, name='pm_list'),
     path('pm_modify/<int:pk>/', views.pm_modify, name='pm_modify'),
     path('pm_delete/<int:pk>/', views.pm_delete, name='pm_delete'),
+    path('pm_excel/', views.pm_excel, name='pm_excel'),
 
 ]
 

@@ -1578,6 +1578,11 @@ def pm_list(request):
                                                                                                   seconds=59)
                     pm_sheet = Product_Management.objects.all().filter(rg_date__gte=startdate,
                                                                        rg_date__lte=e_date).order_by('-rg_date')
+                elif search_sort == 'update_date':
+                    e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
+                                                                                                  seconds=59)
+                    pm_sheet = Product_Management.objects.all().filter(update_date__gte=startdate,
+                                                                       update_date__lte=e_date).order_by('-rg_date')
                 elif search_sort == 'all':
                     pm_sheet = Product_Management.objects.filter(
                         Q(product_name__icontains=query) | Q(serial__icontains=query) | Q(
@@ -1698,3 +1703,92 @@ def pm_delete(request, pk):
     return redirect('isscm:pm_list')
     # return redirect('isscm:product_modify')
 
+# product_manage 엑셀 다운로드
+def pm_excel(request):
+    login_session = request.session.get('login_session')
+
+    print("pm_list 다운로드 시작")
+    # 데이터 db에서 불러옴
+    # data = EstimateSheet.objects.all()
+    response = HttpResponse(content_type="application/vnd.ms-excel")
+    # 다운로드 받을 때 생성될 파일명 설정
+    response["Content-Disposition"] = 'attachment; filename=' \
+                                      + str(datetime.date.today()) + '_pm_list.xls'
+    print("다운 중간")
+    # 인코딩 설정
+    wb = xlwt.Workbook(encoding='utf-8')
+    # 생성될 시트명 설정
+    ws = wb.add_sheet('list')
+
+    # 엑셀 스타일: 첫번째 열(=title)과 나머지 열(=data) 구분 위한 설정
+    title_style = xlwt.easyxf(
+        'pattern: pattern solid, fore_color indigo; align: horizontal center; font: color_index white;')
+    data_style = xlwt.easyxf('align: horizontal right')
+    # 날짜 서식 결정
+    styles = {'datetime': xlwt.easyxf(num_format_str='yyyy-mm-dd hh:mm:ss'),
+              'date': xlwt.easyxf(num_format_str='yyyy-mm-dd'),
+              'time': xlwt.easyxf(num_format_str='hh:mm:ss'),
+              'default': xlwt.Style.default_style}
+    # 첫번째 열에 들어갈 컬럼명 설정
+    col_names = ['등록 일자', '수정 일자', '제품명', '시리얼', '현재 위치', '상태']
+
+    query = request.GET.get('q')
+    print('que : ', query)
+    search_sort = request.GET.get('search_sort', '')
+    print('search : ', search_sort)
+    if search_sort:
+        print('검색으로 다운로드')
+        startdate = request.GET.get('sdate', '')
+        enddate = request.GET.get('edate', '')
+        print('insung search 다운')
+        if search_sort == 'product_name':
+            rows = Product_Management.objects.filter(product_name__icontains=query).order_by('rg_date').values_list(
+                'rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
+        elif search_sort == 'current_location':
+            rows = Product_Management.objects.filter(current_location__icontains=query).order_by('rg_date').\
+                values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
+        elif search_sort == 'serial':
+            rows = Product_Management.objects.filter(serial__icontains=query).order_by('rg_date'). \
+                values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
+        elif search_sort == 'status':
+            rows = Product_Management.objects.filter(status__icontains=query).order_by('rg_date').\
+                values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
+        elif search_sort == 'rg_date':
+            e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
+                                                                                          seconds=59)
+            rows = Product_Management.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by(
+                'rg_date').values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
+        elif search_sort == 'update_date':
+            rows = Product_Management.objects.all().filter(update_date__range=[startdate, enddate]).order_by('rg_date').\
+                values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
+        elif search_sort == 'all':
+            rows = Product_Management.objects.all().filter(
+                Q(product_name__icontains=query) | Q(current_location__icontains=query) | Q(status__icontains=query)).\
+                order_by('rg_date').values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
+        else:
+            rows = Product_Management.objects.all().order_by('rg_date').\
+                values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
+    else:
+        print('전체 다운로드')
+        rows = Product_Management.objects.all().order_by('rg_date').values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
+
+    # 첫번째 열: 설정한 컬럼명 순서대로 스타일 적용하여 생성
+    print("다운 중간2")
+    row_num = 0
+    ix = 0
+    for idx, col_name in enumerate(col_names):
+        ws.write(row_num, idx, col_name, title_style)
+
+    # 두번째 이후 열: 설정한 컬럼명에 맞춘 데이터 순서대로 스타일 적용하여 생성
+    for row in rows:
+        row_num += 1
+        for col_num, attr in enumerate(row):
+            if isinstance(attr, datetime.datetime) or isinstance(attr, date):
+                cell_style = styles['date']
+            else:
+                cell_style = styles['default']
+            ws.write(row_num, col_num, attr, cell_style)
+
+    wb.save(response)
+    print("다운로드 끝")
+    return response

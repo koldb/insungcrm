@@ -51,6 +51,9 @@
             text-decoration: none;
             cursor: pointer;
         }
+
+
+
 </style>
 
 <script>
@@ -58,6 +61,7 @@
     $("input:text").keydown(function(evt) {
         if (evt.keyCode == 13) return false; });
     });
+
 
   $(function () {
         $("#serial").autocomplete({
@@ -68,8 +72,12 @@
             $("#product_name").val(ui.item.value);
             return false;
             }
+        });
 
-    });
+         $("#after_serial").autocomplete({
+          source: '{% url 'isscm:searchPM_serial' %}',
+          minLength: 1
+       });
 
 
 
@@ -109,6 +117,157 @@
         }
     });
 
+
+
+    $(function() {
+        $('#me').change(function() {
+            var result = $('#me option:selected').val();
+            if (result == 'FAN') {
+                $('#f').show();
+                $('#f').removeAttr("disabled");
+                $('#f_com').show();
+                $('#f_com').removeAttr("disabled");
+            } else {
+                $('#f').hide();
+                $('#f').attr('disabled', 'disabled');
+                $('#f_com').hide();
+                $('#f_com').attr('disabled', 'disabled');
+            }
+            if (result == 'HDD') {
+                $('#h').show();
+                $('#h').removeAttr("disabled");
+                 $('#h_com').show();
+                $('#h_com').removeAttr("disabled");
+            } else {
+                $('#h').hide();
+                $('#h').attr('disabled', 'disabled');
+                $('#h_com').hide();
+                $('#h_com').attr('disabled', 'disabled');
+            }
+            if (result == 'SSD') {
+                $('#s').show();
+                $('#s').removeAttr("disabled");
+                $('#s_com').show();
+                $('#s_com').removeAttr("disabled");
+            } else {
+                $('#s').hide();
+                $('#s').attr('disabled', 'disabled');
+                $('#s_com').hide();
+                $('#s_com').attr('disabled', 'disabled');
+            }
+              if (result == 'LAN') {
+                $('#l').show();
+                $('#l').removeAttr("disabled");
+                $('#l_com').show();
+                $('#l_com').removeAttr("disabled");
+            } else {
+                $('#l').hide();
+                $('#l').attr('disabled', 'disabled');
+                $('#l_com').hide();
+                $('#l_com').attr('disabled', 'disabled');
+            }
+              if (result == 'OS') {
+                $('#o').show();
+                $('#o').removeAttr("disabled");
+                $('#o_com').show();
+                $('#o_com').removeAttr("disabled");
+            } else {
+                $('#o').hide();
+                $('#o').attr('disabled', 'disabled');
+                $('#o_com').hide();
+                $('#o_com').attr('disabled', 'disabled');
+            }
+              if (result == 'RAM') {
+                $('#r').show();
+                $('#r').removeAttr("disabled");
+                $('#r_com').show();
+                $('#r_com').removeAttr("disabled");
+            } else {
+                $('#r').hide();
+                $('#r').attr('disabled', 'disabled');
+                $('#r_com').hide();
+                $('#r_com').attr('disabled', 'disabled');
+            }
+              if (result == '그래픽카드') {
+                $('#g').show();
+                $('#g').removeAttr("disabled");
+                $('#g_com').show();
+                $('#g_com').removeAttr("disabled");
+            } else {
+                $('#g').hide();
+                $('#g').attr('disabled', 'disabled');
+                $('#g_com').hide();
+                $('#g_com').attr('disabled', 'disabled');
+            }
+              if (result == '메인보드') {
+                $('#mi').show();
+                $('#mi').removeAttr("disabled");
+                $('#mi_com').show();
+                $('#mi_com').removeAttr("disabled");
+            } else {
+                $('#mi').hide();
+                $('#mi').attr('disabled', 'disabled');
+                $('#mi_com').hide();
+                $('#mi_com').attr('disabled', 'disabled');
+            }
+              if (result == '모니터') {
+                $('#mo').show();
+                $('#mo').removeAttr("disabled");
+                $('#mo_com').show();
+                $('#mo_com').removeAttr("disabled");
+            } else {
+                $('#mo').hide();
+                $('#mo').attr('disabled', 'disabled');
+                $('#mo_com').hide();
+                $('#mo_com').attr('disabled', 'disabled');
+            }
+              if (result == '배터리') {
+                $('#b').show();
+                $('#b').removeAttr("disabled");
+                $('#b_com').show();
+                $('#b_com').removeAttr("disabled");
+            } else {
+                $('#b').hide();
+                $('#b').attr('disabled', 'disabled');
+                $('#b_com').hide();
+                $('#b_com').attr('disabled', 'disabled');
+            }
+              if (result == '부팅/전원') {
+                $('#p').show();
+                $('#p').removeAttr("disabled");
+                $('#p_com').show();
+                $('#p_com').removeAttr("disabled");
+            } else {
+                $('#p').hide();
+                $('#p').attr('disabled', 'disabled');
+                $('#p_com').hide();
+                $('#p_com').attr('disabled', 'disabled');
+            }
+              if (result == '케이블/포트') {
+                $('#c').show();
+                $('#c').removeAttr("disabled");
+                 $('#c_com').show();
+                $('#c_com').removeAttr("disabled");
+            } else {
+                $('#c').hide();
+                $('#c').attr('disabled', 'disabled');
+                $('#c_com').hide();
+                $('#c_com').attr('disabled', 'disabled');
+            }
+              if (result == '기타') {
+                $('#etc').show();
+                $('#etc').removeAttr("disabled");
+                $('#etc_com').show();
+                $('#etc_com').removeAttr("disabled");
+            } else {
+                $('#etc').hide();
+                $('#etc').attr('disabled', 'disabled');
+                $('#etc_com').hide();
+                $('#etc_com').attr('disabled', 'disabled');
+            }
+        });
+    });
+
 </script>
 
 <div class="container my-3">
@@ -133,7 +292,7 @@
         </div>
         <div class="mb-3">
             <label for="rp_date">마감 요청 일자</label>
-            <input type="date" class="form-control" name="rp_date" id="rp_date" value="{{ detailView.rg_date | date:'Y-m-d' }}" readonly>
+            <input type="date" class="form-control" name="rp_date" id="rp_date" value="{{ detailView.rp_date | date:'Y-m-d' }}" readonly>
         </div>
         <div class="mb-3">
             <label for="end_date">종료 일자</label>
@@ -144,9 +303,15 @@
             <input type="text" class="form-control" name="product_name" id="product_name" value="{{ detailView.product_name }}" >
         </div>
         <div class="mb-3">
-            <label for="serial">시리얼</label>
+            <label for="serial">전 시리얼</label>
             <input type="text" class="form-control" name="serial" id="serial" value="{{ detailView.serial }}" placeholder="시리얼 전체 입력 하세요.">
         </div>
+        <div class="mb-3">
+            <label for="after_serial">후 시리얼</label>
+            <input type="text" class="form-control" name="after_serial" id="after_serial" value="{{ detailView.after_serial }}"
+                   placeholder="시리얼 전체 입력 하세요." >
+        </div>
+
         <div class="mb-3">
             <label for="site">프로젝트명</label>
             <input type="text" class="form-control" name="site" id="site" value="{{ detailView.site }}">
@@ -179,13 +344,185 @@
             {% endif %}
         </div>
 
+        {% if login_session == 'insung' %}
+        <div class="mb-3" >
+            <lebel>AS 처리 내용</lebel>
+            <table>
+                <thead>
+                <tr>
+                    <th width="20%">품목</th>
+                    <th width="20%">대분류</th>
+                    <th width="20%">소분류</th>
+                    <th width="20%">조치</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <select name="la" id="la" class="form-control" >
+                            <option value="NAS">NAS</option>
+                            <option value="UPS">UPS</option>
+                            <option value="노트북">노트북</option>
+                            <option value="데스크탑">데스크탑</option>
+                            <option value="모니터">모니터</option>
+                            <option value="미니/슬림 PC">미니/슬림 PC</option>
+                            <option value="서버">서버</option>
+                            <option value="워크스테이션">워크스테이션</option>
+                            <option value="일체형 PC">일체형 PC</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="me" id="me" class="form-control">
+                            <option value="" selected></option>
+                            <option value="FAN">FAN</option>
+                            <option value="HDD">HDD</option>
+                            <option value="SSD">SSD</option>
+                            <option value="LAN">LAN</option>
+                            <option value="OS">OS</option>
+                            <option value="RAM">RAM</option>
+                            <option value="그래픽카드">그래픽카드</option>
+                            <option value="메인보드">메인보드</option>
+                            <option value="모니터">모니터</option>
+                            <option value="배터리">배터리</option>
+                            <option value="부팅/전원">부팅/전원</option>
+                            <option value="케이블/포트">케이블/포트</option>
+                            <option value="기타">기타</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="sm" id="f" style="display: none;" disabled class="form-control">
+                            <option value="FAN 불량">FAN 불량</option>
+                            <option value="FAN 소음">FAN 소음</option>
+                        </select>
+                        <select name="sm" id="h" style="display: none;" disabled class="form-control">
+                            <option value="HDD 불량">HDD 불량</option>
+                            <option value="HDD 소음">HDD 소음</option>
+                        </select>
+                        <select name="sm" id="l" style="display: none;" disabled class="form-control">
+                            <option value="LAN 성능저하">LAN 성능저하</option>
+                            <option value="LAN 카드 불량">LAN 카드 불량</option>
+                        </select>
+                        <select name="sm" id="o" style="display: none;" disabled class="form-control">
+                            <option value="OS 깨짐">OS 깨짐</option>
+                            <option value="OS 변경 요청">OS 변경 요청</option>
+                            <option value="OS 설치 요청">OS 설치 요청</option>
+                            <option value="OS 재설치 요청">OS 재설치 요청</option>
+                        </select>
+                        <select name="sm" id="r" style="display: none;" disabled class="form-control">
+                            <option value="RAM 불량">RAM 불량</option>
+                        </select>
+                        <select name="sm" id="s" style="display: none;" disabled class="form-control">
+                            <option value="SSD 불량">SSD 불량</option>
+                            <option value="SSD 소음 발생">SSD 소음 발생</option>
+                        </select>
+                        <select name="sm" id="g" style="display: none;" disabled class="form-control">
+                            <option value="그래픽 카드 불량">그래픽 카드 불량</option>
+                        </select>
+                        <select name="sm" id="etc" style="display: none;" disabled class="form-control">
+                            <option value="작동 중 멈춤">작동 중 멈춤</option>
+                            <option value="비프음 발생">비프음 발생</option>
+                            <option value="성능 저하">성능 저하</option>
+                            <option value="점검 요청">점검 요청</option>
+                            <option value="파일 백업 요청">파일 백업 요청</option>
+                            <option value="포맷 요청">포맷 요청</option>
+                        </select>
+                        <select name="sm" id="mi" style="display: none;" disabled class="form-control">
+                            <option value="메인보드 불량">메인보드 불량</option>
+                        </select>
+                        <select name="sm" id="mo" style="display: none;" disabled class="form-control">
+                            <option value="화면 깨짐">화면 깨짐</option>
+                            <option value="RGB 불량">RGB 불량</option>
+                            <option value="블루스크린 발생">블루스크린 발생</option>
+                        </select>
+                        <select name="sm" id="b" style="display: none;" disabled class="form-control">
+                            <option value="배터리 불량">배터리 불량</option>
+                        </select>
+                        <select name="sm" id="p" style="display: none;" disabled class="form-control">
+                            <option value="부팅 불량">부팅 불량</option>
+                            <option value="전원 불량">전원 불량</option>
+                            <option value="파워 어댑터 불량">파워 어댑터 불량</option>
+                        </select>
+                        <select name="sm" id="c" style="display: none;" disabled class="form-control">
+                            <option value="SATA 연결 불량">SATA 연결 불량</option>
+                            <option value="포트 불량">포트 불량</option>
+                            <option value="케이블 연결 불량">케이블 연결 불량</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="action" id="f_com" style="display: none;" disabled class="form-control">
+                            <option value="FAN 교체">FAN 교체</option>
+                            <option value="FAN 청소">FAN 청소</option>
+                        </select>
+                        <select name="action" id="h_com" style="display: none;" disabled class="form-control">
+                            <option value="HDD 교체">HDD 교체</option>
+                            <option value="HDD 재연결">HDD 재연결</option>
+                        </select>
+                        <select name="action" id="l_com" style="display: none;" disabled class="form-control">
+                            <option value="LAN 카드 교체">LAN 카드 교체</option>
+                            <option value="LAN 카드 재연결">LAN 카드 재연결</option>
+                        </select>
+                        <select name="action" id="o_com" style="display: none;" disabled class="form-control">
+                            <option value="OS 설치">OS 설치</option>
+                            <option value="OS 재설치">OS 재설치</option>
+                            <option value="포맷 완료">포맷 완료</option>
+                        </select>
+                        <select name="action" id="r_com" style="display: none;" disabled class="form-control">
+                            <option value="RAM 교체">RAM 교체</option>
+                            <option value="RAM 재연결">RAM 재연결</option>
+                        </select>
+                        <select name="action" id="s_com" style="display: none;" disabled class="form-control">
+                            <option value="SSD 교체">SSD 교체</option>
+                            <option value="SSD 재연결">SSD 재연결</option>
+                        </select>
+                        <select name="action" id="g_com" style="display: none;" disabled class="form-control">
+                            <option value="그래픽 카드 교체">그래픽 카드 교체</option>
+                            <option value="그래픽 카드 재연결">그래픽 카드 재연결</option>
+                        </select>
+                        <select name="action" id="etc_com" style="display: none;" disabled class="form-control">
+                            <option value="HP 방문 처리">HP 방문 처리</option>
+                            <option value="데이터 백업">데이터 백업</option>
+                            <option value="드라이버 재설치">드라이버 재설치</option>
+                            <option value="원복 완료">원복 완료</option>
+                            <option value="리포트 전달">리포트 전달</option>
+                            <option value="점검 완료">점검 완료</option>
+                        </select>
+                        <select name="action" id="mi_com" style="display: none;" disabled class="form-control">
+                            <option value="메인보드 교체">메인보드 교체</option>
+                            <option value="메인보드 재연결">메인보드 재연결</option>
+                        </select>
+                        <select name="action" id="mo_com" style="display: none;" disabled class="form-control">
+                            <option value="모니터 교체">모니터 교체</option>
+                        </select>
+                        <select name="action" id="b_com" style="display: none;" disabled class="form-control">
+                            <option value="배터리 불량">배터리 교체</option>
+                        </select>
+                        <select name="action" id="p_com" style="display: none;" disabled class="form-control">
+                            <option value="파워 어댑터 교체">파워 어댑터 교체</option>
+                            <option value="파워 교체">파워 교체</option>
+                            <option value="메인보드 교체">메인보드 교체</option>
+                        </select>
+                        <select name="action" id="c_com" style="display: none;" disabled class="form-control">
+                            <option value="SATA 교체">SATA 교체</option>
+                            <option value="SATA 재연결">SATA 재연결</option>
+                            <option value="케이블 교체">케이블 교체</option>
+                            <option value="케이블 재연결">케이블 재연결</option>
+                        </select>
+
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        {% endif %}
+
         <div class="mb-3">
             <label for="finish">종결 여부</label>
 
             {% if login_session == 'insung' %}
-            <select name="finish" id="finish">
+            <select name="finish" id="finish" class="form-control" style="width: 6em; text-align:left;">
                 {% else %}
-                <select name="finish" onFocus="this.initialSelect = this.selectedIndex;" onChange="this.selectedIndex = this.initialSelect;">
+                <select name="finish"  style="width:6em; text-align:left;" onFocus="this.initialSelect = this.selectedIndex;" onChange="this.selectedIndex = this.initialSelect;" class="form-control">
                     {% endif %}
                     {% if detailView.finish == "진행 중" %}
                     <option value="접수 중" >접수 중</option>
@@ -205,7 +542,7 @@
                 </select>
             </select>
         </div>
-
+        <br>
         <input type="submit" class="btn btn-primary" value="저장" id="myBtn">
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_detail' detailView.no %}'" value="취소">
     </form>

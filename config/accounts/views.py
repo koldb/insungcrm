@@ -32,7 +32,8 @@ def register(request):
             user.save()
             login_session = request.session.get('login_session')
             context = {'forms': register_form, 'login_session': login_session}
-            return render(request, 'isscm/index.html', context)
+            #return render(request, 'accounts/login.html', context)
+            return redirect('accounts:login')
         else:
             context['forms'] = register_form
             if register_form.errors:

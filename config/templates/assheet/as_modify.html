@@ -308,7 +308,7 @@
         </div>
         <div class="mb-3">
             <label for="after_serial">후 시리얼</label>
-            <input type="text" class="form-control" name="after_serial" id="after_serial" value="{{ detailView.after_serial }}"
+            <input type="text" class="form-control" name="after_serial" id="after_serial" value="{{ detailView.after_serial |default_if_none:"" }}"
                    placeholder="시리얼 전체 입력 하세요." >
         </div>
 
@@ -360,6 +360,7 @@
                 <tr>
                     <td>
                         <select name="la" id="la" class="form-control" >
+                            <option value="" selected></option>
                             <option value="NAS">NAS</option>
                             <option value="UPS">UPS</option>
                             <option value="노트북">노트북</option>
@@ -507,7 +508,6 @@
                             <option value="케이블 교체">케이블 교체</option>
                             <option value="케이블 재연결">케이블 재연결</option>
                         </select>
-
                     </td>
                 </tr>
                 </tbody>

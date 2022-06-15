@@ -77,6 +77,28 @@
             <textarea class="form-control" style="resize: none;" name="option" id="option"  readonly>{{ detailView.option }}</textarea>
             {% endif %}
         </div>
+        <div class="mb-3" >
+            <lebel>AS 처리 내용</lebel>
+            <table>
+                <thead>
+                <tr>
+                    <th width="20%">품목</th>
+                    <th width="20%">대분류</th>
+                    <th width="20%">소분류</th>
+                    <th width="20%">조치</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>{{ detailView.la_category |default_if_none:"--" }}</td>
+                    <td>{{ detailView.me_category |default_if_none:"--" }}</td>
+                    <td>{{ detailView.sm_category |default_if_none:"--" }}</td>
+                    <td>{{ detailView.asaction |default_if_none:"--" }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
 
         <div class="mb-3">
             <label for="finish">종결 여부</label>

@@ -52,8 +52,12 @@
             <input type="text" class="form-control" name="product_name" id="product_name" value="{{ detailView.product_name }}" readonly>
         </div>
         <div class="mb-3">
-            <label for="serial">시리얼</label>
+            <label for="serial">전 시리얼</label>
             <input type="text" class="form-control" name="serial" id="serial" value="{{ detailView.serial }}" readonly>
+        </div>
+         <div class="mb-3">
+            <label for="after_serial">후 시리얼</label>
+            <input type="text" class="form-control" name="after_serial" id="after_serial" value="{{ detailView.after_serial |default_if_none:"--" }}" readonly>
         </div>
         <div class="mb-3">
             <label for="site">프로젝트명</label>

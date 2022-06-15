@@ -41,7 +41,7 @@
         </div>
         <div class="mb-3">
             <label for="rp_date">마감 요청 일자</label>
-            <input type="date" class="form-control" name="rp_date" id="rp_date" value="{{ detailView.rg_date | date:'Y-m-d' }}" readonly>
+            <input type="date" class="form-control" name="rp_date" id="rp_date" value="{{ detailView.rp_date | date:'Y-m-d' }}" readonly>
         </div>
         <div class="mb-3">
             <label for="end_date">종료 일자</label>
@@ -97,10 +97,12 @@
             <td>첨부 파일 없음</td>
             {% endif %}
         </div>
+        {% if login_session == 'insung' %}
+        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_modify' detailView.no %}'" value="AS 처리 입력">
+        {% else %}
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_modify' detailView.no %}'" value="수정">
-        {% if login_session == detailView.cname or login_session == 'insung' %}
-        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_delete' detailView.no %}'" value="삭제">
         {% endif %}
+        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_delete' detailView.no %}'" value="삭제">
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_list' %}'" value="목록으로">
     </form>
 </div>

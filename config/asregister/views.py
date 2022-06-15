@@ -578,21 +578,28 @@ def as_modify(request, pk):
         detailView.product_name = request.POST['product_name']
         detailView.cname = request.POST['cname']
         detailView.serial = request.POST['serial']
+        detailView.after_serial = request.POST['after_serial']
         detailView.user_name = user_name
         detailView.memo = request.POST['memo']
         detailView.option = request.POST['option']
         detailView.finish = request.POST['finish']
+        detailView.la_category = request.POST['la']
+        detailView.me_category = request.POST['me']
+        detailView.sm_category = request.POST['sm']
+        detailView.asaction = request.POST['action']
         if request.POST['finish'] == '종료':
             detailView.end_date = date.today()
             try:
                 ex_pm = Product_Management.objects.exclude(status='폐기')
                 pm_modify = get_object_or_404(ex_pm, serial=request.POST['serial'])
-                pm_modify.product_name = request.POST['product_name']
+                pm_modify2 = get_object_or_404(ex_pm, serial=request.POST['after_serial'])
                 pm_modify.current_location = request.POST['cname']
-                pm_modify.status = "보관"
-                pm_modify.serial = request.POST['serial']
+                pm_modify2.current_location = request.POST['cname']
+                pm_modify.status = "AS 교체로 제거"
+                pm_modify2.status = "AS 교체로 설치"
 
                 pm_modify.save()
+                pm_modify2.save()
                 print("pm 까지 수정 저장완료")
             except:
                 print("수정 저장완료")
@@ -601,10 +608,8 @@ def as_modify(request, pk):
             try:
                 ex_pm = Product_Management.objects.exclude(status='폐기')
                 pm_modify = get_object_or_404(ex_pm, serial=request.POST['serial'])
-                pm_modify.product_name = request.POST['product_name']
                 pm_modify.current_location = request.POST['cname']
-                pm_modify.status = "AS"
-                pm_modify.serial = request.POST['serial']
+                pm_modify.status = "AS 진행 중"
 
                 pm_modify.save()
                 print("pm 까지 수정 저장완료")

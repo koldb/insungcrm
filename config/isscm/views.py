@@ -145,6 +145,25 @@ def searchPM(request):
             pname.append(n)
         return JsonResponse(pname, safe=False)
 
+# 시리얼 검색
+def searchPM_serial(request):
+    if 'term' in request.GET:
+        qs = Product_Management.objects.filter(serial__icontains=request.GET.get('term')).exclude(status='폐기').values('serial').distinct()
+        p1 = list()
+        pmlist = []
+        print("여기는? ", qs.values())
+        for product in qs:
+            n = product['serial']
+            print("n 은 : ", n)
+            #print("s 은 : ", s)
+            #s = product['serial']
+            # data = {
+            #     'name' : n,
+            #     'ser' : s
+            # }
+            p1.append(n)
+        return JsonResponse(p1, safe=False)
+
 
 # 메인 입력
 @login_required
@@ -915,6 +934,8 @@ def product_list(request):
                 sub_list = sub_sheet.objects.all().order_by('-m_id', '-rg_date')
             elif sort == 'm_title':
                 sub_list = sub_sheet.objects.all().order_by('-m_title', '-rg_date')
+            elif sort == 'user_name':
+                sub_list = sub_sheet.objects.all().order_by('-user_name', '-rg_date')
             elif sort == 'all':
                 sub_list = sub_sheet.objects.all().order_by('-rg_date')
             else:

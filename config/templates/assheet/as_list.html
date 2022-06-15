@@ -4,7 +4,7 @@
 {% load filter %}
 <style>
     #paging{
-        width:150px;
+        width:250px;
         margin:0 auto;
     }
     #search_p, #search_l {
@@ -106,10 +106,10 @@
         {% if page_obj %}
         <tr class="header" style="text-align:center;">
             <th style="width:3%;">순번</th>
-            <th style="width:7%">업체명</th>
+            <th style="width:6%">업체명</th>
             <th style="width:5%">요청자</th>
             <th style="width:5%">접수 일자</th>
-            <th style="width:6%">마감 요청 일자</th>
+            <th style="width:7%">마감 요청 일자</th>
             <th style="width:5%">종료 일자</th>
             <th style="width:20%">제품명</th>
             <th style="width:6%">시리얼</th>
@@ -146,9 +146,9 @@
         </tbody>
     </table>
     <br>
-    <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_insert' %}'" value="AS접수" style="float:right;">
-</div>
 
+</div>
+<input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_insert' %}'" value="AS접수" style="float:right;">
 <br>
 
 {% else %}

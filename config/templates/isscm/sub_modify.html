@@ -49,23 +49,21 @@
 
     //곱하기
     function def(){
-        var quantity = document.getElementById('quantity');
-        var per_price = document.getElementById('per_price');
-        var total_price = document.getElementById('total_price');
-        var tax = document.getElementById('tax');
-        var x = Number(uncomma(quantity.value))*Number(uncomma(per_price.value))
-        var t = x * 0.1
+        const quantity = document.getElementById('quantity');
+        const per_price = document.getElementById('per_price');
+        const total_price = document.getElementById('total_price');
+        const tax = document.getElementById('tax');
+        const x = Number(uncomma(quantity.value))*Number(uncomma(per_price.value))
+        const t = x * 0.1
         tax.value = comma(t)
     total_price.value = comma(x+t);
     }
 
     function taxdef(){
-        var tax = document.getElementById('tax');
-        var total_price = document.getElementById('total_price');
+        const tax = document.getElementById('tax');
+        const total_price = document.getElementById('total_price');
     tax.value = comma(Number(uncomma(total_price.value))*0.1);
     }
-
-
 
 
 </script>
@@ -114,6 +112,7 @@
         <div >
             <button type="submit" class="btn btn-primary" onclick="alert('입력 완료')" name="fbtn">제출</button>
             <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:sub_delete' sub_detailView.id sub_detailView.m_id_id %}'" value="삭제">
+            <input type="button" class="btn btn-primary" onclick="back();" value="뒤로가기" style="float:right;">
         </div>
     </form>
 </div>

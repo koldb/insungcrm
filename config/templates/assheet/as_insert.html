@@ -47,23 +47,23 @@
     });
 
             // Get the modal
-        var modal = document.getElementById('myModal');
+        const modal = document.getElementById('myModal');
 
         // Get the button that opens the modal
-        var btn = document.getElementById("myBtn");
+        const btn = document.getElementById("myBtn");
 
         // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
+        const span = document.getElementsByClassName("close")[0];
 
         // When the user clicks on the button, open the modal
         btn.onclick = function(e) {
             e.preventDefault();
-            var frm = $("#frm");
-            var inputform = $(".form-control");
+            const frm = $("#frm");
+            const inputform = $(".form-control");
             let com = 0;
             $.each(inputform, function (index, value) {
                     console.log('값은 : ' + $(value).val());
-                    var test = $(value).val()
+                    const test = $(value).val()
                     if (test != ''){
                         com += 1;
                     }
@@ -105,6 +105,7 @@
     function inputNumberFormat(obj) {
         obj.value = comma(uncomma(obj.value));
     };
+
 
 </script>
 
@@ -151,6 +152,7 @@
 
 
         <button type="button" class="btn btn-primary"  id="myBtn">제출</button>
+        <button type="button" class="btn btn-primary"  onclick="back();">목록으로</button>
     </form>
 </div>
 

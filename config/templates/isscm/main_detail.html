@@ -46,11 +46,13 @@
 
     //곱하기
     function def(){
-        var quantity = document.getElementById('quantity');
-        var per_price = document.getElementById('per_price');
-        var total_price = document.getElementById('total_price');
+        const quantity = document.getElementById('quantity');
+        const per_price = document.getElementById('per_price');
+        const total_price = document.getElementById('total_price');
     total_price.value = comma(Number(uncomma(quantity.value))*Number(uncomma(per_price.value)));
     }
+
+
 
 </script>
 
@@ -59,7 +61,8 @@
     <form method="post" action="{% url 'isscm:main_detail' detailView.id %}">
         {% csrf_token %}
         <div class="mb-3">
-            <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:main_list' %}'" value="목록으로" style="float:right;">
+            <!--<input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:main_list' %}'" value="목록으로" style="float:right;">-->
+            <input type="button" class="btn btn-primary" onclick="back();" value="목록으로" style="float:right;">
         </div>
         <br>
 

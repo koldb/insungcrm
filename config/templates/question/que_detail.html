@@ -144,7 +144,7 @@ const comm_save = (no) => {
         {% if login_session == detailView.cname or login_session == 'insung' %}
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'question:que_delete' detailView.no %}'" value="삭제">
         {% endif %}
-        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'question:que_list' %}'" value="목록으로">
+        <input type="button" class="btn btn-primary" onclick="back();" value="목록으로" style="float: right;">
     </form>
 
 

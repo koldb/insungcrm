@@ -47,6 +47,23 @@
 
 </style>
 
+<script type="text/javascript">
+  $(function () {
+        $("#menu-excel").click(function () {
+            $("#modal-excel").modal('show');
+    });
+         $('#modalclose').click(function(){
+        $('#modal-excel').modal('hide');
+    });
+
+    });
+
+</script>
+
+<script>
+
+</script>
+
 
 <!--검색창 부분-->
 <div class="container">
@@ -152,14 +169,7 @@
 
 
 
-<script type="text/javascript">
-  $(function () {
-        $("#menu-excel").click(function () {
-            $("#modal-excel").modal('show');
-    });
-    });
 
-</script>
 
 <!-- modal content -->
 <div id="modal-excel" class="modal fade" tabindex="-1" role="dialog">
@@ -170,6 +180,7 @@
                     <i class="far fa-save mr-1"></i>
                     Product DB Excel Upload
                 </h3>
+                <p>[“xlsx”, “xlsm”, “xltx”, “xltm”] 형식 파일만 업로드 가능.</p>
             </div>
             <form class="modal-form" id="modal-excel-form" action="{% url 'isscm:pm_excel_upload' %}" method='post' enctype="multipart/form-data">
                 <div class="modal-body">
@@ -186,7 +197,7 @@
                 <div class="modal-footer justify-content-center">
                     <div class="float-left mx-auto">
                         <button type="submit" class="btn btn-secondary" >Upload</button>
-                        <button type="button" class="btn btn-default border" data-dismiss="modal" >취소</button>
+                        <button type="button" class="btn btn-default border" id="modalclose" >취소</button>
                     </div>
                 </div>
             </form>

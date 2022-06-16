@@ -35,23 +35,23 @@
 
     //빈칸 입력시 모달창 띄우기
        // Get the modal
-        var modal = document.getElementById('myModal');
+        const modal = document.getElementById('myModal');
 
         // Get the button that opens the modal
-        var btn = document.getElementById("myBtn");
+        const btn = document.getElementById("myBtn");
 
         // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
+        const span = document.getElementsByClassName("close")[0];
 
         // When the user clicks on the button, open the modal
         btn.onclick = function(e) {
             e.preventDefault();
-            var frm = $("#frm");
-            var inputform = $(".form-control");
+            const frm = $("#frm");
+            const inputform = $(".form-control");
             let com = 0;
             $.each(inputform, function (index, value) {
                     console.log('값은 : ' + $(value).val());
-                    var test = $(value).val()
+                    const test = $(value).val()
                     if (test != ''){
                         com += 1;
                     }
@@ -94,22 +94,21 @@
 
     //곱하기
     function def(){
-        var quantity = document.getElementById('quantity');
-        var per_price = document.getElementById('per_price');
-        var total_price = document.getElementById('total_price');
-        var tax = document.getElementById('tax');
-        var x = Number(uncomma(quantity.value))*Number(uncomma(per_price.value))
-        var t = x * 0.1
+        const quantity = document.getElementById('quantity');
+        const per_price = document.getElementById('per_price');
+        const total_price = document.getElementById('total_price');
+        const tax = document.getElementById('tax');
+        const x = Number(uncomma(quantity.value))*Number(uncomma(per_price.value))
+        const t = x * 0.1
         tax.value = comma(t)
     total_price.value = comma(x+t);
     }
 
     function taxdef(){
-        var tax = document.getElementById('tax');
-        var total_price = document.getElementById('total_price');
+        const tax = document.getElementById('tax');
+        const total_price = document.getElementById('total_price');
     tax.value = comma(Number(uncomma(total_price.value))*0.1);
     }
-
 
 
 </script>
@@ -153,7 +152,7 @@
 
         <div >
             <button type="submit" class="btn btn-primary" onclick="alert('입력 완료')" id="myBtn">제출</button>
-            <button type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:main_detail' detailView.id %}'" >뒤로가기</button>
+            <button type="button" class="btn btn-primary" onclick="back();" >뒤로가기</button>
         </div>
     </form>
 </div>

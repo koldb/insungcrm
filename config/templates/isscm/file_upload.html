@@ -30,6 +30,8 @@
             event.preventDefault();
         };
     }, true);
+
+
 </script>
 
 <body>
@@ -42,7 +44,7 @@
         {% csrf_token %}
         <input type="submit" value="Upload" class="btn btn-primary">
         {% endif %}
-        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:main_detail' detailView.id %}'" value="뒤로가기" style="float: right;">
+        <input type="button" class="btn btn-primary" onclick="back();" value="뒤로가기" style="float: right;">
     </form>
 
 </div>

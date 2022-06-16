@@ -18,6 +18,8 @@
 
 </style>
 
+
+
 <div class="container my-3">
     <form method="post" action="#">
         {% csrf_token %}
@@ -129,7 +131,7 @@
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_modify' detailView.no %}'" value="수정">
         {% endif %}
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_delete' detailView.no %}'" value="삭제">
-        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_list' %}'" value="목록으로">
+        <input type="button" class="btn btn-primary" onclick="back();" value="목록으로" style="float: right;">
     </form>
 </div>
 

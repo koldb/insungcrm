@@ -42,6 +42,7 @@
 
     });
     });
+
 </script>
 
 
@@ -81,7 +82,7 @@
         <br>
         <!--엑셀 다운로드-->
         <a href="{% url 'isscm:product_info_excel' %}?sid={{ sub_detailView.id }}" style="color:white" ><button type="button" class="btn btn-primary" >EXCEL DOWN</button></a>
-        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:product_list' %}'" value="목록으로">
+        <input type="button" class="btn btn-primary" onclick="back();" value="목록으로">
         <input type="submit" value="품목 저장" class="btn btn-primary"  style="float: right;">
     </form>
 </div>

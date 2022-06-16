@@ -83,19 +83,19 @@
 
         //빈칸 입력시 모달창 띄우기
         // Get the modal
-        var modal = document.getElementById('myModal');
+        const modal = document.getElementById('myModal');
 
         // Get the button that opens the modal
-        var btn = document.getElementById("myBtn");
+        const btn = document.getElementById("myBtn");
 
         // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
+        const span = document.getElementsByClassName("close")[0];
 
         // When the user clicks on the button, open the modal
         btn.onclick = function(e) {
             e.preventDefault();
-            var frm = $("#frm");
-            var inputform = $(".form-control").val();
+            const frm = $("#frm");
+            const inputform = $(".form-control").val();
             if(inputform == "") {
             modal.style.display = "block";
             return;
@@ -121,7 +121,7 @@
 
     $(function() {
         $('#me').change(function() {
-            var result = $('#me option:selected').val();
+            const result = $('#me option:selected').val();
             if (result == 'FAN') {
                 $('#f').show();
                 $('#f').removeAttr("disabled");
@@ -306,12 +306,14 @@
             <label for="serial">전 시리얼</label>
             <input type="text" class="form-control" name="serial" id="serial" value="{{ detailView.serial }}" placeholder="시리얼 전체 입력 하세요.">
         </div>
+        {% if login_session == 'insung' %}
         <div class="mb-3">
             <label for="after_serial">후 시리얼</label>
             <input type="text" class="form-control" name="after_serial" id="after_serial" value="{{ detailView.after_serial |default_if_none:"" }}"
                    placeholder="시리얼 전체 입력 하세요." >
         </div>
-
+        {% else %}
+        {% endif %}
         <div class="mb-3">
             <label for="site">프로젝트명</label>
             <input type="text" class="form-control" name="site" id="site" value="{{ detailView.site }}">

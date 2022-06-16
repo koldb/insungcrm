@@ -30,6 +30,7 @@
             event.preventDefault();
         };
     }, true);
+
 </script>
 
 <body>
@@ -40,7 +41,7 @@
         <input type="hidden" name="menu" value="AS">
         {% csrf_token %}
         <input type="submit" value="Upload">
-        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_detail' detailView.no %}'" value="뒤로가기" style="float: right;">
+        <input type="button" class="btn btn-primary" onclick="back();" value="뒤로가기" style="float: right;">
     {% endif %}
     </form>
     <table>

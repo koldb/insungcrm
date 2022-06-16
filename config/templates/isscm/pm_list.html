@@ -111,7 +111,8 @@
         </tbody>
     </table>
     <br>
-    <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:pm_insert' %}'" value="DB 입력" style="float:right;">
+    <span><input type="button" name="menu-excel" id="menu-excel" value="Excel Upload" class="btn btn-primary" style="float:right;"> </span>
+    <span><input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:pm_insert' %}'" value="DB 입력" style="float:right; margin-right: 10px;"></span>
 </div>
 
 <!--페이징 부분-->
@@ -144,9 +145,56 @@
         </select>
         <button class="btn btn-primary" type="submit" value="">정렬</button>
         <!--엑셀 다운로드-->
+
         <a href="{% url 'isscm:pm_excel' %}?q={{ query }}&search_sort={{search_sort}}&sdate={{ sdate }}&edate={{ edate }}" style="color:white"><button type="button" class="btn btn-primary">EXCEL DOWN</button></a>
     </form>
 </div>
+
+
+
+<script type="text/javascript">
+  $(function () {
+        $("#menu-excel").click(function () {
+            $("#modal-excel").modal('show');
+    });
+    });
+
+</script>
+
+<!-- modal content -->
+<div id="modal-excel" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="far fa-save mr-1"></i>
+                    Product DB Excel Upload
+                </h3>
+            </div>
+            <form class="modal-form" id="modal-excel-form" action="{% url 'isscm:pm_excel_upload' %}" method='post' enctype="multipart/form-data">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="row justify-content-center toolbar-forms py-2">
+                        <div class="col-8">
+                            <div class="custom-file text-left">
+                                <label for="uploadedFile" ></label>
+                                <input type="file" name="uploadedFile" id="uploadedFile" multiple="multiple">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <div class="float-left mx-auto">
+                        <button type="submit" class="btn btn-secondary" >Upload</button>
+                        <button type="button" class="btn btn-default border" data-dismiss="modal" >취소</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div><!-- modal end -->
+
+
 
 
 

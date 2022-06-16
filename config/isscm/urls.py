@@ -38,6 +38,7 @@ urlpatterns = [
     path('pm_modify/<int:pk>/', views.pm_modify, name='pm_modify'),
     path('pm_delete/<int:pk>/', views.pm_delete, name='pm_delete'),
     path('pm_excel/', views.pm_excel, name='pm_excel'),
+    path('pm_excel_upload/', views.pm_excel_upload, name='pm_excel_upload'),
 
 ]
 

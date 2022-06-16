@@ -16,6 +16,7 @@ from dateutil.relativedelta import relativedelta
 import mimetypes
 import shutil
 
+
 # Create your views here.
 
 # 임시 메인페이지
@@ -108,48 +109,51 @@ def as_list(request):
                 enddate = request.GET.get('edate', '')
                 if search_sort == 'cname':
                     company_sheet = ASsheet.objects.all().filter(cname__icontains=query).order_by('-rg_date',
-                                                                                                     'finish')
+                                                                                                  'finish')
                 elif search_sort == 'cuser':
                     company_sheet = ASsheet.objects.all().filter(cuser__icontains=query).order_by('-rg_date',
-                                                                                                            'finish')
+                                                                                                  'finish')
                 elif search_sort == 'cphone':
                     company_sheet = ASsheet.objects.all().filter(cphone__icontains=query).order_by('-rg_date',
-                                                                                                            'finish')
+                                                                                                   'finish')
                 elif search_sort == 'product_name':
                     company_sheet = ASsheet.objects.all().filter(product_name__icontains=query).order_by('-rg_date',
-                                                                                                            'finish')
+                                                                                                         'finish')
                 elif search_sort == 'finish':
                     company_sheet = ASsheet.objects.all().filter(finish__icontains=query).order_by('-rg_date',
-                                                                                                      'finish')
+                                                                                                   'finish')
                 elif search_sort == 'memo':
                     company_sheet = ASsheet.objects.all().filter(memo__icontains=query).order_by('-rg_date',
-                                                                                                    'finish')
+                                                                                                 'finish')
                 elif search_sort == 'serial':
                     company_sheet = ASsheet.objects.all().filter(serial__icontains=query).order_by('-rg_date',
-                                                                                                 'finish')
+                                                                                                   'finish')
                 elif search_sort == 'after_serial':
                     company_sheet = ASsheet.objects.all().filter(after_serial__icontains=query).order_by('-rg_date',
-                                                                                                 'finish')
+                                                                                                         'finish')
                 elif search_sort == 'symptom':
                     company_sheet = ASsheet.objects.all().filter(symptom__icontains=query).order_by('-rg_date',
-                                                                                                            'finish')
+                                                                                                    'finish')
                 elif search_sort == 'option':
                     company_sheet = ASsheet.objects.all().filter(option__icontains=query).order_by('-rg_date',
-                                                                                                            'finish')
+                                                                                                   'finish')
                 elif search_sort == 'all':
                     company_sheet = ASsheet.objects.all().filter(
                         Q(product_name__icontains=query) | Q(memo__icontains=query) | Q(cname__icontains=query)
-                    | Q(finish__icontains=query)| Q(cuser__icontains=query)| Q(cphone__icontains=query)
-                    | Q(option__icontains=query)| Q(serial__icontains=query)| Q(symptom__icontains=query)).order_by('-rg_date', 'finish')
+                        | Q(finish__icontains=query) | Q(cuser__icontains=query) | Q(cphone__icontains=query)
+                        | Q(option__icontains=query) | Q(serial__icontains=query) | Q(
+                            symptom__icontains=query)).order_by('-rg_date', 'finish')
                 elif search_sort == 'rg_date':
                     e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
                                                                                                   seconds=59)
                     company_sheet = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by(
                         '-rg_date', 'finish')
                 elif search_sort == 'rp_date':
-                    company_sheet = ASsheet.objects.all().filter(rp_date__range=[startdate, enddate]).order_by('-rg_date', 'finish')
+                    company_sheet = ASsheet.objects.all().filter(rp_date__range=[startdate, enddate]).order_by(
+                        '-rg_date', 'finish')
                 elif search_sort == 'end_date':
-                    company_sheet = ASsheet.objects.all().filter(end_date__range=[startdate, enddate]).order_by('-rg_date', 'finish')
+                    company_sheet = ASsheet.objects.all().filter(end_date__range=[startdate, enddate]).order_by(
+                        '-rg_date', 'finish')
                 else:
                     company_sheet = ASsheet.objects.all().order_by('-rg_date', 'finish')
 
@@ -174,7 +178,8 @@ def as_list(request):
             context = {'login_session': login_session, 'company_sheet': company_sheet, 'page_obj': page_obj,
                        'sort': sort, 'as_wnum': as_wnum, 'as_mnum': as_mnum, 'as_wnum_sum': as_wnum_sum,
                        'as_mnum_sum': as_mnum_sum, 'user_name': user_name, 'search_sort': search_sort,
-                       'over_as': over_as, 'query': query, 'sdate': startdate, 'edate': enddate, 'user_phone': user_phone}
+                       'over_as': over_as, 'query': query, 'sdate': startdate, 'edate': enddate,
+                       'user_phone': user_phone}
 
         else:
             sort = request.GET.get('sort', '')
@@ -195,35 +200,44 @@ def as_list(request):
                 startdate = request.GET.get('sdate', '')
                 enddate = request.GET.get('edate', '')
                 if search_sort == 'cname':
-                    company_sheet = ASsheet.objects.all().filter(cname__icontains=query, cname=login_session).order_by('-rg_date',
-                                                                                                  'finish')
+                    company_sheet = ASsheet.objects.all().filter(cname__icontains=query, cname=login_session).order_by(
+                        '-rg_date',
+                        'finish')
                 elif search_sort == 'cuser':
-                    company_sheet = ASsheet.objects.all().filter(cuser__icontains=query, cname=login_session).order_by('-rg_date',
-                                                                                                  'finish')
+                    company_sheet = ASsheet.objects.all().filter(cuser__icontains=query, cname=login_session).order_by(
+                        '-rg_date',
+                        'finish')
                 elif search_sort == 'cphone':
-                    company_sheet = ASsheet.objects.all().filter(cphone__icontains=query, cname=login_session).order_by('-rg_date',
-                                                                                                   'finish')
+                    company_sheet = ASsheet.objects.all().filter(cphone__icontains=query, cname=login_session).order_by(
+                        '-rg_date',
+                        'finish')
                 elif search_sort == 'product_name':
-                    company_sheet = ASsheet.objects.all().filter(product_name__icontains=query, cname=login_session).order_by('-rg_date',
-                                                                                                         'finish')
+                    company_sheet = ASsheet.objects.all().filter(product_name__icontains=query,
+                                                                 cname=login_session).order_by('-rg_date',
+                                                                                               'finish')
                 elif search_sort == 'finish':
-                    company_sheet = ASsheet.objects.all().filter(finish__icontains=query, cname=login_session).order_by('-rg_date',
-                                                                                                   'finish')
+                    company_sheet = ASsheet.objects.all().filter(finish__icontains=query, cname=login_session).order_by(
+                        '-rg_date',
+                        'finish')
                 elif search_sort == 'memo':
-                    company_sheet = ASsheet.objects.all().filter(memo__icontains=query, cname=login_session).order_by('-rg_date',
-                                                                                                 'finish')
+                    company_sheet = ASsheet.objects.all().filter(memo__icontains=query, cname=login_session).order_by(
+                        '-rg_date',
+                        'finish')
                 elif search_sort == 'serial':
-                    company_sheet = ASsheet.objects.all().filter(serial__icontains=query, cname=login_session).order_by('-rg_date',
-                                                                                                   'finish')
+                    company_sheet = ASsheet.objects.all().filter(serial__icontains=query, cname=login_session).order_by(
+                        '-rg_date',
+                        'finish')
                 elif search_sort == 'after_serial':
                     company_sheet = ASsheet.objects.all().filter(after_serial__icontains=query).order_by('-rg_date',
-                                                                                                 'finish')
+                                                                                                         'finish')
                 elif search_sort == 'symptom':
-                    company_sheet = ASsheet.objects.all().filter(symptom__icontains=query, cname=login_session).order_by('-rg_date',
-                                                                                                    'finish')
+                    company_sheet = ASsheet.objects.all().filter(symptom__icontains=query,
+                                                                 cname=login_session).order_by('-rg_date',
+                                                                                               'finish')
                 elif search_sort == 'option':
-                    company_sheet = ASsheet.objects.all().filter(option__icontains=query, cname=login_session).order_by('-rg_date',
-                                                                                                   'finish')
+                    company_sheet = ASsheet.objects.all().filter(option__icontains=query, cname=login_session).order_by(
+                        '-rg_date',
+                        'finish')
                 elif search_sort == 'all':
                     company_sheet = ASsheet.objects.all().filter(
                         Q(product_name__icontains=query) | Q(memo__icontains=query) | Q(cname__icontains=query)
@@ -233,13 +247,16 @@ def as_list(request):
                 elif search_sort == 'rg_date':
                     e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
                                                                                                   seconds=59)
-                    company_sheet = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date, cname=login_session).order_by(
+                    company_sheet = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date,
+                                                                 cname=login_session).order_by(
                         '-rg_date', 'finish')
                 elif search_sort == 'rp_date':
-                    company_sheet = ASsheet.objects.all().filter(rp_date__range=[startdate, enddate], cname=login_session).order_by(
+                    company_sheet = ASsheet.objects.all().filter(rp_date__range=[startdate, enddate],
+                                                                 cname=login_session).order_by(
                         '-rg_date', 'finish')
                 elif search_sort == 'end_date':
-                    company_sheet = ASsheet.objects.all().filter(end_date__range=[startdate, enddate], cname=login_session).order_by(
+                    company_sheet = ASsheet.objects.all().filter(end_date__range=[startdate, enddate],
+                                                                 cname=login_session).order_by(
                         '-rg_date', 'finish')
                 else:
                     company_sheet = ASsheet.objects.all().filter(cname=login_session).order_by('-rg_date', 'finish')
@@ -248,8 +265,10 @@ def as_list(request):
             paginator = Paginator(company_sheet, 10)
             page_obj = paginator.get_page(page)
             print("GET 페이징 끝")
-            context = {'login_session': login_session, 'company_sheet': company_sheet, 'page_obj': page_obj, 'user_phone': user_phone,
-                       'sort': sort, 'search_sort': search_sort, 'query': query, 'user_name': user_name, 'sdate': startdate, 'edate': enddate}
+            context = {'login_session': login_session, 'company_sheet': company_sheet, 'page_obj': page_obj,
+                       'user_phone': user_phone,
+                       'sort': sort, 'search_sort': search_sort, 'query': query, 'user_name': user_name,
+                       'sdate': startdate, 'edate': enddate}
         print('끝')
         return render(request, 'assheet/as_list.html', context)
     elif request.method == 'POST':
@@ -291,14 +310,17 @@ def AsUploadFile(request, pk):
         uploadfile = models.ASUploadFile.objects.all()
         no = pk
 
-        context = {'login_session': login_session, 'no': no, 'detailView': detailView, 'files': uploadfile, 'user_name': user_name}
+        context = {'login_session': login_session, 'no': no, 'detailView': detailView, 'files': uploadfile,
+                   'user_name': user_name}
         return render(request, "assheet/asfile_upload.html", context)
 
     uploadfile = models.ASUploadFile.objects.all()
     detailView = get_object_or_404(ASsheet, no=pk)
 
     return render(request, "assheet/asfile_upload.html", context={'user_name': user_name,
-        "files": uploadfile, "login_session": login_session, 'detailView': detailView})
+                                                                  "files": uploadfile, "login_session": login_session,
+                                                                  'detailView': detailView})
+
 
 # as파일 다운로드
 def as_downloadfile(request, pk):
@@ -309,7 +331,6 @@ def as_downloadfile(request, pk):
     response['Content-Disposition'] = f'attachment; filename={name}'
     shutil.copyfileobj(file, response)
     return response
-
 
 
 # AS 엑셀 다운로드
@@ -349,164 +370,453 @@ def AS_excel(request):
         enddate = request.GET.get('edate', '')
         if login_session == 'insung':
             if search_sort == 'product_name':
-                rows = ASsheet.objects.all().filter(product_name__icontains=query).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
+                rows = ASsheet.objects.all().filter(product_name__icontains=query).values_list('no', 'cname', 'cuser',
+                                                                                               'cphone',
+                                                                                               'rg_date', 'rp_date',
+                                                                                               'end_date',
+                                                                                               'product_name', 'serial',
+                                                                                               'after_serial', 'site',
+                                                                                               'symptom', 'memo',
+                                                                                               'option', 'la_category',
+                                                                                               'me_category',
+                                                                                               'sm_category',
+                                                                                               'asaction', 'user_name',
+                                                                                               'finish')
             elif search_sort == 'cname':
-                rows = ASsheet.objects.all().filter(cname__icontains=query).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
+                rows = ASsheet.objects.all().filter(cname__icontains=query).values_list('no', 'cname', 'cuser',
+                                                                                        'cphone',
+                                                                                        'rg_date', 'rp_date',
+                                                                                        'end_date', 'product_name',
+                                                                                        'serial', 'after_serial',
+                                                                                        'site', 'symptom', 'memo',
+                                                                                        'option', 'la_category',
+                                                                                        'me_category', 'sm_category',
+                                                                                        'asaction', 'user_name',
+                                                                                        'finish')
             elif search_sort == 'cuser':
-                rows = ASsheet.objects.all().filter(cuser__icontains=query).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
+                rows = ASsheet.objects.all().filter(cuser__icontains=query).values_list('no', 'cname', 'cuser',
+                                                                                        'cphone',
+                                                                                        'rg_date', 'rp_date',
+                                                                                        'end_date', 'product_name',
+                                                                                        'serial', 'after_serial',
+                                                                                        'site', 'symptom', 'memo',
+                                                                                        'option', 'la_category',
+                                                                                        'me_category', 'sm_category',
+                                                                                        'asaction', 'user_name',
+                                                                                        'finish')
             elif search_sort == 'cphone':
-                rows = ASsheet.objects.all().filter(cphone__icontains=query).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
+                rows = ASsheet.objects.all().filter(cphone__icontains=query).values_list('no', 'cname', 'cuser',
+                                                                                         'cphone',
+                                                                                         'rg_date', 'rp_date',
+                                                                                         'end_date', 'product_name',
+                                                                                         'serial', 'after_serial',
+                                                                                         'site', 'symptom', 'memo',
+                                                                                         'option', 'la_category',
+                                                                                         'me_category', 'sm_category',
+                                                                                         'asaction', 'user_name',
+                                                                                         'finish')
             elif search_sort == 'finish':
-                rows = ASsheet.objects.all().filter(finish__icontains=query).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
+                rows = ASsheet.objects.all().filter(finish__icontains=query).values_list('no', 'cname', 'cuser',
+                                                                                         'cphone',
+                                                                                         'rg_date', 'rp_date',
+                                                                                         'end_date', 'product_name',
+                                                                                         'serial', 'after_serial',
+                                                                                         'site', 'symptom', 'memo',
+                                                                                         'option', 'la_category',
+                                                                                         'me_category', 'sm_category',
+                                                                                         'asaction', 'user_name',
+                                                                                         'finish')
             elif search_sort == 'memo':
                 rows = ASsheet.objects.all().filter(memo__icontains=query).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
+                                                                                       'rg_date', 'rp_date', 'end_date',
+                                                                                       'product_name', 'serial',
+                                                                                       'after_serial', 'site',
+                                                                                       'symptom', 'memo',
+                                                                                       'option', 'la_category',
+                                                                                       'me_category', 'sm_category',
+                                                                                       'asaction', 'user_name',
+                                                                                       'finish')
             elif search_sort == 'serial':
-                rows = ASsheet.objects.all().filter(serial__icontains=query).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
+                rows = ASsheet.objects.all().filter(serial__icontains=query).values_list('no', 'cname', 'cuser',
+                                                                                         'cphone',
+                                                                                         'rg_date', 'rp_date',
+                                                                                         'end_date', 'product_name',
+                                                                                         'serial', 'after_serial',
+                                                                                         'site', 'symptom', 'memo',
+                                                                                         'option', 'la_category',
+                                                                                         'me_category', 'sm_category',
+                                                                                         'asaction', 'user_name',
+                                                                                         'finish')
             elif search_sort == 'after_serial':
-                rows = ASsheet.objects.all().filter(after_serial__icontains=query).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
-            elif search_sort == 'all':
-                rows = ASsheet.objects.all().filter(Q(product_name__icontains=query)|Q(cname__icontains=query)|
-                                                    Q(cuser__icontains=query)|Q(cphone__icontains=query)|
-                                                    Q(finish__icontains=query)|Q(memo__icontains=query)|
-                                                    Q(serial__icontains=query)|Q(site__icontains=query)|
-                                                    Q(symptom__icontains=query)|Q(option__icontains=query)|
-                                                    Q(option__icontains=query)).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
-            elif search_sort == 'site':
-                rows = ASsheet.objects.all().filter(site__icontains=query).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
-            elif search_sort == 'symptom':
-                rows = ASsheet.objects.all().filter(symptom__icontains=query).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
-            elif search_sort == 'option':
-                rows = ASsheet.objects.all().filter(option__icontains=query).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
-            elif search_sort == 'rg_date':
-                e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
-                                                                                              seconds=59)
-                rows = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by(
-                    '-rg_date', 'finish').values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
-            elif search_sort == 'rp_date':
-                rows = ASsheet.objects.all().filter(rp_date__range=[startdate, enddate]).order_by('-rg_date', 'finish').\
-                    values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
-            elif search_sort == 'end_date':
-                rows = ASsheet.objects.all().filter(end_date__range=[startdate, enddate]).order_by('-rg_date', 'finish').\
-                    values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
-            else:
-                rows = ASsheet.objects.all().values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
-        else:
-            if search_sort == 'product_name':
-                rows = ASsheet.objects.all().filter(product_name__icontains=query, cname=login_session).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
-            elif search_sort == 'cname':
-                rows = ASsheet.objects.all().filter(cname__icontains=query, cname=login_session).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
-            elif search_sort == 'cuser':
-                rows = ASsheet.objects.all().filter(cuser__icontains=query, cname=login_session).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
-            elif search_sort == 'cphone':
-                rows = ASsheet.objects.all().filter(cphone__icontains=query, cname=login_session).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
-            elif search_sort == 'finish':
-                rows = ASsheet.objects.all().filter(finish__icontains=query, cname=login_session).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
-            elif search_sort == 'memo':
-                rows = ASsheet.objects.all().filter(memo__icontains=query, cname=login_session).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
-            elif search_sort == 'serial':
-                rows = ASsheet.objects.all().filter(serial__icontains=query, cname=login_session).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
-            elif search_sort == 'after_serial':
-                rows = ASsheet.objects.all().filter(after_serial__icontains=query, cname=login_session).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
+                rows = ASsheet.objects.all().filter(after_serial__icontains=query).values_list('no', 'cname', 'cuser',
+                                                                                               'cphone',
+                                                                                               'rg_date', 'rp_date',
+                                                                                               'end_date',
+                                                                                               'product_name', 'serial',
+                                                                                               'after_serial', 'site',
+                                                                                               'symptom', 'memo',
+                                                                                               'option', 'la_category',
+                                                                                               'me_category',
+                                                                                               'sm_category',
+                                                                                               'asaction', 'user_name',
+                                                                                               'finish')
             elif search_sort == 'all':
                 rows = ASsheet.objects.all().filter(Q(product_name__icontains=query) | Q(cname__icontains=query) |
                                                     Q(cuser__icontains=query) | Q(cphone__icontains=query) |
                                                     Q(finish__icontains=query) | Q(memo__icontains=query) |
                                                     Q(serial__icontains=query) | Q(site__icontains=query) |
                                                     Q(symptom__icontains=query) | Q(option__icontains=query) |
-                                                    Q(option__icontains=query), cname=login_session).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
+                                                    Q(option__icontains=query)).values_list('no', 'cname', 'cuser',
+                                                                                            'cphone',
+                                                                                            'rg_date', 'rp_date',
+                                                                                            'end_date', 'product_name',
+                                                                                            'serial', 'after_serial',
+                                                                                            'site', 'symptom', 'memo',
+                                                                                            'option', 'la_category',
+                                                                                            'me_category',
+                                                                                            'sm_category', 'asaction',
+                                                                                            'user_name', 'finish')
             elif search_sort == 'site':
-                rows = ASsheet.objects.all().filter(site__icontains=query, cname=login_session).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
+                rows = ASsheet.objects.all().filter(site__icontains=query).values_list('no', 'cname', 'cuser', 'cphone',
+                                                                                       'rg_date', 'rp_date', 'end_date',
+                                                                                       'product_name', 'serial',
+                                                                                       'after_serial', 'site',
+                                                                                       'symptom', 'memo',
+                                                                                       'option', 'la_category',
+                                                                                       'me_category', 'sm_category',
+                                                                                       'asaction', 'user_name',
+                                                                                       'finish')
             elif search_sort == 'symptom':
-                rows = ASsheet.objects.all().filter(symptom__icontains=query, cname=login_session).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
+                rows = ASsheet.objects.all().filter(symptom__icontains=query).values_list('no', 'cname', 'cuser',
+                                                                                          'cphone',
+                                                                                          'rg_date', 'rp_date',
+                                                                                          'end_date', 'product_name',
+                                                                                          'serial', 'after_serial',
+                                                                                          'site', 'symptom', 'memo',
+                                                                                          'option', 'la_category',
+                                                                                          'me_category', 'sm_category',
+                                                                                          'asaction', 'user_name',
+                                                                                          'finish')
             elif search_sort == 'option':
-                rows = ASsheet.objects.all().filter(option__icontains=query, cname=login_session).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
+                rows = ASsheet.objects.all().filter(option__icontains=query).values_list('no', 'cname', 'cuser',
+                                                                                         'cphone',
+                                                                                         'rg_date', 'rp_date',
+                                                                                         'end_date', 'product_name',
+                                                                                         'serial', 'after_serial',
+                                                                                         'site', 'symptom', 'memo',
+                                                                                         'option', 'la_category',
+                                                                                         'me_category', 'sm_category',
+                                                                                         'asaction', 'user_name',
+                                                                                         'finish')
             elif search_sort == 'rg_date':
                 e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
                                                                                               seconds=59)
-                rows = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date, cname=login_session).order_by(
+                rows = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by(
                     '-rg_date', 'finish').values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
+                                                      'rg_date', 'rp_date', 'end_date', 'product_name', 'serial',
+                                                      'after_serial', 'site', 'symptom', 'memo',
+                                                      'option', 'la_category', 'me_category', 'sm_category', 'asaction',
+                                                      'user_name', 'finish')
             elif search_sort == 'rp_date':
-                rows = ASsheet.objects.all().filter(rp_date__range=[startdate, enddate], cname=login_session).order_by('-rg_date', 'finish'). \
+                rows = ASsheet.objects.all().filter(rp_date__range=[startdate, enddate]).order_by('-rg_date', 'finish'). \
                     values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
+                                'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site',
+                                'symptom', 'memo',
+                                'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name',
+                                'finish')
             elif search_sort == 'end_date':
-                rows = ASsheet.objects.all().filter(end_date__range=[startdate, enddate], cname=login_session).order_by('-rg_date', 'finish'). \
+                rows = ASsheet.objects.all().filter(end_date__range=[startdate, enddate]).order_by('-rg_date',
+                                                                                                   'finish'). \
                     values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
+                                'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site',
+                                'symptom', 'memo',
+                                'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name',
+                                'finish')
+            else:
+                rows = ASsheet.objects.all().values_list('no', 'cname', 'cuser', 'cphone',
+                                                         'rg_date', 'rp_date', 'end_date', 'product_name', 'serial',
+                                                         'after_serial', 'site', 'symptom', 'memo',
+                                                         'option', 'la_category', 'me_category', 'sm_category',
+                                                         'asaction', 'user_name', 'finish')
+        else:
+            if search_sort == 'product_name':
+                rows = ASsheet.objects.all().filter(product_name__icontains=query, cname=login_session).values_list(
+                    'no', 'cname', 'cuser', 'cphone',
+                    'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom',
+                    'memo',
+                    'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
+            elif search_sort == 'cname':
+                rows = ASsheet.objects.all().filter(cname__icontains=query, cname=login_session).values_list('no',
+                                                                                                             'cname',
+                                                                                                             'cuser',
+                                                                                                             'cphone',
+                                                                                                             'rg_date',
+                                                                                                             'rp_date',
+                                                                                                             'end_date',
+                                                                                                             'product_name',
+                                                                                                             'serial',
+                                                                                                             'after_serial',
+                                                                                                             'site',
+                                                                                                             'symptom',
+                                                                                                             'memo',
+                                                                                                             'option',
+                                                                                                             'la_category',
+                                                                                                             'me_category',
+                                                                                                             'sm_category',
+                                                                                                             'asaction',
+                                                                                                             'user_name',
+                                                                                                             'finish')
+            elif search_sort == 'cuser':
+                rows = ASsheet.objects.all().filter(cuser__icontains=query, cname=login_session).values_list('no',
+                                                                                                             'cname',
+                                                                                                             'cuser',
+                                                                                                             'cphone',
+                                                                                                             'rg_date',
+                                                                                                             'rp_date',
+                                                                                                             'end_date',
+                                                                                                             'product_name',
+                                                                                                             'serial',
+                                                                                                             'after_serial',
+                                                                                                             'site',
+                                                                                                             'symptom',
+                                                                                                             'memo',
+                                                                                                             'option',
+                                                                                                             'la_category',
+                                                                                                             'me_category',
+                                                                                                             'sm_category',
+                                                                                                             'asaction',
+                                                                                                             'user_name',
+                                                                                                             'finish')
+            elif search_sort == 'cphone':
+                rows = ASsheet.objects.all().filter(cphone__icontains=query, cname=login_session).values_list('no',
+                                                                                                              'cname',
+                                                                                                              'cuser',
+                                                                                                              'cphone',
+                                                                                                              'rg_date',
+                                                                                                              'rp_date',
+                                                                                                              'end_date',
+                                                                                                              'product_name',
+                                                                                                              'serial',
+                                                                                                              'after_serial',
+                                                                                                              'site',
+                                                                                                              'symptom',
+                                                                                                              'memo',
+                                                                                                              'option',
+                                                                                                              'la_category',
+                                                                                                              'me_category',
+                                                                                                              'sm_category',
+                                                                                                              'asaction',
+                                                                                                              'user_name',
+                                                                                                              'finish')
+            elif search_sort == 'finish':
+                rows = ASsheet.objects.all().filter(finish__icontains=query, cname=login_session).values_list('no',
+                                                                                                              'cname',
+                                                                                                              'cuser',
+                                                                                                              'cphone',
+                                                                                                              'rg_date',
+                                                                                                              'rp_date',
+                                                                                                              'end_date',
+                                                                                                              'product_name',
+                                                                                                              'serial',
+                                                                                                              'after_serial',
+                                                                                                              'site',
+                                                                                                              'symptom',
+                                                                                                              'memo',
+                                                                                                              'option',
+                                                                                                              'la_category',
+                                                                                                              'me_category',
+                                                                                                              'sm_category',
+                                                                                                              'asaction',
+                                                                                                              'user_name',
+                                                                                                              'finish')
+            elif search_sort == 'memo':
+                rows = ASsheet.objects.all().filter(memo__icontains=query, cname=login_session).values_list('no',
+                                                                                                            'cname',
+                                                                                                            'cuser',
+                                                                                                            'cphone',
+                                                                                                            'rg_date',
+                                                                                                            'rp_date',
+                                                                                                            'end_date',
+                                                                                                            'product_name',
+                                                                                                            'serial',
+                                                                                                            'after_serial',
+                                                                                                            'site',
+                                                                                                            'symptom',
+                                                                                                            'memo',
+                                                                                                            'option',
+                                                                                                            'la_category',
+                                                                                                            'me_category',
+                                                                                                            'sm_category',
+                                                                                                            'asaction',
+                                                                                                            'user_name',
+                                                                                                            'finish')
+            elif search_sort == 'serial':
+                rows = ASsheet.objects.all().filter(serial__icontains=query, cname=login_session).values_list('no',
+                                                                                                              'cname',
+                                                                                                              'cuser',
+                                                                                                              'cphone',
+                                                                                                              'rg_date',
+                                                                                                              'rp_date',
+                                                                                                              'end_date',
+                                                                                                              'product_name',
+                                                                                                              'serial',
+                                                                                                              'after_serial',
+                                                                                                              'site',
+                                                                                                              'symptom',
+                                                                                                              'memo',
+                                                                                                              'option',
+                                                                                                              'la_category',
+                                                                                                              'me_category',
+                                                                                                              'sm_category',
+                                                                                                              'asaction',
+                                                                                                              'user_name',
+                                                                                                              'finish')
+            elif search_sort == 'after_serial':
+                rows = ASsheet.objects.all().filter(after_serial__icontains=query, cname=login_session).values_list(
+                    'no', 'cname', 'cuser', 'cphone',
+                    'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom',
+                    'memo',
+                    'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
+            elif search_sort == 'all':
+                rows = ASsheet.objects.all().filter(Q(product_name__icontains=query) | Q(cname__icontains=query) |
+                                                    Q(cuser__icontains=query) | Q(cphone__icontains=query) |
+                                                    Q(finish__icontains=query) | Q(memo__icontains=query) |
+                                                    Q(serial__icontains=query) | Q(site__icontains=query) |
+                                                    Q(symptom__icontains=query) | Q(option__icontains=query) |
+                                                    Q(option__icontains=query), cname=login_session).values_list('no',
+                                                                                                                 'cname',
+                                                                                                                 'cuser',
+                                                                                                                 'cphone',
+                                                                                                                 'rg_date',
+                                                                                                                 'rp_date',
+                                                                                                                 'end_date',
+                                                                                                                 'product_name',
+                                                                                                                 'serial',
+                                                                                                                 'after_serial',
+                                                                                                                 'site',
+                                                                                                                 'symptom',
+                                                                                                                 'memo',
+                                                                                                                 'option',
+                                                                                                                 'la_category',
+                                                                                                                 'me_category',
+                                                                                                                 'sm_category',
+                                                                                                                 'asaction',
+                                                                                                                 'user_name',
+                                                                                                                 'finish')
+            elif search_sort == 'site':
+                rows = ASsheet.objects.all().filter(site__icontains=query, cname=login_session).values_list('no',
+                                                                                                            'cname',
+                                                                                                            'cuser',
+                                                                                                            'cphone',
+                                                                                                            'rg_date',
+                                                                                                            'rp_date',
+                                                                                                            'end_date',
+                                                                                                            'product_name',
+                                                                                                            'serial',
+                                                                                                            'after_serial',
+                                                                                                            'site',
+                                                                                                            'symptom',
+                                                                                                            'memo',
+                                                                                                            'option',
+                                                                                                            'la_category',
+                                                                                                            'me_category',
+                                                                                                            'sm_category',
+                                                                                                            'asaction',
+                                                                                                            'user_name',
+                                                                                                            'finish')
+            elif search_sort == 'symptom':
+                rows = ASsheet.objects.all().filter(symptom__icontains=query, cname=login_session).values_list('no',
+                                                                                                               'cname',
+                                                                                                               'cuser',
+                                                                                                               'cphone',
+                                                                                                               'rg_date',
+                                                                                                               'rp_date',
+                                                                                                               'end_date',
+                                                                                                               'product_name',
+                                                                                                               'serial',
+                                                                                                               'after_serial',
+                                                                                                               'site',
+                                                                                                               'symptom',
+                                                                                                               'memo',
+                                                                                                               'option',
+                                                                                                               'la_category',
+                                                                                                               'me_category',
+                                                                                                               'sm_category',
+                                                                                                               'asaction',
+                                                                                                               'user_name',
+                                                                                                               'finish')
+            elif search_sort == 'option':
+                rows = ASsheet.objects.all().filter(option__icontains=query, cname=login_session).values_list('no',
+                                                                                                              'cname',
+                                                                                                              'cuser',
+                                                                                                              'cphone',
+                                                                                                              'rg_date',
+                                                                                                              'rp_date',
+                                                                                                              'end_date',
+                                                                                                              'product_name',
+                                                                                                              'serial',
+                                                                                                              'after_serial',
+                                                                                                              'site',
+                                                                                                              'symptom',
+                                                                                                              'memo',
+                                                                                                              'option',
+                                                                                                              'la_category',
+                                                                                                              'me_category',
+                                                                                                              'sm_category',
+                                                                                                              'asaction',
+                                                                                                              'user_name',
+                                                                                                              'finish')
+            elif search_sort == 'rg_date':
+                e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
+                                                                                              seconds=59)
+                rows = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date,
+                                                    cname=login_session).order_by(
+                    '-rg_date', 'finish').values_list('no', 'cname', 'cuser', 'cphone',
+                                                      'rg_date', 'rp_date', 'end_date', 'product_name', 'serial',
+                                                      'after_serial', 'site', 'symptom', 'memo',
+                                                      'option', 'la_category', 'me_category', 'sm_category', 'asaction',
+                                                      'user_name', 'finish')
+            elif search_sort == 'rp_date':
+                rows = ASsheet.objects.all().filter(rp_date__range=[startdate, enddate], cname=login_session).order_by(
+                    '-rg_date', 'finish'). \
+                    values_list('no', 'cname', 'cuser', 'cphone',
+                                'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site',
+                                'symptom', 'memo',
+                                'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name',
+                                'finish')
+            elif search_sort == 'end_date':
+                rows = ASsheet.objects.all().filter(end_date__range=[startdate, enddate], cname=login_session).order_by(
+                    '-rg_date', 'finish'). \
+                    values_list('no', 'cname', 'cuser', 'cphone',
+                                'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site',
+                                'symptom', 'memo',
+                                'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name',
+                                'finish')
             else:
                 rows = ASsheet.objects.all().filter(cname=login_session).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
+                                                                                     'rg_date', 'rp_date', 'end_date',
+                                                                                     'product_name', 'serial',
+                                                                                     'after_serial', 'site', 'symptom',
+                                                                                     'memo',
+                                                                                     'option', 'la_category',
+                                                                                     'me_category', 'sm_category',
+                                                                                     'asaction', 'user_name', 'finish')
     else:
         if login_session == 'insung':
             # 엑셀에 쓸 데이터 리스트화
             rows = ASsheet.objects.all().values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
+                                                     'rg_date', 'rp_date', 'end_date', 'product_name', 'serial',
+                                                     'after_serial', 'site', 'symptom', 'memo',
+                                                     'option', 'la_category', 'me_category', 'sm_category', 'asaction',
+                                                     'user_name', 'finish')
         else:
             rows = ASsheet.objects.filter(cname=login_session).values_list('no', 'cname', 'cuser', 'cphone',
-                        'rg_date', 'rp_date', 'end_date', 'product_name', 'serial', 'after_serial', 'site', 'symptom', 'memo',
-                        'option', 'la_category', 'me_category', 'sm_category', 'asaction', 'user_name', 'finish')
+                                                                           'rg_date', 'rp_date', 'end_date',
+                                                                           'product_name', 'serial', 'after_serial',
+                                                                           'site', 'symptom', 'memo',
+                                                                           'option', 'la_category', 'me_category',
+                                                                           'sm_category', 'asaction', 'user_name',
+                                                                           'finish')
 
     # 첫번째 열: 설정한 컬럼명 순서대로 스타일 적용하여 생성
     print("다운 중간2")
@@ -583,7 +893,8 @@ def as_modify(request, pk):
         # get으로 오면 다시 수정페이지로 넘김
         detailView = get_object_or_404(ASsheet, no=pk)
 
-        context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name, 'user_phone': user_phone}
+        context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name,
+                   'user_phone': user_phone}
         return render(request, 'assheet/as_modify.html', context)
     elif request.method == 'POST':
 
@@ -617,8 +928,14 @@ def as_modify(request, pk):
                 pm_modify2.save()
                 print("pm 까지 수정 저장완료")
             except:
-                print("수정 저장완료")
+                ex_pm = Product_Management.objects.exclude(status='폐기')
+                pm_modify = get_object_or_404(ex_pm, serial=request.POST['serial'])
+                pm_modify.current_location = request.POST['cname']
+                pm_modify.status = "AS"
+                pm_modify.save()
+
                 detailView.save()
+                print("수정 저장완료")
         elif request.POST['finish'] == '진행 중' or request.POST['finish'] == '접수 중':
             try:
                 ex_pm = Product_Management.objects.exclude(status='폐기')
@@ -632,11 +949,11 @@ def as_modify(request, pk):
                 print("수정 저장완료")
                 detailView.save()
 
-
         detailView.save()
 
         detailView = get_object_or_404(ASsheet, no=pk)
-        context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name, 'user_phone': user_phone}
+        context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name,
+                   'user_phone': user_phone}
         return render(request, 'assheet/as_detail.html', context)
 
 

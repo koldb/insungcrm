@@ -19,6 +19,7 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 from functools import reduce
 from django.urls import reverse
+from openpyxl import load_workbook
 
 
 # Create your views here.
@@ -121,46 +122,64 @@ def searchData(request):
     if 'term' in request.GET:
         qs = ProductDb.objects.filter(product_name__icontains=request.GET.get('term'))
         pname = list()
-        for product in qs:
-            pname.append(product.product_name)
-            print(pname)
+        if qs:
+            for product in qs:
+                pname.append(product.product_name)
+                print(pname)
+        else:
+            print("없음")
+            n = '시리얼과 일치하는 제품명이 없습니다.'
+            pname.append(n)
         return JsonResponse(pname, safe=False)
 
 
 # 제품명 검색 자동완성
 def searchPM(request):
     if 'term' in request.GET:
-        qs = Product_Management.objects.filter(serial__icontains=request.GET.get('term')).exclude(status='폐기').values('product_name').distinct()
+        qs = Product_Management.objects.filter(serial__icontains=request.GET.get('term')).exclude(status='폐기').values(
+            'product_name').distinct()
         pname = list()
         pmlist = []
         print(qs.values())
-        for product in qs:
-            n = product['product_name']
-            #s = product.serial
-            print("name : ", n)
-            # data = {
-            #     'name' : n,
-            #     'ser' : s
-            # }
+        if qs:
+            for product in qs:
+                n = product['product_name']
+                # s = product.serial
+                print("name : ", n)
+                # data = {
+                #     'name' : n,
+                #     'ser' : s
+                # }
+                pname.append(n)
+        else:
+            print("없음")
+            n = '시리얼과 일치하는 제품명이 없습니다.'
             pname.append(n)
         return JsonResponse(pname, safe=False)
+
 
 # 시리얼 검색
 def searchPM_serial(request):
     if 'term' in request.GET:
-        qs = Product_Management.objects.filter(serial__icontains=request.GET.get('term')).exclude(status='폐기').values('serial').distinct()
+        qs = Product_Management.objects.filter(serial__icontains=request.GET.get('term')).exclude(status='폐기').values(
+            'serial').distinct()
         p1 = list()
         pmlist = []
         print("여기는? ", qs.values())
-        for product in qs:
-            n = product['serial']
-            print("n 은 : ", n)
-            #print("s 은 : ", s)
-            #s = product['serial']
-            # data = {
-            #     'name' : n,
-            #     'ser' : s
-            # }
+        if qs:
+            for product in qs:
+                n = product['serial']
+                print("n 은 : ", n)
+                # print("s 은 : ", s)
+                # s = product['serial']
+                # data = {
+                #     'name' : n,
+                #     'ser' : s
+                # }
+                p1.append(n)
+        else:
+            print("없음")
+            n = '일치하는 시리얼이 없습니다.'
             p1.append(n)
         return JsonResponse(p1, safe=False)
 
@@ -1096,7 +1115,7 @@ def product_modify(request, pk):
         try:
             ex_pm = Product_Management.objects.exclude(status='폐기')
             pm_modify = get_object_or_404(ex_pm, serial=request.POST['serial'])
-            #pm_modify = Product_Management()
+            # pm_modify = Product_Management()
             pm_modify.product_name = request.POST['product_name']
             pm_modify.current_location = request.POST['cname']
             pm_modify.status = "출고"
@@ -1712,17 +1731,18 @@ def pm_modify(request, pk):
         print("수정 저장 끝")
         context = {'login_session': login_session, 'user_name': user_name,
                    'user_dept': user_dept, 'detailView': detailView}
-        #return render(request, 'isscm/main_detail.html', context)
+        # return render(request, 'isscm/main_detail.html', context)
         return redirect('isscm:pm_list')
 
 
 def pm_delete(request, pk):
-    pm_view = get_object_or_404(Product_Management, id=pk)
+    pm_view = get_object_or_404(Product_Management, no=pk)
     pm_view.delete()
 
     print('삭제완료')
     return redirect('isscm:pm_list')
     # return redirect('isscm:product_modify')
+
 
 # product_manage 엑셀 다운로드
 def pm_excel(request):
@@ -1766,13 +1786,13 @@ def pm_excel(request):
             rows = Product_Management.objects.filter(product_name__icontains=query).order_by('rg_date').values_list(
                 'rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
         elif search_sort == 'current_location':
-            rows = Product_Management.objects.filter(current_location__icontains=query).order_by('rg_date').\
+            rows = Product_Management.objects.filter(current_location__icontains=query).order_by('rg_date'). \
                 values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
         elif search_sort == 'serial':
             rows = Product_Management.objects.filter(serial__icontains=query).order_by('rg_date'). \
                 values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
         elif search_sort == 'status':
-            rows = Product_Management.objects.filter(status__icontains=query).order_by('rg_date').\
+            rows = Product_Management.objects.filter(status__icontains=query).order_by('rg_date'). \
                 values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
         elif search_sort == 'rg_date':
             e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
@@ -1780,18 +1800,21 @@ def pm_excel(request):
             rows = Product_Management.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by(
                 'rg_date').values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
         elif search_sort == 'update_date':
-            rows = Product_Management.objects.all().filter(update_date__range=[startdate, enddate]).order_by('rg_date').\
+            rows = Product_Management.objects.all().filter(update_date__range=[startdate, enddate]).order_by('rg_date'). \
                 values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
         elif search_sort == 'all':
             rows = Product_Management.objects.all().filter(
-                Q(product_name__icontains=query) | Q(current_location__icontains=query) | Q(status__icontains=query)).\
-                order_by('rg_date').values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
+                Q(product_name__icontains=query) | Q(current_location__icontains=query) | Q(status__icontains=query)). \
+                order_by('rg_date').values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location',
+                                                'status')
         else:
-            rows = Product_Management.objects.all().order_by('rg_date').\
+            rows = Product_Management.objects.all().order_by('rg_date'). \
                 values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
     else:
         print('전체 다운로드')
-        rows = Product_Management.objects.all().order_by('rg_date').values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
+        rows = Product_Management.objects.all().order_by('rg_date').values_list('rg_date', 'update_date',
+                                                                                'product_name', 'serial',
+                                                                                'current_location', 'status')
 
     # 첫번째 열: 설정한 컬럼명 순서대로 스타일 적용하여 생성
     print("다운 중간2")
@@ -1813,3 +1836,58 @@ def pm_excel(request):
     wb.save(response)
     print("다운로드 끝")
     return response
+
+
+def pm_excel_upload(request):
+    if request.method == "POST":
+        print("엑셀 업로드 시작")
+        files = request.FILES['uploadedFile']
+        print('file : ', files)
+        # data_only=Ture로 해줘야 수식이 아닌 값으로 받아온다.
+        load_wb = load_workbook(files, data_only=True)
+        print('loadwb : ', load_wb)
+        # 시트 이름으로 불러오기
+        load_ws = load_wb['Sheet1']
+        print('loadws :', load_ws)
+        all_values = []
+        for row in load_ws.rows:
+            row_value = []
+            for cell in row:
+                row_value.append(cell.value)
+            all_values.append(row_value)
+
+        print(all_values)
+        for idx, val in enumerate(all_values):
+            print('저장 진행중')
+            if idx == 0:
+                print('val : ', val[0])
+                print('val : ', val[1])
+                print('val : ', val[2])
+                # 엑셀 형식 체크 (첫번째의 제목 row)
+                if val[0] != 'product_name' or val[1] != 'serial' or val[2] != 'current_location' or val[3] != 'status':
+                    print("항목 틀림")
+                    break
+            else:
+                if val[0] == None and val[1] == None and val[2] == None and val[3] == None :
+                    # te = Product_Management(no=val[0], rg_date=val[1], product_name=val[2], serial=val[3],
+                    #                                     current_location=val[4], status=val[5], update_date=val[6])
+                    print("끝")
+                    break
+                else:
+                    print('idx : ', idx)
+                    print('val0 : ', val[0])
+                    print('val1 : ', val[1])
+                    print('val2 : ', val[2])
+                    print('val3 : ', val[3])
+                    pm = Product_Management()
+                    #pm.no = val[0]
+                    pm.product_name = val[0]
+                    pm.serial = val[1]
+                    pm.current_location = val[2]
+                    pm.status = val[3]
+
+                    pm.save()
+                    print(type(pm.product_name))
+                    print('저장 완료')
+
+    return HttpResponseRedirect(reverse('isscm:pm_list'))

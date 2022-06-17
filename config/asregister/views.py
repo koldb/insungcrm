@@ -94,10 +94,22 @@ def as_list(request):
                 company_sheet = ASsheet.objects.all().order_by('-rg_date')
             elif sort == 'rp_date':
                 company_sheet = ASsheet.objects.all().order_by('-rp_date')
+            elif sort == 'end_date':
+                company_sheet = ASsheet.objects.all().order_by('-end_date')
             elif sort == 'product_name':
                 company_sheet = ASsheet.objects.all().order_by('-product_name', '-rg_date')
             elif sort == 'finish':
                 company_sheet = ASsheet.objects.all().order_by('-finish', '-rg_date')
+            elif sort == 'asaction':
+                company_sheet = ASsheet.objects.all().order_by('-asaction', '-rg_date')
+            elif sort == 'la_category':
+                company_sheet = ASsheet.objects.all().order_by('-la_category', '-rg_date')
+            elif sort == 'me_category':
+                company_sheet = ASsheet.objects.all().order_by('-me_category', '-rg_date')
+            elif sort == 'sm_category':
+                company_sheet = ASsheet.objects.all().order_by('-sm_category', '-rg_date')
+            elif sort == 'user_name':
+                company_sheet = ASsheet.objects.all().order_by('-user_name', '-rg_date')
             elif sort == 'cname':
                 company_sheet = ASsheet.objects.all().order_by('-cname', '-rg_date')
             elif sort == 'all':
@@ -113,30 +125,27 @@ def as_list(request):
                 elif search_sort == 'cuser':
                     company_sheet = ASsheet.objects.all().filter(cuser__icontains=query).order_by('-rg_date',
                                                                                                   'finish')
-                elif search_sort == 'cphone':
-                    company_sheet = ASsheet.objects.all().filter(cphone__icontains=query).order_by('-rg_date',
-                                                                                                   'finish')
                 elif search_sort == 'product_name':
                     company_sheet = ASsheet.objects.all().filter(product_name__icontains=query).order_by('-rg_date',
                                                                                                          'finish')
-                elif search_sort == 'finish':
-                    company_sheet = ASsheet.objects.all().filter(finish__icontains=query).order_by('-rg_date',
-                                                                                                   'finish')
-                elif search_sort == 'memo':
-                    company_sheet = ASsheet.objects.all().filter(memo__icontains=query).order_by('-rg_date',
-                                                                                                 'finish')
                 elif search_sort == 'serial':
                     company_sheet = ASsheet.objects.all().filter(serial__icontains=query).order_by('-rg_date',
                                                                                                    'finish')
                 elif search_sort == 'after_serial':
                     company_sheet = ASsheet.objects.all().filter(after_serial__icontains=query).order_by('-rg_date',
                                                                                                          'finish')
-                elif search_sort == 'symptom':
-                    company_sheet = ASsheet.objects.all().filter(symptom__icontains=query).order_by('-rg_date',
-                                                                                                    'finish')
-                elif search_sort == 'option':
-                    company_sheet = ASsheet.objects.all().filter(option__icontains=query).order_by('-rg_date',
-                                                                                                   'finish')
+                elif search_sort == 'asaction':
+                    company_sheet = ASsheet.objects.all().filter(asaction__icontains=query).order_by('-rg_date',
+                                                                                                         'finish')
+                elif search_sort == 'la_category':
+                    company_sheet = ASsheet.objects.all().filter(la_category__icontains=query).order_by('-rg_date',
+                                                                                                         'finish')
+                elif search_sort == 'me_category':
+                    company_sheet = ASsheet.objects.all().filter(me_category__icontains=query).order_by('-rg_date',
+                                                                                                         'finish')
+                elif search_sort == 'sm_category':
+                    company_sheet = ASsheet.objects.all().filter(sm_category__icontains=query).order_by('-rg_date',
+                                                                                                         'finish')
                 elif search_sort == 'all':
                     company_sheet = ASsheet.objects.all().filter(
                         Q(product_name__icontains=query) | Q(memo__icontains=query) | Q(cname__icontains=query)
@@ -192,6 +201,16 @@ def as_list(request):
                 company_sheet = ASsheet.objects.filter(cname=login_session).order_by('-product_name', '-rg_date')
             elif sort == 'finish':
                 company_sheet = ASsheet.objects.filter(cname=login_session).order_by('-finish', '-rg_date')
+            elif sort == 'asaction':
+                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('-asaction', '-rg_date')
+            elif sort == 'la_category':
+                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('-la_category', '-rg_date')
+            elif sort == 'me_category':
+                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('-me_category', '-rg_date')
+            elif sort == 'sm_category':
+                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('-sm_category', '-rg_date')
+            elif sort == 'user_name':
+                company_sheet = ASsheet.objects.filter(cname=login_session).order_by('-user_name', '-rg_date')
             elif sort == 'all':
                 company_sheet = ASsheet.objects.filter(cname=login_session).order_by('-rg_date', 'finish')
             else:
@@ -207,37 +226,29 @@ def as_list(request):
                     company_sheet = ASsheet.objects.all().filter(cuser__icontains=query, cname=login_session).order_by(
                         '-rg_date',
                         'finish')
-                elif search_sort == 'cphone':
-                    company_sheet = ASsheet.objects.all().filter(cphone__icontains=query, cname=login_session).order_by(
-                        '-rg_date',
-                        'finish')
                 elif search_sort == 'product_name':
                     company_sheet = ASsheet.objects.all().filter(product_name__icontains=query,
                                                                  cname=login_session).order_by('-rg_date',
                                                                                                'finish')
-                elif search_sort == 'finish':
-                    company_sheet = ASsheet.objects.all().filter(finish__icontains=query, cname=login_session).order_by(
-                        '-rg_date',
-                        'finish')
-                elif search_sort == 'memo':
-                    company_sheet = ASsheet.objects.all().filter(memo__icontains=query, cname=login_session).order_by(
-                        '-rg_date',
-                        'finish')
                 elif search_sort == 'serial':
                     company_sheet = ASsheet.objects.all().filter(serial__icontains=query, cname=login_session).order_by(
                         '-rg_date',
                         'finish')
                 elif search_sort == 'after_serial':
-                    company_sheet = ASsheet.objects.all().filter(after_serial__icontains=query).order_by('-rg_date',
+                    company_sheet = ASsheet.objects.all().filter(after_serial__icontains=query, cname=login_session).order_by('-rg_date',
                                                                                                          'finish')
-                elif search_sort == 'symptom':
-                    company_sheet = ASsheet.objects.all().filter(symptom__icontains=query,
-                                                                 cname=login_session).order_by('-rg_date',
-                                                                                               'finish')
-                elif search_sort == 'option':
-                    company_sheet = ASsheet.objects.all().filter(option__icontains=query, cname=login_session).order_by(
-                        '-rg_date',
-                        'finish')
+                elif search_sort == 'asaction':
+                    company_sheet = ASsheet.objects.all().filter(asaction__icontains=query, cname=login_session).order_by('-rg_date',
+                                                                                                         'finish')
+                elif search_sort == 'la_category':
+                    company_sheet = ASsheet.objects.all().filter(la_category__icontains=query, cname=login_session).order_by('-rg_date',
+                                                                                                         'finish')
+                elif search_sort == 'me_category':
+                    company_sheet = ASsheet.objects.all().filter(me_category__icontains=query, cname=login_session).order_by('-rg_date',
+                                                                                                         'finish')
+                elif search_sort == 'sm_category':
+                    company_sheet = ASsheet.objects.all().filter(sm_category__icontains=query, cname=login_session).order_by('-rg_date',
+                                                                                                         'finish')
                 elif search_sort == 'all':
                     company_sheet = ASsheet.objects.all().filter(
                         Q(product_name__icontains=query) | Q(memo__icontains=query) | Q(cname__icontains=query)
@@ -908,34 +919,42 @@ def as_modify(request, pk):
         detailView.option = request.POST['option']
         detailView.finish = request.POST['finish']
         if login_session == 'insung':
-            detailView.after_serial = request.POST['after_serial']
-            detailView.la_category = request.POST['la']
-            detailView.me_category = request.POST['me']
-            detailView.sm_category = request.POST['sm']
-            detailView.asaction = request.POST['action']
+            print('입력')
+            detailView.after_serial = request.POST.get('after_serial', None)
+            detailView.la_category = request.POST.get('la', None)
+            detailView.me_category = request.POST.get('me', None)
+            detailView.sm_category = request.POST.get('sm', None)
+            detailView.asaction = request.POST.get('action', None)
         if request.POST['finish'] == '종료':
-            detailView.end_date = date.today()
-            try:
+            if request.POST['after_serial'] =='':
+                print('확인')
+                detailView.end_date = date.today()
+                try:
+                    print('pm 수정 시작')
+                    ex_pm = Product_Management.objects.exclude(status='폐기')
+                    pm_modify = get_object_or_404(ex_pm, serial=request.POST['serial'])
+                    pm_modify2 = get_object_or_404(ex_pm, serial=request.POST['after_serial'])
+                    pm_modify.current_location = request.POST['cname']
+                    pm_modify2.current_location = request.POST['cname']
+                    pm_modify.status = "AS"
+                    pm_modify2.status = "출고"
+
+                    pm_modify.save()
+                    pm_modify2.save()
+                    print("pm 까지 수정 저장완료")
+                except:
+                    print('후 시리얼 없어 예외처리')
+                    detailView.save()
+            elif request.POST['serial'] == '':
+                print('후 시리얼 없어 전 시리얼만 업데이트')
                 ex_pm = Product_Management.objects.exclude(status='폐기')
                 pm_modify = get_object_or_404(ex_pm, serial=request.POST['serial'])
-                pm_modify2 = get_object_or_404(ex_pm, serial=request.POST['after_serial'])
-                pm_modify.current_location = request.POST['cname']
-                pm_modify2.current_location = request.POST['cname']
-                pm_modify.status = "AS"
-                pm_modify2.status = "출고"
-
-                pm_modify.save()
-                pm_modify2.save()
-                print("pm 까지 수정 저장완료")
-            except:
-                ex_pm = Product_Management.objects.exclude(status='폐기')
-                pm_modify = get_object_or_404(ex_pm, serial=request.POST['serial'])
                 pm_modify.current_location = request.POST['cname']
                 pm_modify.status = "AS"
                 pm_modify.save()
-
+            else:
+                print('전 시리얼 없이 저장')
                 detailView.save()
-                print("수정 저장완료")
         elif request.POST['finish'] == '진행 중' or request.POST['finish'] == '접수 중':
             try:
                 ex_pm = Product_Management.objects.exclude(status='폐기')
@@ -950,7 +969,7 @@ def as_modify(request, pk):
                 detailView.save()
 
         detailView.save()
-
+        print('끝')
         detailView = get_object_or_404(ASsheet, no=pk)
         context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name,
                    'user_phone': user_phone}

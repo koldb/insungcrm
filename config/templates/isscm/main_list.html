@@ -4,8 +4,9 @@
 {% load filter %}
 <style>
      #paging{
-        width:150px;
+        width:250px;
         margin:0 auto;
+        text-align: center;
     }
     #search_p, #search_l {
         margin:0 0 0 120px;
@@ -57,7 +58,6 @@
                 <option value="main_title" id="main_title">견적명</option>
                 <option value="product_name" id="product_name">제품명</option>
                 <option value="requests" id="requests">요청사항</option>
-                <option value="finish" id="finish">종결 여부</option>
                 <option value="user_dept" id="user_dept">담당 팀</option>
                 <option value="user_name" id="user_name">담당자</option>
                 <option value="cname" id="cname">업체명</option>
@@ -71,7 +71,7 @@
         <div id="search_l">
             <select name="search_sort" id="search_sort">
                 <option value="rg_date" id="rg_date">등록 일자</option>
-                <option value="rp_date" id="rp_date">마감 일자</option>
+                <option value="rp_date" id="rp_date">마감 요청 일자</option>
                 <option value="end_date" id="end_date">종료 일자</option>
             </select>
             <input type="text" placeholder="클릭하여 날짜 선택"  name="sdate" id="datepicker3">
@@ -219,11 +219,11 @@
 <div class="col-4">
     <form method="GET" action="{% url 'isscm:main_list' %}">
         <select name="sort" id="sort">
-            <option value="rg_date" id="rg_date">고객 접수 일자</option>
+            <option value="rg_date" id="rg_date">등록 일자</option>
             <option value="rp_date" id="rp_date">마감 요청 일자</option>
+            <option value="end_date" id="end_date">종료 일자</option>
             <option value="main_title" id="main_title">견적명</option>
             <option value="cname" id="cname">업체명</option>
-            <option value="requests" id="requests">요청 사항</option>
             <option value="finish" id="finish">종결 여부</option>
             <option value="total_price" id="total_price">총 금액</option>
             <option value="user_dept" id="user_dept">담당 팀</option>

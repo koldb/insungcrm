@@ -6,6 +6,7 @@
     #paging{
         width:250px;
         margin:0 auto;
+        text-align: center;
     }
     #search_p, #search_l {
         margin:0 0 0 120px;
@@ -70,12 +71,10 @@
                 <option value="serial" id="serial">전 시리얼</option>
                 <option value="after_serial" id="after_serial">후 시리얼</option>
                 <option value="cuser" id="cuser">요청자</option>
-                <option value="cphone" id="cphone">연락처</option>
-                <option value="site" id="site">현장 명</option>
-                <option value="symptom" id="symptom">증상</option>
-                <option value="memo" id="memo">비고</option>
-                <option value="option" id="option">의견</option>
-                <option value="finish" id="finish">완료 여부</option>
+                <option value="la_category" id="la_category">품목</option>
+                <option value="me_category" id="me_category">대분류</option>
+                <option value="sm_category" id="sm_category">소분류</option>
+                <option value="asaction" id="asaction">조치</option>
                 <option value="all" id="all">전체</option>
             </select>
             <input type="search" placeholder="검색"  name="q" value="{{ query }}">
@@ -86,7 +85,7 @@
         <div id="search_l">
             <select name="search_sort" id="search_sort">
                 <option value="rg_date" id="rg_date">접수 일자</option>
-                <option value="rp_date" id="rp_date">마감 일자</option>
+                <option value="rp_date" id="rp_date">마감 요청 일자</option>
                 <option value="end_date" id="end_date">종료 일자</option>
             </select>
             <input type="text" placeholder="클릭하여 날짜 선택"  name="sdate" id="datepicker3">
@@ -107,18 +106,20 @@
         {% if page_obj %}
         <tr class="header" style="text-align:center;">
             <th style="width:3%;">순번</th>
-            <th style="width:5%">업체명</th>
+            <th style="width:6%">업체명</th>
             <th style="width:5%">요청자</th>
-            <th style="width:6%">접수 일자</th>
-            <th style="width:6%">마감 요청 일자</th>
-            <th style="width:6%">종료 일자</th>
+            <th style="width:7%">접수 일자</th>
+            <th style="width:7%">마감 요청 일자</th>
+            <th style="width:7%">종료 일자</th>
             <th style="width:15%">제품명</th>
             <th style="width:6%">전 시리얼</th>
             <th style="width:6%">후 시리얼</th>
-            <th style="width:10%">비고</th>
-            <th style="width:10%">의견</th>
-            <th style="width:4%">완료 여부</th>
-            <th style="width:5%">담당자</th>
+            <th style="width:6%">품목</th>
+            <th style="width:6%">대분류</th>
+            <th style="width:6%">소분류</th>
+            <th style="width:6%">조치</th>
+            <th style="width:5%">완료 여부</th>
+            <th style="width:4%">담당자</th>
         </tr>
         </thead>
         <tbody>
@@ -134,8 +135,10 @@
             <td>{{ list.product_name }}</td>
             <td>{{ list.serial |default_if_none:"--" }}</td>
             <td>{{ list.after_serial |default_if_none:"--" }}</td>
-            <td>{{ list.memo |default_if_none:"--"  | truncatewords:15}}</td>
-            <td>{{ list.option|default_if_none:"--"  | truncatewords:15 }}</td>
+            <td>{{ list.la_category |default_if_none:"--" }}</td>
+            <td>{{ list.me_category |default_if_none:"--" }}</td>
+            <td>{{ list.sm_category |default_if_none:"--" }}</td>
+            <td>{{ list.asaction |default_if_none:"--" }}</td>
             <td>{{ list.finish|default_if_none:"--" }}</td>
             <td>{{ list.user_name|default_if_none:"--" }}</td>
         </tr>
@@ -162,18 +165,20 @@
         {% if page_obj %}
         <tr class="header" style="text-align:center;">
             <th style="width:3%;">순번</th>
-            <th style="width:5%">업체명</th>
+            <th style="width:6%">업체명</th>
             <th style="width:5%">요청자</th>
             <th style="width:7%">접수 일자</th>
             <th style="width:7%">마감 요청 일자</th>
             <th style="width:7%">종료 일자</th>
-            <th style="width:20%">제품명</th>
+            <th style="width:15%">제품명</th>
             <th style="width:6%">전 시리얼</th>
             <th style="width:6%">후 시리얼</th>
-            <th style="width:13%">비고</th>
-            <th style="width:13%">의견</th>
+            <th style="width:6%">품목</th>
+            <th style="width:6%">대분류</th>
+            <th style="width:6%">소분류</th>
+            <th style="width:6%">조치</th>
             <th style="width:5%">완료 여부</th>
-            <th style="width:6%">담당자</th>
+            <th style="width:4%">담당자</th>
         </tr>
         </thead>
         <tbody>
@@ -194,8 +199,10 @@
             <td>{{ list.product_name }}</td>
             <td>{{ list.serial |default_if_none:"--" }}</td>
             <td>{{ list.after_serial |default_if_none:"--" }}</td>
-            <td>{{ list.memo |default_if_none:"--" | truncatewords:15}}</td>
-            <td>{{ list.option |default_if_none:"--" | truncatewords:15}}</td>
+            <td>{{ list.la_category |default_if_none:"--" }}</td>
+            <td>{{ list.me_category |default_if_none:"--" }}</td>
+            <td>{{ list.sm_category |default_if_none:"--" }}</td>
+            <td>{{ list.asaction |default_if_none:"--" }}</td>
             <td>{{ list.finish|default_if_none:"--" }}</td>
             <td>{{ list.user_name|default_if_none:"--" }}</td>
         </tr>
@@ -241,9 +248,15 @@
             {% if login_session == 'insung' %}
             <option value="cname" id="cname">업체명</option>
             {% endif %}
-            <option value="rg_date" id="rg_date">고객 접수 일자</option>
-            <option value="rp_date" id="rp_date">회신 완료 일자</option>
+            <option value="rg_date" id="rg_date">접수 일자</option>
+            <option value="rp_date" id="rp_date">마감 요청 일자</option>
+            <option value="end_date" id="end_date">종료 일자</option>
             <option value="product_name" id="product_name">제품명</option>
+            <option value="la_category" id="la_category">품목</option>
+            <option value="me_category" id="me_category">대분류</option>
+            <option value="sm_category" id="sm_category">소분류</option>
+            <option value="asaction" id="asaction">조치</option>
+            <option value="user_name" id="user_name">담당자</option>
             <option value="finish" id="finish">완료 여부</option>
             <option value="all" id="all">전체</option>
         </select>

@@ -88,8 +88,8 @@
                 <option value="rp_date" id="rp_date">마감 요청 일자</option>
                 <option value="end_date" id="end_date">종료 일자</option>
             </select>
-            <input type="text" placeholder="클릭하여 날짜 선택"  name="sdate" id="datepicker3">
-            <input type="text" placeholder="클릭하여 날짜 선택"  name="edate" id="datepicker4">
+            <input type="text" placeholder="클릭하여 날짜 선택"  name="sdate" id="datepicker3" required>
+            <input type="text" placeholder="클릭하여 날짜 선택"  name="edate" id="datepicker4" required>
             <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search">검색</i></button>
 
         </div>
@@ -262,7 +262,8 @@
         </select>
         <button class="btn btn-primary" type="submit" value="">정렬</button>
         <!--엑셀 다운로드-->
-        <a href="{% url 'asregister:AS_excel' %}?q={{ query }}&search_sort={{ search_sort }}&sdate={{ sdate }}&edate={{ edate }}" style="color:white"><button type="button" class="btn btn-primary">EXCEL DOWN</button></a>
+        <!--<a href="{% url 'asregister:AS_excel' %}?q={{ query }}&search_sort={{ search_sort }}&sdate={{ sdate }}&edate={{ edate }}" style="color:white"><button type="button" class="btn btn-primary">EXCEL DOWN</button></a>-->
+        <a href="{% url 'asregister:AS_excel_openpyxl' %}?q={{ query }}&search_sort={{ search_sort }}&sdate={{ sdate }}&edate={{ edate }}" style="color:white"><button type="button" class="btn btn-primary">EXCEL DOWN</button></a>
     </form>
 </div>
 
@@ -308,73 +309,6 @@
 
     </table>
 </div>
-<hr style="border: 1px;">
 {% endif %}
-
-{% if login_session == 'insung' %}
-<!--AS 제품별 주간, 월간 현황-->
-<div class="row" style="padding: 20px 0px 20px 20px; width: 100%;">
-    <div class="col-xl-3 col-md-6 mb-4" style="float:left; width: 50%; " id="fdiv">
-        <div class="card border-left-primary shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="font-weight:bold; font-size: 21px;"  >
-                            주간 제품별 AS 접수 현황</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">
-                            <table>
-                                <tr>
-                                    <th>제품명</th>
-                                    <th>수량</th>
-                                </tr>
-                                {% for as in as_wnum %}
-                                <tr>
-                                    <td>{{ as.product_name }}</td>
-                                    <td>{{ as.count }}</td>
-                                </tr>
-                                {% endfor %}
-                                <td style="font-weight: bold">합계</td>
-                                <td style="font-weight: bold">{{ as_wnum_sum.product_name__count }}</td>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-3 col-md-6 mb-4" style="float:right; width: 50%;" id="fdiv">
-        <div class="card border-left-primary shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="font-weight:bold; font-size: 21px;"  >
-                            월간 제품별 AS 접수 현황</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">
-                            <table>
-                                <tr>
-                                    <th>제품명</th>
-                                    <th>수량</th>
-                                </tr>
-                                {% for as in as_mnum %}
-                                <tr>
-                                    <td>{{ as.product_name }}</td>
-                                    <td>{{ as.count }}</td>
-                                </tr>
-                                {% endfor %}
-                                <td style="font-weight: bold">합계</td>
-                                <td style="font-weight: bold">{{ as_mnum_sum.product_name__count }}</td>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% else %}
-{% endif %}
-
-
-
 
 {% endblock %}

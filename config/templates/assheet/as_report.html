@@ -1,0 +1,154 @@
+{% extends "base/base2.html" %}
+{% block content %}
+{% load humanize %}
+{% load filter %}
+
+
+
+{% if login_session == 'insung' %}
+<!--AS 제품별 주간, 월간 현황-->
+<div class="row" style="padding: 20px 0px 20px 20px; width: 100%;">
+    <div class="col-xl-3 col-md-6 mb-4" style="float:left; width: 50%; " id="fdiv">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="font-weight:bold; font-size: 21px;"  >
+                            주간 제품별 AS 접수 현황</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <table>
+                                <tr>
+                                    <th>제품명</th>
+                                    <th>수량</th>
+                                </tr>
+                                {% for as in as_wnum %}
+                                <tr>
+                                    <td>{{ as.product_name }}</td>
+                                    <td>{{ as.count }}</td>
+                                </tr>
+                                {% endfor %}
+                                <td style="font-weight: bold">합계</td>
+                                <td style="font-weight: bold">{{ as_wnum_sum.product_name__count }}</td>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4" style="float:right; width: 50%;" id="fdiv">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="font-weight:bold; font-size: 21px;"  >
+                            월간 제품별 AS 접수 현황</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <table>
+                                <tr>
+                                    <th>제품명</th>
+                                    <th>수량</th>
+                                </tr>
+                                {% for as in as_mnum %}
+                                <tr>
+                                    <td>{{ as.product_name }}</td>
+                                    <td>{{ as.count }}</td>
+                                </tr>
+                                {% endfor %}
+                                <td style="font-weight: bold">합계</td>
+                                <td style="font-weight: bold">{{ as_mnum_sum.product_name__count }}</td>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" style="padding: 20px 0px 20px 20px; width: 100%;">
+    <div class="col-xl-3 col-md-6 mb-4" style="float:left; width: 100%; " id="fdiv">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="font-weight:bold; font-size: 21px;"  >
+                            주간 AS 현황</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <table style="width:100%">
+                                <tr >
+                                    <th>품목</th>
+                                    <th>갯수</th>
+                                </tr>
+                                {% for as in as_wle %}
+                                <tr>
+                                    <td>{{ as.la_category }}</td>
+                                    <td>{{ as.count }}</td>
+                                </tr>
+                                {% endfor %}
+                                <td style="font-weight: bold">합계</td>
+                                <td style="font-weight: bold">{{ as_wle_sum.la_category__count }}</td>
+                            </table>
+                            <hr style="border: 2px;">
+                            <table style="width:100%">
+                                <tr >
+                                    <th>대분류</th>
+                                    <th>갯수</th>
+                                </tr>
+                                {% for as in as_wme %}
+                                <tr>
+                                    <td>{{ as.me_category }}</td>
+                                    <td>{{ as.count }}</td>
+                                </tr>
+                                {% endfor %}
+                                <td style="font-weight: bold">합계</td>
+                                <td style="font-weight: bold">{{ as_wme_sum.me_category__count }}</td>
+                            </table>
+                            <hr style="border: 2px;">
+                            <table style="width:100%">
+                                <tr >
+                                    <th>소분류</th>
+                                    <th>갯수</th>
+                                </tr>
+                                {% for as in as_wsm %}
+                                <tr>
+                                    <td>{{ as.sm_category }}</td>
+                                    <td>{{ as.count }}</td>
+                                </tr>
+                                {% endfor %}
+                                <td style="font-weight: bold">합계</td>
+                                <td style="font-weight: bold">{{ as_wsm_sum.sm_category__count }}</td>
+                            </table>
+                            <hr style="border: 2px;">
+                            <table style="width:100%">
+                                <tr >
+                                    <th>조치</th>
+                                    <th>갯수</th>
+                                </tr>
+                                {% for as in as_wac %}
+                                <tr>
+                                    <td>{{ as.asaction }}</td>
+                                    <td>{{ as.count }}</td>
+                                </tr>
+                                {% endfor %}
+                                <td style="font-weight: bold">합계</td>
+                                <td style="font-weight: bold">{{ as_wac_sum.asaction__count }}</td>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+{% endif %}
+
+
+
+
+
+
+
+
+{% endblock %}

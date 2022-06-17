@@ -10,6 +10,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q, Count, Sum
 import datetime
 import xlwt
+import openpyxl
 from django.http import HttpResponse, HttpResponseRedirect
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
@@ -136,16 +137,16 @@ def as_list(request):
                                                                                                          'finish')
                 elif search_sort == 'asaction':
                     company_sheet = ASsheet.objects.all().filter(asaction__icontains=query).order_by('-rg_date',
-                                                                                                         'finish')
+                                                                                                     'finish')
                 elif search_sort == 'la_category':
                     company_sheet = ASsheet.objects.all().filter(la_category__icontains=query).order_by('-rg_date',
-                                                                                                         'finish')
+                                                                                                        'finish')
                 elif search_sort == 'me_category':
                     company_sheet = ASsheet.objects.all().filter(me_category__icontains=query).order_by('-rg_date',
-                                                                                                         'finish')
+                                                                                                        'finish')
                 elif search_sort == 'sm_category':
                     company_sheet = ASsheet.objects.all().filter(sm_category__icontains=query).order_by('-rg_date',
-                                                                                                         'finish')
+                                                                                                        'finish')
                 elif search_sort == 'all':
                     company_sheet = ASsheet.objects.all().filter(
                         Q(product_name__icontains=query) | Q(memo__icontains=query) | Q(cname__icontains=query)
@@ -175,18 +176,9 @@ def as_list(request):
             page_obj = paginator.get_page(page)
             upfile = ASUploadFile.objects.all()
 
-            # 주간 월간 제품별 AS 현황
-            as_wnum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1)).values(
-                'product_name').order_by('product_name').annotate(count=Count('product_name'))
-            as_wnum_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1)).aggregate(
-                Count('product_name'))
-            as_mnum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values(
-                'product_name').order_by('product_name').annotate(count=Count('product_name'))
-            as_mnum_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).aggregate(
-                Count('product_name'))
+
             context = {'login_session': login_session, 'company_sheet': company_sheet, 'page_obj': page_obj,
-                       'sort': sort, 'as_wnum': as_wnum, 'as_mnum': as_mnum, 'as_wnum_sum': as_wnum_sum,
-                       'as_mnum_sum': as_mnum_sum, 'user_name': user_name, 'search_sort': search_sort,
+                       'sort': sort, 'user_name': user_name, 'search_sort': search_sort,
                        'over_as': over_as, 'query': query, 'sdate': startdate, 'edate': enddate,
                        'user_phone': user_phone}
 
@@ -236,19 +228,19 @@ def as_list(request):
                         'finish')
                 elif search_sort == 'after_serial':
                     company_sheet = ASsheet.objects.all().filter(after_serial__icontains=query, cname=login_session).order_by('-rg_date',
-                                                                                                         'finish')
+                                                                                                                              'finish')
                 elif search_sort == 'asaction':
                     company_sheet = ASsheet.objects.all().filter(asaction__icontains=query, cname=login_session).order_by('-rg_date',
-                                                                                                         'finish')
+                                                                                                                          'finish')
                 elif search_sort == 'la_category':
                     company_sheet = ASsheet.objects.all().filter(la_category__icontains=query, cname=login_session).order_by('-rg_date',
-                                                                                                         'finish')
+                                                                                                                             'finish')
                 elif search_sort == 'me_category':
                     company_sheet = ASsheet.objects.all().filter(me_category__icontains=query, cname=login_session).order_by('-rg_date',
-                                                                                                         'finish')
+                                                                                                                             'finish')
                 elif search_sort == 'sm_category':
                     company_sheet = ASsheet.objects.all().filter(sm_category__icontains=query, cname=login_session).order_by('-rg_date',
-                                                                                                         'finish')
+                                                                                                                             'finish')
                 elif search_sort == 'all':
                     company_sheet = ASsheet.objects.all().filter(
                         Q(product_name__icontains=query) | Q(memo__icontains=query) | Q(cname__icontains=query)
@@ -284,7 +276,7 @@ def as_list(request):
         return render(request, 'assheet/as_list.html', context)
     elif request.method == 'POST':
         print('포스트인가')
-        print("리스트 끝")
+        print("포스트 리스트 끝")
         return redirect('asregister:as_list')
 
 
@@ -343,8 +335,161 @@ def as_downloadfile(request, pk):
     shutil.copyfileobj(file, response)
     return response
 
+#AS 액셀 다운로드 openpyxl 사용
+def AS_excel_openpyxl(request):
+    login_session = request.session.get('login_session')
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response["Content-Disposition"] = 'attachment; filename=' \
+                                      + str(datetime.date.today()) + '_AS.xlsx'
 
-# AS 엑셀 다운로드
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = 'AS'
+
+    columns = [ '업체명', '요청자', '연락처', '접수 일자', '마감 요청 일자', '종료 일자', '제품명',
+                 '전 시리얼', '후 시리얼', '프로젝트명', '증상', '비고', '의견', '품목', '대분류', '소분류', '조치', '담당자', '완료 여부']
+
+    query = request.GET.get('q')
+    search_sort = request.GET.get('search_sort', '')
+    if search_sort:
+        startdate = request.GET.get('sdate', '')
+        enddate = request.GET.get('edate', '')
+        if login_session == 'insung':
+            if search_sort == 'product_name':
+                rows = ASsheet.objects.all().filter(product_name__icontains=query)
+            elif search_sort == 'cname':
+                rows = ASsheet.objects.all().filter(cname__icontains=query)
+            elif search_sort == 'cuser':
+                rows = ASsheet.objects.all().filter(cuser__icontains=query)
+            elif search_sort == 'cphone':
+                rows = ASsheet.objects.all().filter(cphone__icontains=query)
+            elif search_sort == 'finish':
+                rows = ASsheet.objects.all().filter(finish__icontains=query)
+            elif search_sort == 'memo':
+                rows = ASsheet.objects.all().filter(memo__icontains=query)
+            elif search_sort == 'serial':
+                rows = ASsheet.objects.all().filter(serial__icontains=query)
+            elif search_sort == 'after_serial':
+                rows = ASsheet.objects.all().filter(after_serial__icontains=query)
+            elif search_sort == 'all':
+                rows = ASsheet.objects.all().filter(Q(product_name__icontains=query) | Q(cname__icontains=query) |
+                                                    Q(cuser__icontains=query) | Q(cphone__icontains=query) |
+                                                    Q(finish__icontains=query) | Q(memo__icontains=query) |
+                                                    Q(serial__icontains=query) | Q(site__icontains=query) |
+                                                    Q(symptom__icontains=query) | Q(option__icontains=query) |
+                                                    Q(option__icontains=query))
+            elif search_sort == 'site':
+                rows = ASsheet.objects.all().filter(site__icontains=query)
+            elif search_sort == 'symptom':
+                rows = ASsheet.objects.all().filter(symptom__icontains=query)
+            elif search_sort == 'option':
+                rows = ASsheet.objects.all().filter(option__icontains=query)
+            elif search_sort == 'rg_date':
+                e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
+                                                                                              seconds=59)
+                rows = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by(
+                    '-rg_date', 'finish')
+            elif search_sort == 'rp_date':
+                rows = ASsheet.objects.all().filter(rp_date__range=[startdate, enddate]).order_by('-rg_date', 'finish')
+            elif search_sort == 'end_date':
+                rows = ASsheet.objects.all().filter(end_date__range=[startdate, enddate]).order_by('-rg_date',
+                                                                                                   'finish')
+            else:
+                rows = ASsheet.objects.all()
+        else:
+            if search_sort == 'product_name':
+                rows = ASsheet.objects.all().filter(product_name__icontains=query, cname=login_session)
+            elif search_sort == 'cname':
+                rows = ASsheet.objects.all().filter(cname__icontains=query, cname=login_session)
+            elif search_sort == 'cuser':
+                rows = ASsheet.objects.all().filter(cuser__icontains=query, cname=login_session)
+            elif search_sort == 'cphone':
+                rows = ASsheet.objects.all().filter(cphone__icontains=query, cname=login_session)
+            elif search_sort == 'finish':
+                rows = ASsheet.objects.all().filter(finish__icontains=query, cname=login_session)
+            elif search_sort == 'memo':
+                rows = ASsheet.objects.all().filter(memo__icontains=query, cname=login_session)
+            elif search_sort == 'serial':
+                rows = ASsheet.objects.all().filter(serial__icontains=query, cname=login_session)
+            elif search_sort == 'after_serial':
+                rows = ASsheet.objects.all().filter(after_serial__icontains=query, cname=login_session)
+            elif search_sort == 'all':
+                rows = ASsheet.objects.all().filter(Q(product_name__icontains=query) | Q(cname__icontains=query) |
+                                                    Q(cuser__icontains=query) | Q(cphone__icontains=query) |
+                                                    Q(finish__icontains=query) | Q(memo__icontains=query) |
+                                                    Q(serial__icontains=query) | Q(site__icontains=query) |
+                                                    Q(symptom__icontains=query) | Q(option__icontains=query) |
+                                                    Q(option__icontains=query), cname=login_session)
+            elif search_sort == 'site':
+                rows = ASsheet.objects.all().filter(site__icontains=query, cname=login_session)
+            elif search_sort == 'symptom':
+                rows = ASsheet.objects.all().filter(symptom__icontains=query, cname=login_session)
+            elif search_sort == 'option':
+                rows = ASsheet.objects.all().filter(option__icontains=query, cname=login_session)
+            elif search_sort == 'rg_date':
+                e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
+                                                                                              seconds=59)
+                rows = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date,
+                                                    cname=login_session).order_by(
+                    '-rg_date', 'finish')
+            elif search_sort == 'rp_date':
+                rows = ASsheet.objects.all().filter(rp_date__range=[startdate, enddate], cname=login_session).order_by(
+                    '-rg_date', 'finish')
+            elif search_sort == 'end_date':
+                rows = ASsheet.objects.all().filter(end_date__range=[startdate, enddate], cname=login_session).order_by(
+                    '-rg_date', 'finish')
+            else:
+                rows = ASsheet.objects.all().filter(cname=login_session)
+    else:
+        if login_session == 'insung':
+            # 엑셀에 쓸 데이터 리스트화
+            rows = ASsheet.objects.all()
+        else:
+            rows = ASsheet.objects.filter(cname=login_session)
+
+
+    row_num = 1
+    for col_num, column_title in enumerate(columns, 1):
+        cell = ws.cell(row=row_num, column=col_num)
+        cell.value = column_title
+
+    for asrow in rows:
+        row_num += 1
+
+        # Define the data for each cell in the row
+        row = [
+            asrow.cname,
+            asrow.cuser,
+            asrow.cphone,
+            asrow.rg_date.strftime('%Y-%m-%d'),
+            asrow.rp_date,
+            asrow.end_date,
+            asrow.product_name,
+            asrow.serial,
+            asrow.site,
+            asrow.after_serial,
+            asrow.symptom,
+            asrow.memo,
+            asrow.option,
+            asrow.la_category,
+            asrow.me_category,
+            asrow.sm_category,
+            asrow.asaction,
+            asrow.finish,
+            asrow.user_name
+        ]
+
+        # Assign the data for each cell of the row
+        for col_num, cell_value in enumerate(row, 1):
+            cell = ws.cell(row=row_num, column=col_num)
+            cell.value = cell_value
+
+    wb.save(response)
+    return response
+
+# AS 엑셀 다운로드 xlwt 사용
 def AS_excel(request):
     login_session = request.session.get('login_session')
 
@@ -986,3 +1131,11 @@ def as_delete(request, pk):
         return redirect('asregister:as_list')
     else:
         return redirect(f'/asregister/as_detail/{pk}')
+
+
+
+
+# AS 리포트
+def as_report(request):
+
+    return

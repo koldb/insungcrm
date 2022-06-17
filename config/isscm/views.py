@@ -296,8 +296,6 @@ def main_list(request):
                 m_sheet = main_sheet.objects.all().order_by('-rp_date')
             elif sort == 'main_title':
                 m_sheet = main_sheet.objects.all().order_by('-main_title', '-rg_date')
-            elif sort == 'requests':
-                m_sheet = main_sheet.objects.all().order_by('-requests', '-rg_date', )
             elif sort == 'cname':
                 m_sheet = main_sheet.objects.all().order_by('-cname', '-rg_date', '-finish')
             elif sort == 'finish':
@@ -321,8 +319,8 @@ def main_list(request):
                     m_sheet = main_sheet.objects.all().filter(requests__icontains=query).order_by('-rg_date')
                 elif search_sort == 'cname':
                     m_sheet = main_sheet.objects.all().filter(cname__icontains=query).order_by('-rg_date')
-                elif search_sort == 'finish':
-                    m_sheet = main_sheet.objects.all().filter(finish__icontains=query).order_by('-rg_date')
+                # elif search_sort == 'finish':
+                #     m_sheet = main_sheet.objects.all().filter(finish__icontains=query).order_by('-rg_date')
                 elif search_sort == 'user_dept':
                     m_sheet = main_sheet.objects.all().filter(user_dept__icontains=query).order_by('-rg_date')
                 elif search_sort == 'user_name':
@@ -374,8 +372,6 @@ def main_list(request):
                 m_sheet = main_sheet.objects.filter(cname=login_session).order_by('-rp_date')
             elif sort == 'main_title':
                 m_sheet = main_sheet.objects.filter(cname=login_session).order_by('-main_title', '-rg_date')
-            elif sort == 'requests':
-                m_sheet = main_sheet.objects.filter(cname=login_session).order_by('-requests', '-rg_date')
             elif sort == 'cname':
                 m_sheet = main_sheet.objects.filter(cname=login_session).order_by('cname', '-rg_date')
             elif sort == 'total_price':
@@ -395,9 +391,6 @@ def main_list(request):
                 elif search_sort == 'requests':
                     m_sheet = main_sheet.objects.all().filter(requests__icontains=query,
                                                               cname=login_session).order_by('-rg_date')
-                elif search_sort == 'finish':
-                    m_sheet = main_sheet.objects.all().filter(finish__icontains=query, cname=login_session).order_by(
-                        '-rg_date')
                 elif search_sort == 'user_dept':
                     m_sheet = main_sheet.objects.all().filter(user_dept__icontains=query, cname=login_session).order_by(
                         '-rg_date')
@@ -1841,53 +1834,56 @@ def pm_excel(request):
 def pm_excel_upload(request):
     if request.method == "POST":
         print("엑셀 업로드 시작")
-        files = request.FILES['uploadedFile']
-        print('file : ', files)
-        # data_only=Ture로 해줘야 수식이 아닌 값으로 받아온다.
-        load_wb = load_workbook(files, data_only=True)
-        print('loadwb : ', load_wb)
-        # 시트 이름으로 불러오기
-        load_ws = load_wb['Sheet1']
-        print('loadws :', load_ws)
-        all_values = []
-        for row in load_ws.rows:
-            row_value = []
-            for cell in row:
-                row_value.append(cell.value)
-            all_values.append(row_value)
+        try:
+            files = request.FILES['uploadedFile']
+            print('file : ', files)
+            # data_only=Ture로 해줘야 수식이 아닌 값으로 받아온다.
+            load_wb = load_workbook(files, data_only=True)
+            print('loadwb : ', load_wb)
+            # 시트 이름으로 불러오기
+            load_ws = load_wb['Sheet1']
+            print('loadws :', load_ws)
+            all_values = []
+            for row in load_ws.rows:
+                row_value = []
+                for cell in row:
+                    row_value.append(cell.value)
+                all_values.append(row_value)
 
-        print(all_values)
-        for idx, val in enumerate(all_values):
-            print('저장 진행중')
-            if idx == 0:
-                print('val : ', val[0])
-                print('val : ', val[1])
-                print('val : ', val[2])
-                # 엑셀 형식 체크 (첫번째의 제목 row)
-                if val[0] != 'product_name' or val[1] != 'serial' or val[2] != 'current_location' or val[3] != 'status':
-                    print("항목 틀림")
-                    break
-            else:
-                if val[0] == None and val[1] == None and val[2] == None and val[3] == None :
-                    # te = Product_Management(no=val[0], rg_date=val[1], product_name=val[2], serial=val[3],
-                    #                                     current_location=val[4], status=val[5], update_date=val[6])
-                    print("끝")
-                    break
+            print(all_values)
+            for idx, val in enumerate(all_values):
+                print('저장 진행중')
+                if idx == 0:
+                    print('val : ', val[0])
+                    print('val : ', val[1])
+                    print('val : ', val[2])
+                    # 엑셀 형식 체크 (첫번째의 제목 row)
+                    if val[0] != 'product_name' or val[1] != 'serial' or val[2] != 'current_location' or val[3] != 'status':
+                        print("항목 틀림")
+                        break
                 else:
-                    print('idx : ', idx)
-                    print('val0 : ', val[0])
-                    print('val1 : ', val[1])
-                    print('val2 : ', val[2])
-                    print('val3 : ', val[3])
-                    pm = Product_Management()
-                    #pm.no = val[0]
-                    pm.product_name = val[0]
-                    pm.serial = val[1]
-                    pm.current_location = val[2]
-                    pm.status = val[3]
+                    if val[0] == None and val[1] == None and val[2] == None and val[3] == None :
+                        # te = Product_Management(no=val[0], rg_date=val[1], product_name=val[2], serial=val[3],
+                        #                                     current_location=val[4], status=val[5], update_date=val[6])
+                        print("끝")
+                        break
+                    else:
+                        print('idx : ', idx)
+                        print('val0 : ', val[0])
+                        print('val1 : ', val[1])
+                        print('val2 : ', val[2])
+                        print('val3 : ', val[3])
+                        pm = Product_Management()
+                        #pm.no = val[0]
+                        pm.product_name = val[0]
+                        pm.serial = val[1]
+                        pm.current_location = val[2]
+                        pm.status = val[3]
 
-                    pm.save()
-                    print(type(pm.product_name))
-                    print('저장 완료')
+                        pm.save()
+                        print(type(pm.product_name))
+                        print('저장 완료')
+        except:
+            return redirect('isscm:pm_list')
 
     return HttpResponseRedirect(reverse('isscm:pm_list'))

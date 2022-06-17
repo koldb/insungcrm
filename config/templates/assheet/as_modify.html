@@ -362,7 +362,11 @@
                 <tr>
                     <td>
                         <select name="la" id="la" class="form-control" >
+                            {% if detailView.la_category != None %}
+                            <option value="{{ detailView.la_category }}" selected>{{detailView.la_category}}</option>
+                            {% else %}
                             <option value="" selected></option>
+                            {% endif %}
                             <option value="NAS">NAS</option>
                             <option value="UPS">UPS</option>
                             <option value="노트북">노트북</option>

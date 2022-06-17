@@ -13,8 +13,10 @@ urlpatterns = [
     path('searchPM/', views.searchPM, name='searchPM'),
     path('searchPM_serial/', views.searchPM_serial, name='searchPM_serial'),
     path('main_excel/', views.main_excel, name='main_excel'),
+    path('main_excel_openpyxl/', views.main_excel_openpyxl, name='main_excel_openpyxl'),
     path('sub_excel/', views.sub_excel, name='sub_excel'),
     path('sub_list_excel/', views.sub_list_excel, name='sub_list_excel'),
+    path('sub_list_excel_openpyxl/', views.sub_list_excel_openpyxl, name='sub_list_excel_openpyxl'),
     path('product_info_excel/', views.product_info_excel, name='product_info_excel'),
     path('main_downloadfile/<int:pk>/', views.main_downloadfile, name='main_downloadfile'),
     path('main_insert', views.main_insert, name='main_insert'),
@@ -38,6 +40,7 @@ urlpatterns = [
     path('pm_modify/<int:pk>/', views.pm_modify, name='pm_modify'),
     path('pm_delete/<int:pk>/', views.pm_delete, name='pm_delete'),
     path('pm_excel/', views.pm_excel, name='pm_excel'),
+    path('pm_excel_openpyxl/', views.pm_excel_openpyxl, name='pm_excel_openpyxl'),
     path('pm_excel_upload/', views.pm_excel_upload, name='pm_excel_upload'),
 
 ]

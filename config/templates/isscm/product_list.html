@@ -103,7 +103,7 @@
         <tbody>
 
         {% for list in page_obj %}
-        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'isscm:product_modify' list.id  %}'">
+        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'isscm:product_modify' list.id  %}?q={{ query }}&page_obj={{ page_obj }}&page={{page_obj.number}}&sort={{sort}}&search_sort={{search_sort}}&sdate={{ sdate }}&edate={{ edate }}'">
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.rg_date |date:'Y-m-d' }}</td>
             <td>{{ list.product_name }}</td>
@@ -156,7 +156,7 @@
         </select>
         <button class="btn btn-primary" type="submit" value="">정렬</button>
         <!--엑셀 다운로드-->
-        <a href="{% url 'isscm:sub_list_excel' %}?q={{ query }}&search_sort={{search_sort}}&sdate={{ sdate }}&edate={{ edate }}" style="color:white"><button type="button" class="btn btn-primary">EXCEL DOWN</button></a>
+        <a href="{% url 'isscm:sub_list_excel_openpyxl' %}?q={{ query }}&search_sort={{search_sort}}&sdate={{ sdate }}&edate={{ edate }}" style="color:white"><button type="button" class="btn btn-primary">EXCEL DOWN</button></a>
     </form>
 </div>
 

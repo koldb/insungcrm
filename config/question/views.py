@@ -51,14 +51,27 @@ def que_detail(request, pk):
     user_name = request.session.get('user_name')
     detailView = get_object_or_404(question_sheet, no=pk)
     comments = question_comment.objects.filter(que_no_id=pk).order_by('rg_date')
+
+    sort = request.GET.get('sort', '')
+    query = request.GET.get('q', '')
+    search_sort = request.GET.get('search_sort', '')
+    if request.GET.get('sdate', '') is not None:
+        startdate = request.GET.get('sdate', '')
+    if request.GET.get('edate', '') is not None:
+        enddate = request.GET.get('edate', '')
+    page = request.GET.get('page', '')
+
     if request.method == 'GET':
         try:
             upfile = que_UploadFile.objects.filter(que_no=pk)
             context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile, 'comments': comments,
-                       'user_name': user_name}
+                       'user_name': user_name, 'sort': sort, 'query': query, 'search_sort': search_sort, 'sdate': startdate,
+                       'edate': enddate, 'page': page}
             print("get 성공")
         except:
-            context = {'detailView': detailView, 'login_session': login_session, 'comments': comments, 'user_name': user_name}
+            context = {'detailView': detailView, 'login_session': login_session, 'comments': comments, 'user_name': user_name,
+                       'sort': sort, 'query': query, 'search_sort': search_sort, 'sdate': startdate, 'edate': enddate, 'page': page
+                       }
             print("실패")
 
         print("문의글 상세 뷰 들어감")
@@ -68,10 +81,11 @@ def que_detail(request, pk):
         try:
             upfile = que_UploadFile.objects.filter(que_no=pk)
             context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile, 'user_name': user_name,
-                       'comments': comments}
+                       'comments': comments, 'sort': sort, 'query': query, 'search_sort': search_sort, 'sdate': startdate, 'edate': enddate, 'page': page}
             print("post 성공")
         except:
-            context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name, 'comments': comments}
+            context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name, 'comments': comments,
+                       'sort': sort, 'query': query, 'search_sort': search_sort, 'sdate': startdate, 'edate': enddate, 'page': page}
             print("실패")
     return render(request, 'question/que_detail.html', context)
 
@@ -126,7 +140,7 @@ def que_list(request):
             print("insung GET 페이징 끝")
 
             context = {'login_session': login_session, 'page_obj': page_obj, 'sort': sort, 'query': query, 'search_sort': search_sort,
-                       'user_name': user_name}
+                       'user_name': user_name, 'sdate': startdate, 'edate': enddate}
 
         else:
             sort = request.GET.get('sort', '')

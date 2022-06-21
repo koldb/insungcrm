@@ -14,17 +14,11 @@
     width: 100%;
     height: 15em;
   }
-
-
 </style>
-
-
 
 <div class="container my-3">
     <form method="post" action="#">
         {% csrf_token %}
-
-
         <div class="mb-3">
             <label for="cname">업체명</label>
             <input type="text" class="form-control" name="cname" id="cname" value="{{ detailView.cname }}" readonly>
@@ -131,7 +125,7 @@
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_modify' detailView.no %}'" value="수정">
         {% endif %}
         <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_delete' detailView.no %}'" value="삭제">
-        <input type="button" class="btn btn-primary" onclick="back();" value="목록으로" style="float: right;">
+        <input type="button" class="btn btn-primary" onclick="location.href='{% url 'asregister:as_list' %}?q={{ query }}&page_obj={{ page_obj }}&page={{page}}&sort={{sort}}&search_sort={{search_sort}}&sdate={{ sdate }}&edate={{ edate }}'" value="목록으로" style="float: right;">
     </form>
 </div>
 

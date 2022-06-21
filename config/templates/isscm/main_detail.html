@@ -62,7 +62,8 @@
         {% csrf_token %}
         <div class="mb-3">
             <!--<input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:main_list' %}'" value="목록으로" style="float:right;">-->
-            <input type="button" class="btn btn-primary" onclick="back();" value="목록으로" style="float:right;">
+            <!--<input type="button" class="btn btn-primary" onclick="back();" value="목록으로" style="float:right;">-->
+            <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:main_list' %}?q={{ query }}&page_obj={{ page_obj }}&page={{page}}&sort={{sort}}&search_sort={{search_sort}}&sdate={{ sdate }}&edate={{ edate }}'" value="목록으로" style="float:right;">
         </div>
         <br>
 

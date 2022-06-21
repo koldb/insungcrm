@@ -125,7 +125,7 @@
         <tbody>
 
         {% for list in page_obj %}
-        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'asregister:as_detail' list.no %}'">
+        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'asregister:as_detail' list.no %}?q={{ query }}&page={{page_obj.number}}&sort={{sort}}&search_sort={{ search_sort }}&sdate={{ sdate }}&edate={{ edate }}'">
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.cname }}</td>
             <td>{{ list.cuser }}</td>
@@ -189,7 +189,7 @@
         {% if list.cname == login_session %}
 
 
-        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'asregister:as_detail' list.no %}'">
+        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'asregister:as_detail' list.no %}?q={{ query }}&page={{page_obj.number}}&sort={{sort}}&search_sort={{ search_sort }}&sdate={{ sdate }}&edate={{ edate }}'">
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.cname }}</td>
             <td>{{ list.cuser }}</td>
@@ -262,7 +262,6 @@
         </select>
         <button class="btn btn-primary" type="submit" value="">정렬</button>
         <!--엑셀 다운로드-->
-        <!--<a href="{% url 'asregister:AS_excel' %}?q={{ query }}&search_sort={{ search_sort }}&sdate={{ sdate }}&edate={{ edate }}" style="color:white"><button type="button" class="btn btn-primary">EXCEL DOWN</button></a>-->
         <a href="{% url 'asregister:AS_excel_openpyxl' %}?q={{ query }}&search_sort={{ search_sort }}&sdate={{ sdate }}&edate={{ edate }}" style="color:white"><button type="button" class="btn btn-primary">EXCEL DOWN</button></a>
     </form>
 </div>

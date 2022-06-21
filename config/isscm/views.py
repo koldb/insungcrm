@@ -221,6 +221,15 @@ def main_detail(request, pk):
     user_name = request.session.get('user_name')
     user_dept = request.session.get('user_dept')
     detailView = get_object_or_404(main_sheet, id=pk)
+    sort = request.GET.get('sort', '')
+    query = request.GET.get('q', '')
+    search_sort = request.GET.get('search_sort', '')
+    if request.GET.get('sdate', '') is not None:
+        startdate = request.GET.get('sdate', '')
+    if request.GET.get('edate', '') is not None:
+        enddate = request.GET.get('edate', '')
+    page = request.GET.get('page', '')
+
     global sub
     if request.method == 'GET':
         print('get 메인 디테일 뷰 시작')
@@ -238,16 +247,19 @@ def main_detail(request, pk):
                 upload_file = UploadFile.objects.filter(main_id_id=pk).count()
                 print('업로드 파일', upload_file)
                 context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name,
-                           'user_dept': user_dept, 'sub': sub, 'files': upload_file}
+                           'user_dept': user_dept, 'sub': sub, 'files': upload_file, 'sort': sort, 'query': query, 'search_sort': search_sort,
+                           'sdate': startdate, 'edate': enddate, 'page': page}
             except:
                 print('get 파일 없음')
                 context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name,
-                           'user_dept': user_dept, 'sub': sub}
+                           'user_dept': user_dept, 'sub': sub, 'sort': sort, 'query': query, 'search_sort': search_sort,
+                           'sdate': startdate, 'edate': enddate, 'page': page}
         else:
             print('sub 없음')
             upload_file = UploadFile.objects.filter(main_id_id=pk).count()
             context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name,
-                       'user_dept': user_dept, 'files': upload_file}
+                       'user_dept': user_dept, 'files': upload_file, 'sort': sort, 'query': query, 'search_sort': search_sort,
+                           'sdate': startdate, 'edate': enddate, 'page': page}
         print("디테일 뷰 끝")
         return render(request, 'isscm/main_detail.html', context)
     else:
@@ -543,251 +555,6 @@ def sub_delete(request, pk, mid):
     return render(request, 'isscm/main_detail.html', context)
 
 
-# main 엑셀 다운로드
-def main_excel(request):
-    login_session = request.session.get('login_session')
-
-    print("main 다운로드 시작")
-    # 데이터 db에서 불러옴
-    # data = EstimateSheet.objects.all()
-    response = HttpResponse(content_type="application/vnd.ms-excel")
-    # 다운로드 받을 때 생성될 파일명 설정
-    response["Content-Disposition"] = 'attachment; filename=' \
-                                      + str(datetime.date.today()) + '_mainsheet.xls'
-    print("다운 중간")
-    # 인코딩 설정
-    wb = xlwt.Workbook(encoding='utf-8')
-    # 생성될 시트명 설정
-    ws = wb.add_sheet('main')
-
-    # 엑셀 스타일: 첫번째 열(=title)과 나머지 열(=data) 구분 위한 설정
-    title_style = xlwt.easyxf(
-        'pattern: pattern solid, fore_color indigo; align: horizontal center; font: color_index white;')
-    data_style = xlwt.easyxf('align: horizontal right')
-    # 날짜 서식 결정
-    styles = {'datetime': xlwt.easyxf(num_format_str='yyyy-mm-dd hh:mm:ss'),
-              'date': xlwt.easyxf(num_format_str='yyyy-mm-dd'),
-              'time': xlwt.easyxf(num_format_str='hh:mm:ss'),
-              'default': xlwt.Style.default_style}
-    # 첫번째 열에 들어갈 컬럼명 설정
-    col_names = ['등록 일자', '마감 요청 일자', '종료일자', '견적명', '업체명', '요청 사항', '총 금액', '종료 여부', '담당 팀', '담당자']
-
-    query = request.GET.get('q')
-    print('que : ', query)
-    search_sort = request.GET.get('search_sort', '')
-    print('search : ', search_sort)
-    if search_sort:
-        startdate = request.GET.get('sdate', '')
-        enddate = request.GET.get('edate', '')
-        print('enddate : ', enddate)
-        print('검색으로 다운로드')
-        if login_session == 'insung':
-            print('insung search 다운')
-            if search_sort == 'main_title':
-                rows = main_sheet.objects.all().filter(main_title__icontains=query).values_list('rg_date',
-                                                                                                'rp_date',
-                                                                                                'end_date',
-                                                                                                'main_title',
-                                                                                                'cname', 'requests',
-                                                                                                'total_price',
-                                                                                                'finish',
-                                                                                                'user_dept',
-                                                                                                'user_name')
-            elif search_sort == 'requests':
-                rows = main_sheet.objects.all().filter(requests__icontains=query).values_list('rg_date',
-                                                                                              'rp_date',
-                                                                                              'end_date',
-                                                                                              'main_title', 'cname',
-                                                                                              'requests',
-                                                                                              'total_price',
-                                                                                              'finish', 'user_dept',
-                                                                                              'user_name')
-            elif search_sort == 'cname':
-                rows = main_sheet.objects.all().filter(cname__icontains=query).values_list('rg_date',
-                                                                                           'rp_date',
-                                                                                           'end_date',
-                                                                                           'main_title', 'cname',
-                                                                                           'requests', 'total_price',
-                                                                                           'finish', 'user_dept',
-                                                                                           'user_name')
-            elif search_sort == 'finish':
-                rows = main_sheet.objects.all().filter(finish__icontains=query).values_list('rg_date',
-                                                                                            'rp_date',
-                                                                                            'end_date',
-                                                                                            'main_title', 'cname',
-                                                                                            'requests',
-                                                                                            'total_price',
-                                                                                            'finish', 'user_dept',
-                                                                                            'user_name')
-            elif search_sort == 'user_dept':
-                rows = main_sheet.objects.all().filter(user_dept__icontains=query).values_list('rg_date',
-                                                                                               'rp_date',
-                                                                                               'end_date',
-                                                                                               'main_title', 'cname',
-                                                                                               'requests',
-                                                                                               'total_price',
-                                                                                               'finish', 'user_dept',
-                                                                                               'user_name')
-            elif search_sort == 'user_name':
-                rows = main_sheet.objects.all().filter(user_name__icontains=query).values_list('rg_date',
-                                                                                               'rp_date',
-                                                                                               'end_date',
-                                                                                               'main_title', 'cname',
-                                                                                               'requests',
-                                                                                               'total_price',
-                                                                                               'finish', 'user_dept',
-                                                                                               'user_name')
-            elif search_sort == 'product_name':
-                s_sheet = sub_sheet.objects.all().filter(product_name__icontains=query).order_by(
-                    '-rg_date')
-                v = []
-                for i in s_sheet:
-                    sm = i.m_id_id
-                    ms = main_sheet.objects.filter(id__icontains=sm).values_list('rg_date',
-                                                                                 'rp_date',
-                                                                                 'end_date',
-                                                                                 'main_title', 'cname',
-                                                                                 'requests',
-                                                                                 'total_price',
-                                                                                 'finish', 'user_dept',
-                                                                                 'user_name')
-                    v = v + list(ms)
-                rows = reduce(lambda acc, cur: acc if cur in acc else acc + [cur], v, [])
-            elif search_sort == 'all':
-                rows = main_sheet.objects.all().filter(
-                    Q(requests__icontains=query) | Q(cname__icontains=query) | Q(finish__icontains=query) |
-                    Q(main_title__icontains=query) | Q(user_dept__icontains=query) |
-                    Q(user_name__icontains=query)).values_list('rg_date', 'rp_date', 'end_date',
-                                                               'main_title', 'cname', 'requests', 'total_price',
-                                                               'finish', 'user_dept', 'user_name')
-            elif search_sort == 'rg_date':
-                e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
-                                                                                              seconds=59)
-                print('엑셀다운 등록일자', e_date)
-                rows = main_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by('-rg_date') \
-                    .values_list('rg_date', 'rp_date', 'end_date',
-                                 'main_title', 'cname', 'requests', 'total_price', 'finish', 'user_dept', 'user_name')
-            elif search_sort == 'rp_date':
-                rows = main_sheet.objects.all().filter(rp_date__range=[startdate, enddate]).order_by(
-                    '-rg_date').values_list('rg_date', 'rp_date', 'end_date',
-                                            'main_title', 'cname', 'requests', 'total_price', 'finish', 'user_dept',
-                                            'user_name')
-            elif search_sort == 'end_date':
-                rows = main_sheet.objects.all().filter(end_date__range=[startdate, enddate]).order_by(
-                    '-rg_date').values_list('rg_date', 'rp_date', 'end_date',
-                                            'main_title', 'cname', 'requests', 'total_price', 'finish', 'user_dept',
-                                            'user_name')
-        else:
-            print('일반 search 다운')
-            if search_sort == 'main_title':
-                rows = main_sheet.objects.all().filter(main_title__icontains=query,
-                                                       cname=login_session).values_list('rg_date', 'rp_date',
-                                                                                        'end_date',
-                                                                                        'main_title', 'cname',
-                                                                                        'requests', 'total_price',
-                                                                                        'finish', 'user_dept',
-                                                                                        'user_name')
-            elif search_sort == 'requests':
-                rows = main_sheet.objects.all().filter(requests__icontains=query,
-                                                       cname=login_session).values_list('rg_date', 'rp_date',
-                                                                                        'end_date',
-                                                                                        'main_title', 'cname',
-                                                                                        'requests', 'total_price',
-                                                                                        'finish', 'user_dept',
-                                                                                        'user_name')
-            elif search_sort == 'finish':
-                rows = main_sheet.objects.all().filter(finish__icontains=query, cname=login_session).values_list(
-                    'rg_date', 'rp_date', 'end_date',
-                    'main_title', 'cname', 'requests', 'total_price',
-                    'finish', 'user_dept', 'user_name')
-            elif search_sort == 'product_name':
-                s_sheet = sub_sheet.objects.all().filter(product_name__icontains=query, cname=login_session).order_by(
-                    '-rg_date')
-                v = []
-                for i in s_sheet:
-                    sm = i.m_id_id
-                    ms = main_sheet.objects.filter(id__icontains=sm).values_list('rg_date',
-                                                                                 'rp_date',
-                                                                                 'end_date',
-                                                                                 'main_title', 'cname',
-                                                                                 'requests',
-                                                                                 'total_price',
-                                                                                 'finish', 'user_dept',
-                                                                                 'user_name')
-                    v = v + list(ms)
-                rows = reduce(lambda acc, cur: acc if cur in acc else acc + [cur], v, [])
-            elif search_sort == 'all':
-                rows = main_sheet.objects.filter(Q(requests__icontains=query) | Q(finish__icontains=query) |
-                                                 Q(main_title__icontains=query), cname=login_session).values_list(
-                    'rg_date', 'rp_date', 'end_date',
-                    'main_title', 'cname', 'requests', 'total_price',
-                    'finish', 'user_dept', 'user_name')
-            elif search_sort == 'rg_date':
-                e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
-                                                                                              seconds=59)
-                print('엑셀다운 등록일자', e_date)
-                rows = main_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date,
-                                                       cname=login_session).order_by('-rg_date') \
-                    .values_list('rg_date', 'rp_date', 'end_date',
-                                 'main_title', 'cname', 'requests', 'total_price', 'finish', 'user_dept', 'user_name')
-            elif search_sort == 'rp_date':
-                rows = main_sheet.objects.all().filter(rp_date__range=[startdate, enddate],
-                                                       cname=login_session).order_by('-rg_date').values_list('rg_date',
-                                                                                                             'rp_date',
-                                                                                                             'end_date',
-                                                                                                             'main_title',
-                                                                                                             'cname',
-                                                                                                             'requests',
-                                                                                                             'total_price',
-                                                                                                             'finish',
-                                                                                                             'user_dept',
-                                                                                                             'user_name')
-            elif search_sort == 'end_date':
-                rows = main_sheet.objects.all().filter(end_date__range=[startdate, enddate],
-                                                       cname=login_session).order_by('-rg_date').values_list('rg_date',
-                                                                                                             'rp_date',
-                                                                                                             'end_date',
-                                                                                                             'main_title',
-                                                                                                             'cname',
-                                                                                                             'requests',
-                                                                                                             'total_price',
-                                                                                                             'finish',
-                                                                                                             'user_dept',
-                                                                                                             'user_name')
-    else:
-        print('전체 다운로드')
-        if login_session == 'insung':
-            rows = main_sheet.objects.all().values_list('rg_date', 'rp_date', 'end_date',
-                                                        'main_title', 'cname', 'requests', 'total_price',
-                                                        'finish', 'user_dept', 'user_name')
-        else:
-            rows = main_sheet.objects.all().filter(cname=login_session).values_list('rg_date', 'rp_date', 'end_date',
-                                                                                    'main_title', 'cname', 'requests',
-                                                                                    'total_price',
-                                                                                    'finish', 'user_dept', 'user_name')
-
-    # 첫번째 열: 설정한 컬럼명 순서대로 스타일 적용하여 생성
-    print("다운 중간2")
-    row_num = 0
-    ix = 0
-    for idx, col_name in enumerate(col_names):
-        ws.write(row_num, idx, col_name, title_style)
-
-    # 두번째 이후 열: 설정한 컬럼명에 맞춘 데이터 순서대로 스타일 적용하여 생성
-    for row in rows:
-        row_num += 1
-        for col_num, attr in enumerate(row):
-            if isinstance(attr, datetime.datetime) or isinstance(attr, date):
-                cell_style = styles['date']
-            else:
-                cell_style = styles['default']
-            ws.write(row_num, col_num, attr, cell_style)
-
-    wb.save(response)
-    print("다운로드 끝")
-    return response
-
-
 # main 엑셀 다운로드 openpyxl 사용
 def main_excel_openpyxl(request):
     login_session = request.session.get('login_session')
@@ -900,21 +667,21 @@ def main_excel_openpyxl(request):
         cell = ws.cell(row=row_num, column=col_num)
         cell.value = column_title
 
-    for asrow in rows:
+    for mainrow in rows:
         row_num += 1
 
         # Define the data for each cell in the row
         row = [
-            asrow.rg_date.strftime('%Y-%m-%d'),
-            asrow.rp_date,
-            asrow.end_date,
-            asrow.main_title,
-            asrow.cname,
-            asrow.requests,
-            asrow.total_price,
-            asrow.finish,
-            asrow.user_dept,
-            asrow.user_name,
+            mainrow.rg_date.strftime('%Y-%m-%d'),
+            mainrow.rp_date,
+            mainrow.end_date,
+            mainrow.main_title,
+            mainrow.cname,
+            mainrow.requests,
+            mainrow.total_price,
+            mainrow.finish,
+            mainrow.user_dept,
+            mainrow.user_name,
         ]
 
         # Assign the data for each cell of the row
@@ -927,57 +694,56 @@ def main_excel_openpyxl(request):
     return response
 
 
-
 # sub 엑셀 다운로드
 def sub_excel(request):
     login_session = request.session.get('login_session')
-
-    print("sub 다운로드 시작")
-    # 데이터 db에서 불러옴
-    response = HttpResponse(content_type="application/vnd.ms-excel")
-    # 다운로드 받을 때 생성될 파일명 설정
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
     response["Content-Disposition"] = 'attachment; filename=' \
-                                      + str(datetime.date.today()) + '_subsheet.xls'
-    print("다운 중간")
-    # 인코딩 설정
-    wb = xlwt.Workbook(encoding='utf-8')
-    # 생성될 시트명 설정
-    ws = wb.add_sheet('sub')
+                                      + str(datetime.date.today()) + '_sub.xlsx'
 
-    # 엑셀 스타일: 첫번째 열(=title)과 나머지 열(=data) 구분 위한 설정
-    title_style = xlwt.easyxf(
-        'pattern: pattern solid, fore_color indigo; align: horizontal center; font: color_index white;')
-    data_style = xlwt.easyxf('align: horizontal right')
-    # 날짜 서식 결정
-    styles = {'datetime': xlwt.easyxf(num_format_str='yyyy-mm-dd hh:mm:ss'),
-              'date': xlwt.easyxf(num_format_str='yyyy-mm-dd'),
-              'time': xlwt.easyxf(num_format_str='hh:mm:ss'),
-              'default': xlwt.Style.default_style}
-    # 첫번째 열에 들어갈 컬럼명 설정
-    col_names = ['메인 ID', '메인 Title', '등록 일자', '업체명', '제품명', '수량', '개당 단가', '부가세', '총 금액']
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = 'sub'
+
+    columns = ['메인 ID', '메인 Title', '등록 일자', '업체명', '제품명', '수량', '개당 단가', '부가세', '총 금액']
 
     m_id = request.GET.get('id')
     print("이건 뭘까", login_session)
-    rows = sub_sheet.objects.filter(m_id_id=m_id).values_list('m_id', 'm_title', 'rg_date', 'cname', 'product_name',
-                                                              'quantity',
-                                                              'per_price', 'tax',
-                                                              'total_price')
+    rows = sub_sheet.objects.filter(m_id_id=m_id)
 
     # 첫번째 열: 설정한 컬럼명 순서대로 스타일 적용하여 생성
     print("다운 중간2")
-    row_num = 0
-    for idx, col_name in enumerate(col_names):
-        ws.write(row_num, idx, col_name, title_style)
+    row_num = 1
+    for col_num, column_title in enumerate(columns, 1):
+        cell = ws.cell(row=row_num, column=col_num)
+        cell.value = column_title
+        print('여기까지')
 
-    # 두번째 이후 열: 설정한 컬럼명에 맞춘 데이터 순서대로 스타일 적용하여 생성
-    for row in rows:
+    for subex in rows:
         row_num += 1
-        for col_num, attr in enumerate(row):
-            if isinstance(attr, datetime.datetime) or isinstance(attr, date):
-                cell_style = styles['date']
-            else:
-                cell_style = styles['default']
-            ws.write(row_num, col_num, attr, cell_style)
+
+        # Define the data for each cell in the row
+        row = [
+            subex.m_id,
+            subex.m_title,
+            subex.rg_date.strftime('%Y-%m-%d'),
+            subex.cname,
+            subex.product_name,
+            subex.quantity,
+            subex.per_price,
+            subex.tax,
+            subex.total_price
+        ]
+        print('여기까지2')
+
+        # Assign the data for each cell of the row
+        for col_num, cell_value in enumerate(row, 1):
+            print(cell_value)
+            cell = ws.cell(row=row_num, column=col_num)
+            cell.value = cell_value
+            print('여기까지3')
 
     wb.save(response)
     print("다운로드 끝")
@@ -1118,7 +884,6 @@ def product_list(request):
                         v = sub_sheet.objects.filter(id__icontains=sid).order_by('-rg_date')
                         sub_list = sub_list + list(v)
                         print('sub_list : ', sub_list)
-                        print(type(sub_list))
                 elif search_sort == 'all':
                     sub_list = sub_sheet.objects.all().filter(
                         Q(product_name__icontains=query) | Q(cname__icontains=query) |
@@ -1184,7 +949,7 @@ def product_list(request):
                         v = sub_sheet.objects.filter(id__icontains=sid).order_by('-rg_date')
                         sub_list = sub_list + list(v)
                         print('sub_list : ', sub_list)
-                        print(type(sub_list))
+                        print(sub_list)
                 elif search_sort == 'all':
                     sub_list = sub_sheet.objects.all().filter(
                         Q(product_name__icontains=query) | Q(m_title__icontains=query) |
@@ -1223,11 +988,22 @@ def product_modify(request, pk):
     product_view = product_info.objects.filter(s_id_id=pk)
     sid_count = product_info.objects.filter(s_id_id=pk).count() + 1
     entercount = get_object_or_404(sub_sheet, id=pk)
+
+    sort = request.GET.get('sort', '')
+    query = request.GET.get('q', '')
+    search_sort = request.GET.get('search_sort', '')
+    if request.GET.get('sdate', '') is not None:
+        startdate = request.GET.get('sdate', '')
+    if request.GET.get('edate', '') is not None:
+        enddate = request.GET.get('edate', '')
+    page = request.GET.get('page', '')
+
     if request.method == 'GET':
         print('get sub detail 뷰 시작')
 
         context = {'sub_detailView': sub_detailView, 'product_view': product_view, 'login_session': login_session,
-                   'user_name': user_name, 'user_dept': user_dept}
+                   'user_name': user_name, 'user_dept': user_dept, 'sort': sort, 'query': query, 'search_sort': search_sort,
+                   'sdate': startdate, 'edate': enddate, 'page': page}
         print("디테일 뷰 끝")
         return render(request, 'isscm/product_modify.html', context)
     else:
@@ -1288,247 +1064,24 @@ def product_delete(request, pk, sid):
     return redirect(f'/product_modify/{sid}')
     # return redirect('isscm:product_modify')
 
-
-# sub list 엑셀 다운로드
-def sub_list_excel(request):
-    login_session = request.session.get('login_session')
-
-    print("sub list 다운로드 시작")
-    # 데이터 db에서 불러옴
-    # data = EstimateSheet.objects.all()
-    response = HttpResponse(content_type="application/vnd.ms-excel")
-    # 다운로드 받을 때 생성될 파일명 설정
-    response["Content-Disposition"] = 'attachment; filename=' \
-                                      + str(datetime.date.today()) + '_sub_list.xls'
-    print("다운 중간")
-    # 인코딩 설정
-    wb = xlwt.Workbook(encoding='utf-8')
-    # 생성될 시트명 설정
-    ws = wb.add_sheet('sub_list')
-
-    # 엑셀 스타일: 첫번째 열(=title)과 나머지 열(=data) 구분 위한 설정
-    title_style = xlwt.easyxf(
-        'pattern: pattern solid, fore_color indigo; align: horizontal center; font: color_index white;')
-    data_style = xlwt.easyxf('align: horizontal right')
-    # 날짜 서식 결정
-    styles = {'datetime': xlwt.easyxf(num_format_str='yyyy-mm-dd hh:mm:ss'),
-              'date': xlwt.easyxf(num_format_str='yyyy-mm-dd'),
-              'time': xlwt.easyxf(num_format_str='hh:mm:ss'),
-              'default': xlwt.Style.default_style}
-    # 첫번째 열에 들어갈 컬럼명 설정
-    col_names = ['등록 일자', '제품명', '수량', '출고 수량', '개당 단가', '부가세', '총 금액', '업체명', '메인번호', '메인 Title', '담당자']
-
-    query = request.GET.get('q')
-    print('que : ', query)
-    search_sort = request.GET.get('search_sort', '')
-    print('search : ', search_sort)
-    if search_sort:
-        print('검색으로 다운로드')
-        startdate = request.GET.get('sdate', '')
-        enddate = request.GET.get('edate', '')
-        if login_session == 'insung':
-            print('insung search 다운')
-            if search_sort == 'product_name':
-                rows = sub_sheet.objects.filter(product_name__icontains=query).order_by('-rg_date').values_list(
-                    'rg_date', 'product_name', 'quantity',
-                    'enter_quantity', 'per_price', 'tax', 'total_price',
-                    'cname', 'm_id', 'm_title', 'user_name')
-            elif search_sort == 'cname':
-                rows = sub_sheet.objects.filter(cname__icontains=query).order_by('-rg_date').values_list('rg_date',
-                                                                                                         'product_name',
-                                                                                                         'quantity',
-                                                                                                         'enter_quantity',
-                                                                                                         'per_price',
-                                                                                                         'tax',
-                                                                                                         'total_price',
-                                                                                                         'cname',
-                                                                                                         'm_id',
-                                                                                                         'm_title',
-                                                                                                         'user_name')
-            elif search_sort == 'serial':
-                sub_list = []
-                product_list = product_info.objects.filter(serial__icontains=query).order_by('-rg_date').order_by(
-                    '-rg_date')
-                print('product_list : ', product_list)
-                for i in product_list:
-                    print('s_id : ', i.s_id_id)
-                    sid = i.s_id_id
-                    v = sub_sheet.objects.filter(id__icontains=sid).order_by('-rg_date').values_list('rg_date',
-                                                                                                     'product_name',
-                                                                                                     'quantity',
-                                                                                                     'enter_quantity',
-                                                                                                     'per_price', 'tax',
-                                                                                                     'total_price',
-                                                                                                     'cname', 'm_id',
-                                                                                                     'm_title',
-                                                                                                     'user_name')
-                    rows = sub_list + list(v)
-            elif search_sort == 'm_title':
-                rows = sub_sheet.objects.filter(m_title__icontains=query).order_by('-rg_date').values_list('rg_date',
-                                                                                                           'product_name',
-                                                                                                           'quantity',
-                                                                                                           'enter_quantity',
-                                                                                                           'per_price',
-                                                                                                           'tax',
-                                                                                                           'total_price',
-                                                                                                           'cname',
-                                                                                                           'm_id',
-                                                                                                           'm_title',
-                                                                                                           'user_name')
-            elif search_sort == 'user_name':
-                rows = sub_sheet.objects.filter(user_name__icontains=query).order_by('-rg_date').values_list('rg_date',
-                                                                                                             'product_name',
-                                                                                                             'quantity',
-                                                                                                             'enter_quantity',
-                                                                                                             'per_price',
-                                                                                                             'tax',
-                                                                                                             'total_price',
-                                                                                                             'cname',
-                                                                                                             'm_id',
-                                                                                                             'm_title',
-                                                                                                             'user_name')
-            elif search_sort == 'all':
-                rows = sub_sheet.objects.all().filter(
-                    Q(product_name__icontains=query) | Q(cname__icontains=query) | Q(serial__icontains=query) |
-                    Q(m_title__icontains=query) | Q(user_name__icontains=query)).order_by('-rg_date').values_list(
-                    'rg_date', 'product_name', 'quantity',
-                    'enter_quantity', 'per_price', 'tax', 'total_price',
-                    'cname', 'm_id', 'm_title', 'user_name')
-            elif search_sort == 'rg_date':
-                e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
-                                                                                              seconds=59)
-
-                rows = sub_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by(
-                    '-rg_date').values_list(
-                    'rg_date', 'product_name', 'quantity', 'enter_quantity', 'per_price', 'tax', 'total_price',
-                    'cname', 'm_id', 'm_title', 'user_name')
-        else:
-            print('일반 search 다운')
-            if search_sort == 'product_name':
-                rows = sub_sheet.objects.all().filter(product_name__icontains=query,
-                                                      cname=login_session).order_by('-rg_date').values_list('rg_date',
-                                                                                                            'product_name',
-                                                                                                            'quantity',
-                                                                                                            'enter_quantity',
-                                                                                                            'per_price',
-                                                                                                            'tax',
-                                                                                                            'total_price',
-                                                                                                            'cname',
-                                                                                                            'm_id',
-                                                                                                            'm_title',
-                                                                                                            'user_name')
-            elif search_sort == 'serial':
-                rows = sub_sheet.objects.all().filter(serial__icontains=query,
-                                                      cname=login_session).order_by('-rg_date').values_list('rg_date',
-                                                                                                            'product_name',
-                                                                                                            'quantity',
-                                                                                                            'enter_quantity',
-                                                                                                            'per_price',
-                                                                                                            'tax',
-                                                                                                            'total_price',
-                                                                                                            'cname',
-                                                                                                            'm_id',
-                                                                                                            'm_title',
-                                                                                                            'user_name')
-            elif search_sort == 'm_title':
-                rows = sub_sheet.objects.all().filter(m_title__icontains=query, cname=login_session).order_by(
-                    '-rg_date').values_list('rg_date', 'product_name', 'quantity',
-                                            'enter_quantity', 'per_price', 'tax', 'total_price',
-                                            'cname', 'm_id', 'm_title', 'user_name')
-            elif search_sort == 'user_name':
-                rows = sub_sheet.objects.all().filter(user_name__icontains=query, cname=login_session).order_by(
-                    '-rg_date').values_list('rg_date', 'product_name', 'quantity',
-                                            'enter_quantity', 'per_price', 'tax', 'total_price',
-                                            'cname', 'm_id', 'm_title', 'user_name')
-            elif search_sort == 'all':
-                rows = sub_sheet.objects.filter(Q(product_name__icontains=query) | Q(serial__icontains=query) |
-                                                Q(m_title__icontains=query) | Q(user_name__icontains=query),
-                                                cname=login_session).order_by('-rg_date').values_list('rg_date',
-                                                                                                      'product_name',
-                                                                                                      'quantity',
-                                                                                                      'enter_quantity',
-                                                                                                      'per_price',
-                                                                                                      'tax',
-                                                                                                      'total_price',
-                                                                                                      'cname', 'm_id',
-                                                                                                      'm_title',
-                                                                                                      'user_name')
-            elif search_sort == 'rg_date':
-                e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
-                                                                                              seconds=59)
-
-                rows = sub_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date,
-                                                      cname=login_session).order_by('-rg_date').values_list(
-                    'rg_date', 'product_name', 'quantity', 'enter_quantity', 'per_price', 'tax', 'total_price',
-                    'cname', 'm_id', 'm_title', 'user_name')
-    else:
-        print('전체 다운로드')
-        if login_session == 'insung':
-            rows = sub_sheet.objects.all().order_by('-rg_date').values_list('rg_date', 'product_name', 'quantity',
-                                                                            'enter_quantity', 'per_price', 'tax',
-                                                                            'total_price',
-                                                                            'cname', 'm_id', 'm_title', 'user_name')
-        else:
-            rows = sub_sheet.objects.all().filter(cname=login_session).order_by('-rg_date').values_list('rg_date',
-                                                                                                        'product_name',
-                                                                                                        'quantity',
-                                                                                                        'enter_quantity',
-                                                                                                        'per_price',
-                                                                                                        'tax',
-                                                                                                        'total_price',
-                                                                                                        'cname', 'm_id',
-                                                                                                        'm_title',
-                                                                                                        'user_name')
-
-    # 첫번째 열: 설정한 컬럼명 순서대로 스타일 적용하여 생성
-    print("다운 중간2")
-    row_num = 0
-    ix = 0
-    for idx, col_name in enumerate(col_names):
-        ws.write(row_num, idx, col_name, title_style)
-
-    # 두번째 이후 열: 설정한 컬럼명에 맞춘 데이터 순서대로 스타일 적용하여 생성
-    for row in rows:
-        row_num += 1
-        for col_num, attr in enumerate(row):
-            if isinstance(attr, datetime.datetime) or isinstance(attr, date):
-                cell_style = styles['date']
-            else:
-                cell_style = styles['default']
-            ws.write(row_num, col_num, attr, cell_style)
-
-    wb.save(response)
-    print("다운로드 끝")
-    return response
-
 # sub list 엑셀 다운로드
 def sub_list_excel_openpyxl(request):
+    global rows
     login_session = request.session.get('login_session')
 
     print("sub list 다운로드 시작")
-    # 데이터 db에서 불러옴
-    # data = EstimateSheet.objects.all()
-    response = HttpResponse(content_type="application/vnd.ms-excel")
-    # 다운로드 받을 때 생성될 파일명 설정
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
     response["Content-Disposition"] = 'attachment; filename=' \
-                                      + str(datetime.date.today()) + '_sub_list.xls'
-    print("다운 중간")
-    # 인코딩 설정
-    wb = xlwt.Workbook(encoding='utf-8')
-    # 생성될 시트명 설정
-    ws = wb.add_sheet('sub_list')
+                                      + str(datetime.date.today()) + '_sub_list.xlsx'
 
-    # 엑셀 스타일: 첫번째 열(=title)과 나머지 열(=data) 구분 위한 설정
-    title_style = xlwt.easyxf(
-        'pattern: pattern solid, fore_color indigo; align: horizontal center; font: color_index white;')
-    data_style = xlwt.easyxf('align: horizontal right')
-    # 날짜 서식 결정
-    styles = {'datetime': xlwt.easyxf(num_format_str='yyyy-mm-dd hh:mm:ss'),
-              'date': xlwt.easyxf(num_format_str='yyyy-mm-dd'),
-              'time': xlwt.easyxf(num_format_str='hh:mm:ss'),
-              'default': xlwt.Style.default_style}
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = 'sub_list'
+
     # 첫번째 열에 들어갈 컬럼명 설정
-    col_names = ['등록 일자', '제품명', '수량', '출고 수량', '개당 단가', '부가세', '총 금액', '업체명', '메인번호', '메인 Title', '담당자']
+    columns = ['등록 일자', '제품명', '수량', '출고 수량', '개당 단가', '부가세', '총 금액', '업체명', '메인번호', '메인 Title', '담당자']
 
     query = request.GET.get('q')
     print('que : ', query)
@@ -1541,241 +1094,155 @@ def sub_list_excel_openpyxl(request):
         if login_session == 'insung':
             print('insung search 다운')
             if search_sort == 'product_name':
-                rows = sub_sheet.objects.filter(product_name__icontains=query).order_by('-rg_date').values_list(
-                    'rg_date', 'product_name', 'quantity',
-                    'enter_quantity', 'per_price', 'tax', 'total_price',
-                    'cname', 'm_id', 'm_title', 'user_name')
+                rows = sub_sheet.objects.filter(product_name__icontains=query).order_by('-rg_date')
             elif search_sort == 'cname':
-                rows = sub_sheet.objects.filter(cname__icontains=query).order_by('-rg_date').values_list('rg_date',
-                                                                                                         'product_name',
-                                                                                                         'quantity',
-                                                                                                         'enter_quantity',
-                                                                                                         'per_price',
-                                                                                                         'tax',
-                                                                                                         'total_price',
-                                                                                                         'cname',
-                                                                                                         'm_id',
-                                                                                                         'm_title',
-                                                                                                         'user_name')
+                rows = sub_sheet.objects.filter(cname__icontains=query).order_by('-rg_date')
             elif search_sort == 'serial':
-                sub_list = []
-                product_list = product_info.objects.filter(serial__icontains=query).order_by('-rg_date').order_by(
-                    '-rg_date')
+                rows = list()
+                product_list = product_info.objects.filter(serial__icontains=query).values('s_id').distinct()
                 print('product_list : ', product_list)
                 for i in product_list:
-                    print('s_id : ', i.s_id_id)
-                    sid = i.s_id_id
-                    v = sub_sheet.objects.filter(id__icontains=sid).order_by('-rg_date').values_list('rg_date',
-                                                                                                     'product_name',
-                                                                                                     'quantity',
-                                                                                                     'enter_quantity',
-                                                                                                     'per_price', 'tax',
-                                                                                                     'total_price',
-                                                                                                     'cname', 'm_id',
-                                                                                                     'm_title',
-                                                                                                     'user_name')
-                    rows = sub_list + list(v)
+                    sid = i['s_id']
+                    v = sub_sheet.objects.all().filter(id__icontains=sid).order_by('-rg_date')
+                    for w in v:
+                        rows.append(w)
+                print('rows : ', rows)
             elif search_sort == 'm_title':
-                rows = sub_sheet.objects.filter(m_title__icontains=query).order_by('-rg_date').values_list('rg_date',
-                                                                                                           'product_name',
-                                                                                                           'quantity',
-                                                                                                           'enter_quantity',
-                                                                                                           'per_price',
-                                                                                                           'tax',
-                                                                                                           'total_price',
-                                                                                                           'cname',
-                                                                                                           'm_id',
-                                                                                                           'm_title',
-                                                                                                           'user_name')
+                rows = sub_sheet.objects.filter(m_title__icontains=query).order_by('-rg_date')
             elif search_sort == 'user_name':
-                rows = sub_sheet.objects.filter(user_name__icontains=query).order_by('-rg_date').values_list('rg_date',
-                                                                                                             'product_name',
-                                                                                                             'quantity',
-                                                                                                             'enter_quantity',
-                                                                                                             'per_price',
-                                                                                                             'tax',
-                                                                                                             'total_price',
-                                                                                                             'cname',
-                                                                                                             'm_id',
-                                                                                                             'm_title',
-                                                                                                             'user_name')
+                rows = sub_sheet.objects.filter(user_name__icontains=query).order_by('-rg_date')
             elif search_sort == 'all':
                 rows = sub_sheet.objects.all().filter(
                     Q(product_name__icontains=query) | Q(cname__icontains=query) | Q(serial__icontains=query) |
-                    Q(m_title__icontains=query) | Q(user_name__icontains=query)).order_by('-rg_date').values_list(
-                    'rg_date', 'product_name', 'quantity',
-                    'enter_quantity', 'per_price', 'tax', 'total_price',
-                    'cname', 'm_id', 'm_title', 'user_name')
+                    Q(m_title__icontains=query) | Q(user_name__icontains=query)).order_by('-rg_date')
             elif search_sort == 'rg_date':
                 e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
                                                                                               seconds=59)
 
                 rows = sub_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by(
-                    '-rg_date').values_list(
-                    'rg_date', 'product_name', 'quantity', 'enter_quantity', 'per_price', 'tax', 'total_price',
-                    'cname', 'm_id', 'm_title', 'user_name')
+                    '-rg_date')
         else:
             print('일반 search 다운')
             if search_sort == 'product_name':
                 rows = sub_sheet.objects.all().filter(product_name__icontains=query,
-                                                      cname=login_session).order_by('-rg_date').values_list('rg_date',
-                                                                                                            'product_name',
-                                                                                                            'quantity',
-                                                                                                            'enter_quantity',
-                                                                                                            'per_price',
-                                                                                                            'tax',
-                                                                                                            'total_price',
-                                                                                                            'cname',
-                                                                                                            'm_id',
-                                                                                                            'm_title',
-                                                                                                            'user_name')
+                                                      cname=login_session).order_by('-rg_date')
             elif search_sort == 'serial':
                 rows = sub_sheet.objects.all().filter(serial__icontains=query,
-                                                      cname=login_session).order_by('-rg_date').values_list('rg_date',
-                                                                                                            'product_name',
-                                                                                                            'quantity',
-                                                                                                            'enter_quantity',
-                                                                                                            'per_price',
-                                                                                                            'tax',
-                                                                                                            'total_price',
-                                                                                                            'cname',
-                                                                                                            'm_id',
-                                                                                                            'm_title',
-                                                                                                            'user_name')
+                                                      cname=login_session).order_by('-rg_date')
             elif search_sort == 'm_title':
                 rows = sub_sheet.objects.all().filter(m_title__icontains=query, cname=login_session).order_by(
-                    '-rg_date').values_list('rg_date', 'product_name', 'quantity',
-                                            'enter_quantity', 'per_price', 'tax', 'total_price',
-                                            'cname', 'm_id', 'm_title', 'user_name')
+                    '-rg_date')
             elif search_sort == 'user_name':
                 rows = sub_sheet.objects.all().filter(user_name__icontains=query, cname=login_session).order_by(
-                    '-rg_date').values_list('rg_date', 'product_name', 'quantity',
-                                            'enter_quantity', 'per_price', 'tax', 'total_price',
-                                            'cname', 'm_id', 'm_title', 'user_name')
+                    '-rg_date')
             elif search_sort == 'all':
                 rows = sub_sheet.objects.filter(Q(product_name__icontains=query) | Q(serial__icontains=query) |
                                                 Q(m_title__icontains=query) | Q(user_name__icontains=query),
-                                                cname=login_session).order_by('-rg_date').values_list('rg_date',
-                                                                                                      'product_name',
-                                                                                                      'quantity',
-                                                                                                      'enter_quantity',
-                                                                                                      'per_price',
-                                                                                                      'tax',
-                                                                                                      'total_price',
-                                                                                                      'cname', 'm_id',
-                                                                                                      'm_title',
-                                                                                                      'user_name')
+                                                cname=login_session).order_by('-rg_date')
             elif search_sort == 'rg_date':
                 e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
                                                                                               seconds=59)
 
                 rows = sub_sheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date,
-                                                      cname=login_session).order_by('-rg_date').values_list(
-                    'rg_date', 'product_name', 'quantity', 'enter_quantity', 'per_price', 'tax', 'total_price',
-                    'cname', 'm_id', 'm_title', 'user_name')
+                                                      cname=login_session).order_by('-rg_date')
     else:
         print('전체 다운로드')
         if login_session == 'insung':
-            rows = sub_sheet.objects.all().order_by('-rg_date').values_list('rg_date', 'product_name', 'quantity',
-                                                                            'enter_quantity', 'per_price', 'tax',
-                                                                            'total_price',
-                                                                            'cname', 'm_id', 'm_title', 'user_name')
+            rows = sub_sheet.objects.all().order_by('-rg_date')
         else:
-            rows = sub_sheet.objects.all().filter(cname=login_session).order_by('-rg_date').values_list('rg_date',
-                                                                                                        'product_name',
-                                                                                                        'quantity',
-                                                                                                        'enter_quantity',
-                                                                                                        'per_price',
-                                                                                                        'tax',
-                                                                                                        'total_price',
-                                                                                                        'cname', 'm_id',
-                                                                                                        'm_title',
-                                                                                                        'user_name')
+            rows = sub_sheet.objects.all().filter(cname=login_session).order_by('-rg_date')
 
-    # 첫번째 열: 설정한 컬럼명 순서대로 스타일 적용하여 생성
-    print("다운 중간2")
-    row_num = 0
-    ix = 0
-    for idx, col_name in enumerate(col_names):
-        ws.write(row_num, idx, col_name, title_style)
+    row_num = 1
+    for col_num, column_title in enumerate(columns, 1):
+        cell = ws.cell(row=row_num, column=col_num)
+        cell.value = column_title
 
-    # 두번째 이후 열: 설정한 컬럼명에 맞춘 데이터 순서대로 스타일 적용하여 생성
-    for row in rows:
+    for sublistrow in rows:
         row_num += 1
-        for col_num, attr in enumerate(row):
-            if isinstance(attr, datetime.datetime) or isinstance(attr, date):
-                cell_style = styles['date']
-            else:
-                cell_style = styles['default']
-            ws.write(row_num, col_num, attr, cell_style)
+
+        # Define the data for each cell in the row
+        row = [
+            sublistrow.rg_date.strftime('%Y-%m-%d'),
+            sublistrow.product_name,
+            sublistrow.quantity,
+            sublistrow.enter_quantity,
+            sublistrow.per_price,
+            sublistrow.tax,
+            sublistrow.total_price,
+            sublistrow.cname,
+            sublistrow.m_id_id,
+            sublistrow.m_title,
+            sublistrow.user_name
+        ]
+
+        # Assign the data for each cell of the row
+        for col_num, cell_value in enumerate(row, 1):
+            cell = ws.cell(row=row_num, column=col_num)
+            cell.value = cell_value
 
     wb.save(response)
     print("다운로드 끝")
     return response
+
 
 # product info 엑셀 다운로드
 def product_info_excel(request):
     login_session = request.session.get('login_session')
 
-    print("product info list 다운로드 시작")
-    # 데이터 db에서 불러옴
-    # data = EstimateSheet.objects.all()
-    response = HttpResponse(content_type="application/vnd.ms-excel")
-    # 다운로드 받을 때 생성될 파일명 설정
+    print("main 다운로드 시작")
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
     response["Content-Disposition"] = 'attachment; filename=' \
-                                      + str(datetime.date.today()) + 'product_info.xls'
-    print("다운 중간")
-    # 인코딩 설정
-    wb = xlwt.Workbook(encoding='utf-8')
-    # 생성될 시트명 설정
-    ws = wb.add_sheet('product_info')
+                                      + str(datetime.date.today()) + '_product_info.xlsx'
 
-    # 엑셀 스타일: 첫번째 열(=title)과 나머지 열(=data) 구분 위한 설정
-    title_style = xlwt.easyxf(
-        'pattern: pattern solid, fore_color indigo; align: horizontal center; font: color_index white;')
-    data_style = xlwt.easyxf('align: horizontal right')
-    # 날짜 서식 결정
-    styles = {'datetime': xlwt.easyxf(num_format_str='yyyy-mm-dd hh:mm:ss'),
-              'date': xlwt.easyxf(num_format_str='yyyy-mm-dd'),
-              'time': xlwt.easyxf(num_format_str='hh:mm:ss'),
-              'default': xlwt.Style.default_style}
-    # 첫번째 열에 들어갈 컬럼명 설정
-    col_names = ['등록일자', '제품명', '업체명', '시리얼', '생산 일자', '출고 일자', '보증 만료일', 'SUB ID', '담당자']
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = 'product_info'
+
+    columns = ['등록일자', '제품명', '업체명', '시리얼', '생산 일자', '출고 일자', '보증 만료일', 'SUB ID', '담당자']
 
     sub_id = request.GET.get('sid')
     if login_session == 'insung':
         print('인성 다운로드')
-        rows = product_info.objects.filter(s_id_id=sub_id).order_by('-rg_date').values_list('rg_date', 'product_name',
-                                                                                            'cname', 'serial',
-                                                                                            'production_date',
-                                                                                            'release_date', 'warranty',
-                                                                                            's_id', 'user_name')
+        rows = product_info.objects.filter(s_id_id=sub_id).order_by('-rg_date')
+        print(rows.values())
     else:
         print('일반 다운로드')
-        rows = product_info.objects.filter(s_id_id=sub_id, cname=login_session).order_by('-rg_date').values_list(
-            'rg_date', 'product_name', 'cname', 'serial',
-            'production_date', 'release_date',
-            'warranty',
-            's_id', 'user_name')
+        rows = product_info.objects.filter(s_id_id=sub_id, cname=login_session).order_by('-rg_date')
     # 첫번째 열: 설정한 컬럼명 순서대로 스타일 적용하여 생성
     print("다운 중간2")
-    row_num = 0
-    ix = 0
-    for idx, col_name in enumerate(col_names):
-        ws.write(row_num, idx, col_name, title_style)
 
-    # 두번째 이후 열: 설정한 컬럼명에 맞춘 데이터 순서대로 스타일 적용하여 생성
-    for row in rows:
+    row_num = 1
+    for col_num, column_title in enumerate(columns, 1):
+        cell = ws.cell(row=row_num, column=col_num)
+        cell.value = column_title
+
+    for plrow in rows:
         row_num += 1
-        for col_num, attr in enumerate(row):
-            if isinstance(attr, datetime.datetime) or isinstance(attr, date):
-                cell_style = styles['date']
-            else:
-                cell_style = styles['default']
-            ws.write(row_num, col_num, attr, cell_style)
+
+        # Define the data for each cell in the row
+        row = [
+            plrow.rg_date.strftime('%Y-%m-%d'),
+            plrow.product_name,
+            plrow.cname,
+            plrow.serial,
+            plrow.production_date,
+            plrow.release_date,
+            plrow.warranty,
+            plrow.s_id_id,
+            plrow.user_name,
+        ]
+        print(row)
+
+        # Assign the data for each cell of the row
+        for col_num, cell_value in enumerate(row, 1):
+            cell = ws.cell(row=row_num, column=col_num)
+            cell.value = cell_value
 
     wb.save(response)
     print("다운로드 끝")
+
     return response
 
 
@@ -2056,10 +1523,21 @@ def pm_modify(request, pk):
     user_name = request.session.get('user_name')
     user_dept = request.session.get('user_dept')
     detailView = get_object_or_404(Product_Management, no=pk)
+
+    sort = request.GET.get('sort', '')
+    query = request.GET.get('q', '')
+    search_sort = request.GET.get('search_sort', '')
+    if request.GET.get('sdate', '') is not None:
+        startdate = request.GET.get('sdate', '')
+    if request.GET.get('edate', '') is not None:
+        enddate = request.GET.get('edate', '')
+    page = request.GET.get('page', '')
+
     if request.method == 'GET':
         print('get sub detail 뷰 시작')
         context = {'detailView': detailView, 'login_session': login_session, 'user_name': user_name,
-                   'user_dept': user_dept}
+                   'user_dept': user_dept, 'sort': sort, 'query': query, 'search_sort': search_sort, 'sdate': startdate,
+                   'edate': enddate, 'page': page}
         print("디테일 뷰 끝")
         return render(request, 'isscm/pm_modify.html', context)
     else:
@@ -2131,7 +1609,8 @@ def pm_excel_openpyxl(request):
         elif search_sort == 'update_date':
             d_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
                                                                                           seconds=59)
-            rows = Product_Management.objects.all().filter(rg_date__gte=startdate, rg_date__lte=d_date).order_by('rg_date')
+            rows = Product_Management.objects.all().filter(rg_date__gte=startdate, rg_date__lte=d_date).order_by(
+                'rg_date')
         elif search_sort == 'all':
             rows = Product_Management.objects.all().filter(
                 Q(product_name__icontains=query) | Q(current_location__icontains=query) | Q(status__icontains=query)). \
@@ -2169,100 +1648,6 @@ def pm_excel_openpyxl(request):
     print("다운로드 끝")
     return response
 
-# product_manage 엑셀 다운로드 xlwt 사용 
-def pm_excel(request):
-    login_session = request.session.get('login_session')
-
-    print("pm_list 다운로드 시작")
-    # 데이터 db에서 불러옴
-    # data = EstimateSheet.objects.all()
-    response = HttpResponse(content_type="application/vnd.ms-excel")
-    # 다운로드 받을 때 생성될 파일명 설정
-    response["Content-Disposition"] = 'attachment; filename=' \
-                                      + str(datetime.date.today()) + '_pm_list.xls'
-    print("다운 중간")
-    # 인코딩 설정
-    wb = xlwt.Workbook(encoding='utf-8')
-    # 생성될 시트명 설정
-    ws = wb.add_sheet('list')
-
-    # 엑셀 스타일: 첫번째 열(=title)과 나머지 열(=data) 구분 위한 설정
-    title_style = xlwt.easyxf(
-        'pattern: pattern solid, fore_color indigo; align: horizontal center; font: color_index white;')
-    data_style = xlwt.easyxf('align: horizontal right')
-    # 날짜 서식 결정
-    styles = {'datetime': xlwt.easyxf(num_format_str='yyyy-mm-dd hh:mm:ss'),
-              'date': xlwt.easyxf(num_format_str='yyyy-mm-dd'),
-              'time': xlwt.easyxf(num_format_str='hh:mm:ss'),
-              'default': xlwt.Style.default_style}
-    # 첫번째 열에 들어갈 컬럼명 설정
-    col_names = ['등록 일자', '수정 일자', '제품명', '시리얼', '현재 위치', '상태']
-
-    query = request.GET.get('q')
-    print('que : ', query)
-    search_sort = request.GET.get('search_sort', '')
-    print('search : ', search_sort)
-    if search_sort:
-        print('검색으로 다운로드')
-        startdate = request.GET.get('sdate', '')
-        enddate = request.GET.get('edate', '')
-        print('insung search 다운')
-        if search_sort == 'product_name':
-            rows = Product_Management.objects.filter(product_name__icontains=query).order_by('rg_date').values_list(
-                'rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
-        elif search_sort == 'current_location':
-            rows = Product_Management.objects.filter(current_location__icontains=query).order_by('rg_date'). \
-                values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
-        elif search_sort == 'serial':
-            rows = Product_Management.objects.filter(serial__icontains=query).order_by('rg_date'). \
-                values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
-        elif search_sort == 'status':
-            rows = Product_Management.objects.filter(status__icontains=query).order_by('rg_date'). \
-                values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
-        elif search_sort == 'rg_date':
-            e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
-                                                                                          seconds=59)
-            rows = Product_Management.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by(
-                'rg_date').values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
-        elif search_sort == 'update_date':
-            rows = Product_Management.objects.all().filter(update_date__range=[startdate, enddate]).order_by('rg_date'). \
-                values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
-        elif search_sort == 'all':
-            rows = Product_Management.objects.all().filter(
-                Q(product_name__icontains=query) | Q(current_location__icontains=query) | Q(status__icontains=query)). \
-                order_by('rg_date').values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location',
-                                                'status')
-        else:
-            rows = Product_Management.objects.all().order_by('rg_date'). \
-                values_list('rg_date', 'update_date', 'product_name', 'serial', 'current_location', 'status')
-    else:
-        print('전체 다운로드')
-        rows = Product_Management.objects.all().order_by('rg_date').values_list('rg_date', 'update_date',
-                                                                                'product_name', 'serial',
-                                                                                'current_location', 'status')
-
-    # 첫번째 열: 설정한 컬럼명 순서대로 스타일 적용하여 생성
-    print("다운 중간2")
-    row_num = 0
-    ix = 0
-    for idx, col_name in enumerate(col_names):
-        ws.write(row_num, idx, col_name, title_style)
-
-    # 두번째 이후 열: 설정한 컬럼명에 맞춘 데이터 순서대로 스타일 적용하여 생성
-    for row in rows:
-        row_num += 1
-        for col_num, attr in enumerate(row):
-            if isinstance(attr, datetime.datetime) or isinstance(attr, date):
-                cell_style = styles['date']
-            else:
-                cell_style = styles['default']
-            ws.write(row_num, col_num, attr, cell_style)
-
-    wb.save(response)
-    print("다운로드 끝")
-    return response
-
-
 def pm_excel_upload(request):
     if request.method == "POST":
         print("엑셀 업로드 시작")
@@ -2290,11 +1675,12 @@ def pm_excel_upload(request):
                     print('val : ', val[1])
                     print('val : ', val[2])
                     # 엑셀 형식 체크 (첫번째의 제목 row)
-                    if val[0] != 'product_name' or val[1] != 'serial' or val[2] != 'current_location' or val[3] != 'status':
+                    if val[0] != 'product_name' or val[1] != 'serial' or val[2] != 'current_location' or val[
+                        3] != 'status':
                         print("항목 틀림")
                         break
                 else:
-                    if val[0] == None and val[1] == None and val[2] == None and val[3] == None :
+                    if val[0] == None and val[1] == None and val[2] == None and val[3] == None:
                         # te = Product_Management(no=val[0], rg_date=val[1], product_name=val[2], serial=val[3],
                         #                                     current_location=val[4], status=val[5], update_date=val[6])
                         print("끝")
@@ -2306,7 +1692,7 @@ def pm_excel_upload(request):
                         print('val2 : ', val[2])
                         print('val3 : ', val[3])
                         pm = Product_Management()
-                        #pm.no = val[0]
+                        # pm.no = val[0]
                         pm.product_name = val[0]
                         pm.serial = val[1]
                         pm.current_location = val[2]

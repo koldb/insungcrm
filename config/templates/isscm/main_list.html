@@ -103,7 +103,7 @@
         </thead>
         <tbody>
         {% for list in page_obj %}
-        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'isscm:main_detail' list.id %}'">
+        <tr class="m" style="text-align:center;" onclick="location.href='{% url 'isscm:main_detail' list.id %}?q={{ query }}&page_obj={{ page_obj }}&page={{page_obj.number}}&sort={{sort}}&search_sort={{search_sort}}&sdate={{ sdate }}&edate={{ edate }}'">
             <td>{{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1  }}</td>
             <td>{{ list.rg_date|date:'Y-m-d' }}</td>
             <td>{{ list.rp_date|date:'Y-m-d'  }}</td>
@@ -135,7 +135,7 @@
     <br>
 
 </div>
-<input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:main_insert' %}'" value="견적글 작성" style="float:right;">
+<input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:main_insert' %}?q={{ query }}&page_obj={{ page_obj }}&page={{page_obj.number}}&sort={{sort}}&search_sort={{search_sort}}&sdate={{ sdate }}&edate={{ edate }}'" value="견적글 작성" style="float:right;">
 <br>
 
 {% else %}
@@ -232,8 +232,6 @@
         </select>
         <button class="btn btn-primary" type="submit" value="">정렬</button>
         <!--엑셀 다운로드-->
-        <!--<a href="{% url 'isscm:main_excel' %}?q={{ query }}&search_sort={{ search_sort }}&sdate={{ sdate }}&edate={{ edate }}" style="color:white">
-            <button type="button" class="btn btn-primary">EXCEL DOWN</button></a> -->
         <a href="{% url 'isscm:main_excel_openpyxl' %}?q={{ query }}&search_sort={{ search_sort }}&sdate={{ sdate }}&edate={{ edate }}" style="color:white">
             <button type="button" class="btn btn-primary">EXCEL DOWN</button></a>
     </form>

@@ -17,4 +17,5 @@ urlpatterns = [
     path('as_delete/<int:pk>/', views.as_delete, name='as_delete'),
     path('AS_excel_openpyxl/', views.AS_excel_openpyxl, name='AS_excel_openpyxl'),
     path('as_report/', views.as_report, name='as_report'),
+    path('as_chart/', views.as_chart, name='as_chart'),
 ]

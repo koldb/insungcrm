@@ -18,6 +18,7 @@ import mimetypes
 import shutil
 
 
+
 # Create your views here.
 
 # 임시 메인페이지
@@ -494,7 +495,6 @@ def AS_excel_openpyxl(request):
     return response
 
 
-
 # as 파일 삭제
 def ASfile_delete(request, pk):
     login_session = request.session.get('login_session')
@@ -533,7 +533,8 @@ def as_detail(request, pk):
         try:
             upfile = ASUploadFile.objects.filter(sheet_no_id=pk).count()
             context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile,
-                       'user_name': user_name, 'user_phone': user_phone, 'sort': sort, 'query': query, 'search_sort': search_sort,
+                       'user_name': user_name, 'user_phone': user_phone, 'sort': sort, 'query': query,
+                       'search_sort': search_sort,
                        'sdate': startdate, 'edate': enddate, 'page': page}
             print("성공")
         except:
@@ -646,4 +647,147 @@ def as_delete(request, pk):
 
 # AS 리포트
 def as_report(request):
-    return
+    login_session = request.session.get('login_session')
+    user_name = request.session.get('user_name')
+
+    # 주간 월간 제품별 AS 현황
+    as_wnum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1)).values('product_name'). \
+        order_by('product_name').annotate(count=Count('product_name'))
+    as_wnum_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1)).aggregate(
+        Count('product_name'))
+    as_mnum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values('product_name'). \
+        order_by('product_name').annotate(count=Count('product_name'))
+    as_mnum_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).aggregate(
+        Count('product_name'))
+
+    # 주간 월간 품목/대,소/조치 AS 현황
+    # 주간
+    as_wle = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1)).exclude(
+        la_category=None).values('la_category'). \
+        order_by('la_category').annotate(count=Count('la_category'))
+    as_wle_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1)).exclude(
+        la_category=None).aggregate(Count('la_category'))
+
+    as_wme = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1)).exclude(
+        me_category=None).values('me_category'). \
+        order_by('me_category').annotate(count=Count('me_category'))
+    as_wme_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1)).exclude(
+        me_category=None).aggregate(
+        Count('me_category'))
+
+    as_wsm = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1)).exclude(
+        sm_category=None).values('sm_category'). \
+        order_by('sm_category').annotate(count=Count('sm_category'))
+    as_wsm_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1)).exclude(
+        sm_category=None).aggregate(
+        Count('sm_category'))
+
+    as_wac = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1)).exclude(asaction=None).values(
+        'asaction'). \
+        order_by('asaction').annotate(count=Count('asaction'))
+    as_wac_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(weeks=1)).exclude(
+        asaction=None).aggregate(
+        Count('asaction'))
+
+    # 월간
+    as_mle = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).exclude(
+        la_category=None).values('la_category'). \
+        order_by('la_category').annotate(count=Count('la_category'))
+    as_mle_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).exclude(
+        la_category=None).aggregate(
+        Count('la_category'))
+
+    as_mme = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).exclude(
+        me_category=None).values('me_category'). \
+        order_by('me_category').annotate(count=Count('me_category'))
+    as_mme_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).exclude(
+        me_category=None).aggregate(
+        Count('me_category'))
+
+    as_msm = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).exclude(
+        sm_category=None).values('sm_category'). \
+        order_by('sm_category').annotate(count=Count('sm_category'))
+    as_msm_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).exclude(
+        sm_category=None).aggregate(
+        Count('sm_category'))
+
+    as_mac = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).exclude(asaction=None).values(
+        'asaction'). \
+        order_by('asaction').annotate(count=Count('asaction'))
+    as_mac_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).exclude(
+        asaction=None).aggregate(
+        Count('asaction'))
+
+    context = {'as_wnum': as_wnum, 'as_wnum_sum': as_wnum_sum, 'as_mnum': as_mnum, 'as_mnum_sum': as_mnum_sum,
+               'as_wle': as_wle,
+               'as_wle_sum': as_wle_sum, 'as_wme': as_wme, 'as_wme_sum': as_wme_sum, 'as_wsm': as_wsm,
+               'as_wsm_sum': as_wsm_sum,
+               'as_wac': as_wac, 'as_wac_sum': as_wac_sum, 'as_mle': as_mle, 'as_mle_sum': as_mle_sum, 'as_mme': as_mme,
+               'as_mme_sum': as_mme_sum, 'as_msm': as_msm, 'as_msm_sum': as_msm_sum, 'as_mac': as_mac,
+               'as_mac_sum': as_mac_sum,
+               'login_session': login_session, 'user_name': user_name}
+
+    return render(request, 'assheet/as_report.html', context)
+
+
+# AS 차트 페이지
+def as_chart(request):
+    global chart
+    login_session = request.session.get('login_session')
+    user_name = request.session.get('user_name')
+
+    search_sort = request.GET.get('search_sort', '')
+    startdate = request.GET.get('sdate', '')
+    enddate = request.GET.get('edate', '')
+
+    print('search : ', search_sort)
+    print('sdate : ', startdate)
+    print('edate : ', enddate)
+
+    la_category = request.GET.get('la', '')
+    print('la : ', la_category)
+    me_category = request.GET.get('me', '')
+    print('me : ', me_category)
+    sm_category = request.GET.get('sm', '')
+    print('sm : ', sm_category)
+    asaction = request.GET.get('action', '')
+    print('as : ', asaction)
+    print('여기?')
+    if search_sort == 'rg_date':
+        if la_category == '' and me_category == '' and sm_category == '' and asaction == '':
+            print('여기')
+            e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
+                                                                                          seconds=59)
+            chart = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by('-rg_date',
+                                                                                                       'finish')
+        else:
+            print('여기2')
+            e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
+                                                                                          seconds=59)
+            chartdata = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by('-rg_date',
+                                                                                                           'finish')
+            chart = chartdata.filter(Q(la_category__exact=la_category) | Q(me_category__exact=me_category) | \
+                                     Q(sm_category__exact=sm_category) | Q(asaction__exact=asaction)).order_by('-rg_date', 'finish')
+            print('여기 끝')
+    elif search_sort == 'rp_date':
+        if la_category == '' and me_category == '' and sm_category == '' and asaction == '':
+            chart = ASsheet.objects.all().filter(rp_date__range=[startdate, enddate]).order_by('-rg_date', 'finish')
+        else:
+            chartdata = ASsheet.objects.all().filter(rp_date__range=[startdate, enddate]).order_by('-rg_date', 'finish')
+            chart = chartdata.filter(
+                Q(la_category__exact=la_category) | Q(me_category__exact=me_category) |
+                Q(sm_category__exact=sm_category) | Q(asaction__exact=asaction)).order_by('-rg_date', 'finish')
+    elif search_sort == 'end_date':
+        if la_category == '' and me_category == '' and sm_category == '' and asaction == '':
+            chart = ASsheet.objects.all().filter(end_date__range=[startdate, enddate]).order_by('-rg_date', 'finish')
+        else:
+            chartdata = ASsheet.objects.all().filter(end_date__range=[startdate, enddate]).order_by('-rg_date',
+                                                                                                    'finish')
+            chart = chartdata.filter(
+                Q(la_category__exact=la_category) | Q(me_category__exact=me_category) |
+                Q(sm_category__exact=sm_category) | Q(asaction__exact=asaction)).order_by('-rg_date', 'finish')
+
+    sheet_chart = []
+    context = {'login_session': login_session, 'user_name': user_name, 'chart': chart.count()}
+
+    return render(request, 'assheet/as_report.html', context)

@@ -16,6 +16,7 @@ from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
 import mimetypes
 import shutil
+import pandas as pd
 
 
 
@@ -740,19 +741,19 @@ def as_chart(request):
     startdate = request.GET.get('sdate', '')
     enddate = request.GET.get('edate', '')
 
-    print('search : ', search_sort)
-    print('sdate : ', startdate)
-    print('edate : ', enddate)
+
 
     la_category = request.GET.get('la', '')
-    print('la : ', la_category)
     me_category = request.GET.get('me', '')
-    print('me : ', me_category)
     sm_category = request.GET.get('sm', '')
-    print('sm : ', sm_category)
     asaction = request.GET.get('action', '')
-    print('as : ', asaction)
-    print('여기?')
+
+    from_to = pd.date_range(startdate, enddate)  # 2020-04-01 ~ 2020-04-15 까지의 기간
+    from_to_list = from_to.strftime("%Y-%m-%d").tolist()  # 날짜 포맷팅을 지정
+    daterange = from_to_list[0:7]  # 0번 째가 가장 첫번 째 데이터이기 때문에 start로 지정
+    print(daterange)
+
+
     if search_sort == 'rg_date':
         if la_category == '' and me_category == '' and sm_category == '' and asaction == '':
             print('여기')
@@ -760,6 +761,7 @@ def as_chart(request):
                                                                                           seconds=59)
             chart = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by('-rg_date',
                                                                                                        'finish')
+            report_df = pd.DataFrame(chart)
         else:
             print('여기2')
             e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,

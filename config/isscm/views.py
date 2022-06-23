@@ -30,7 +30,6 @@ def index(request):
     login_session = request.session.get('login_session')
     user_phone = request.session.get('user_phone')
     user_name = request.session.get('user_name')
-    print(user_phone)
 
     # 1일 기준 신규 접수 현황
     es_count = main_sheet.objects.filter(rg_date__gte=date.today()).count()
@@ -82,10 +81,8 @@ def index(request):
         Sum('quantity'))
     as_num = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values(
         'product_name').order_by('product_name').annotate(count=Count('product_name'))
-    print(as_num)
     as_num_sum = ASsheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).aggregate(
         Count('product_name'))
-    print(as_num_sum)
 
     # 업체별 월간 메인, AS 개수
     es_cnum = main_sheet.objects.filter(rg_date__gte=date.today() - relativedelta(months=1)).values(

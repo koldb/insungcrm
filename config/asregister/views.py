@@ -1,3 +1,4 @@
+from django.db.models.functions import TruncMonth, TruncWeek
 from django.shortcuts import render, redirect, get_object_or_404, reverse
 import sys
 
@@ -17,6 +18,7 @@ from dateutil.relativedelta import relativedelta
 import mimetypes
 import shutil
 import pandas as pd
+import numpy as np
 
 
 
@@ -741,8 +743,6 @@ def as_chart(request):
     startdate = request.GET.get('sdate', '')
     enddate = request.GET.get('edate', '')
 
-
-
     la_category = request.GET.get('la', '')
     me_category = request.GET.get('me', '')
     sm_category = request.GET.get('sm', '')
@@ -750,27 +750,29 @@ def as_chart(request):
 
     from_to = pd.date_range(startdate, enddate)  # 2020-04-01 ~ 2020-04-15 까지의 기간
     from_to_list = from_to.strftime("%Y-%m-%d").tolist()  # 날짜 포맷팅을 지정
-    daterange = from_to_list[0:7]  # 0번 째가 가장 첫번 째 데이터이기 때문에 start로 지정
-    print(daterange)
-
+    print(from_to_list)
 
     if search_sort == 'rg_date':
         if la_category == '' and me_category == '' and sm_category == '' and asaction == '':
             print('여기')
             e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
                                                                                           seconds=59)
-            chart = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by('-rg_date',
-                                                                                                       'finish')
-            report_df = pd.DataFrame(chart)
+            # chart = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by('-rg_date', 'finish')
+            chart = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).annotate(stat=TruncWeek('rg_date')).values('stat'). \
+                annotate(stat_count=Count('product_name')).values('stat', 'stat_count')
+            print(chart)
         else:
             print('여기2')
             e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
                                                                                           seconds=59)
             chartdata = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by('-rg_date',
                                                                                                            'finish')
+            # chart = chartdata.filter(Q(la_category__exact=la_category) | Q(me_category__exact=me_category) | \
+            #                          Q(sm_category__exact=sm_category) | Q(asaction__exact=asaction)).order_by('-rg_date', 'finish')
             chart = chartdata.filter(Q(la_category__exact=la_category) | Q(me_category__exact=me_category) | \
-                                     Q(sm_category__exact=sm_category) | Q(asaction__exact=asaction)).order_by('-rg_date', 'finish')
-            print('여기 끝')
+                                     Q(sm_category__exact=sm_category) | Q(asaction__exact=asaction)).annotate(stat=TruncWeek('rg_date')).values('stat'). \
+                annotate(stat_count=Count('product_name')).values('stat', 'stat_count')
+            print(chart)
     elif search_sort == 'rp_date':
         if la_category == '' and me_category == '' and sm_category == '' and asaction == '':
             chart = ASsheet.objects.all().filter(rp_date__range=[startdate, enddate]).order_by('-rg_date', 'finish')

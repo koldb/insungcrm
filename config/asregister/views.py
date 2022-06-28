@@ -1,3 +1,5 @@
+import json
+
 from django.db.models.functions import TruncMonth, TruncWeek
 from django.shortcuts import render, redirect, get_object_or_404, reverse
 import sys
@@ -19,7 +21,6 @@ import mimetypes
 import shutil
 import pandas as pd
 import numpy as np
-
 
 
 # Create your views here.
@@ -748,9 +749,8 @@ def as_chart(request):
     sm_category = request.GET.get('sm', '')
     asaction = request.GET.get('action', '')
 
-    from_to = pd.date_range(startdate, enddate)  # 2020-04-01 ~ 2020-04-15 까지의 기간
+    from_to = pd.date_range(startdate, enddate)
     from_to_list = from_to.strftime("%Y-%m-%d").tolist()  # 날짜 포맷팅을 지정
-    print(from_to_list)
 
     if search_sort == 'rg_date':
         if la_category == '' and me_category == '' and sm_category == '' and asaction == '':
@@ -758,9 +758,9 @@ def as_chart(request):
             e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
                                                                                           seconds=59)
             # chart = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by('-rg_date', 'finish')
-            chart = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).annotate(stat=TruncWeek('rg_date')).values('stat'). \
-                annotate(stat_count=Count('product_name')).values('stat', 'stat_count')
-            print(chart)
+            chart = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).annotate(
+                stat=TruncWeek('rg_date')).values('stat'). \
+                annotate(stat_count=Count('product_name')).values('stat', 'stat_count', 'product_name')
         else:
             print('여기2')
             e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
@@ -770,28 +770,48 @@ def as_chart(request):
             # chart = chartdata.filter(Q(la_category__exact=la_category) | Q(me_category__exact=me_category) | \
             #                          Q(sm_category__exact=sm_category) | Q(asaction__exact=asaction)).order_by('-rg_date', 'finish')
             chart = chartdata.filter(Q(la_category__exact=la_category) | Q(me_category__exact=me_category) | \
-                                     Q(sm_category__exact=sm_category) | Q(asaction__exact=asaction)).annotate(stat=TruncWeek('rg_date')).values('stat'). \
-                annotate(stat_count=Count('product_name')).values('stat', 'stat_count')
-            print(chart)
+                                     Q(sm_category__exact=sm_category) | Q(asaction__exact=asaction)).annotate(
+                stat=TruncWeek('rg_date')).values('stat'). \
+                annotate(stat_count=Count('product_name')).values('stat', 'stat_count', 'product_name')
     elif search_sort == 'rp_date':
         if la_category == '' and me_category == '' and sm_category == '' and asaction == '':
-            chart = ASsheet.objects.all().filter(rp_date__range=[startdate, enddate]).order_by('-rg_date', 'finish')
+            chart = ASsheet.objects.all().filter(rp_date__range=[startdate, enddate]).order_by('-rg_date',
+                                                                                               'finish').annotate(
+                stat=TruncWeek('rg_date')).values('stat'). \
+                annotate(stat_count=Count('product_name')).values('stat', 'stat_count', 'product_name')
         else:
             chartdata = ASsheet.objects.all().filter(rp_date__range=[startdate, enddate]).order_by('-rg_date', 'finish')
             chart = chartdata.filter(
                 Q(la_category__exact=la_category) | Q(me_category__exact=me_category) |
-                Q(sm_category__exact=sm_category) | Q(asaction__exact=asaction)).order_by('-rg_date', 'finish')
+                Q(sm_category__exact=sm_category) | Q(asaction__exact=asaction)).order_by('-rg_date',
+                                                                                          'finish').annotate(
+                stat=TruncWeek('rg_date')).values('stat'). \
+                annotate(stat_count=Count('product_name')).values('stat', 'stat_count', 'product_name')
     elif search_sort == 'end_date':
         if la_category == '' and me_category == '' and sm_category == '' and asaction == '':
-            chart = ASsheet.objects.all().filter(end_date__range=[startdate, enddate]).order_by('-rg_date', 'finish')
+            chart = ASsheet.objects.all().filter(end_date__range=[startdate, enddate]).order_by('-rg_date',
+                                                                                                'finish').annotate(
+                stat=TruncWeek('rg_date')).values('stat'). \
+                annotate(stat_count=Count('product_name')).values('stat', 'stat_count', 'product_name')
         else:
             chartdata = ASsheet.objects.all().filter(end_date__range=[startdate, enddate]).order_by('-rg_date',
                                                                                                     'finish')
             chart = chartdata.filter(
                 Q(la_category__exact=la_category) | Q(me_category__exact=me_category) |
-                Q(sm_category__exact=sm_category) | Q(asaction__exact=asaction)).order_by('-rg_date', 'finish')
+                Q(sm_category__exact=sm_category) | Q(asaction__exact=asaction)).order_by('-rg_date',
+                                                                                          'finish').annotate(
+                stat=TruncWeek('rg_date')).values('stat'). \
+                annotate(stat_count=Count('product_name')).values('stat', 'stat_count', 'product_name')
 
-    sheet_chart = []
-    context = {'login_session': login_session, 'user_name': user_name, 'chart': chart.count()}
+    chart_pro = []
+    chart_stat = []
+    chart_stat_cou = []
+    for i in chart:
+        chart_pro.append(i['product_name'])
+        chart_stat.append(str(i['stat']))
+        chart_stat_cou.append(i['stat_count'])
 
-    return render(request, 'assheet/as_report.html', context)
+    print(chart_stat_cou)
+    context = {'login_session': login_session, 'user_name': user_name, 'chart': chart, 'chart_pro': json.dumps(chart_pro), 'chart_stat': json.dumps(chart_stat),
+               'chart_stat_cou': json.dumps(chart_stat_cou)}
+    return render(request, 'assheet/as_chart_result.html', context)

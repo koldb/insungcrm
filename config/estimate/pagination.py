@@ -1,6 +1,6 @@
 from django.core.paginator import Paginator
 
-
+# 현재 미사용 / 페이징 관련 공부, 테스트때 사용 했음
 # Board : 게시글들
 # contents_num : 한 페이지 표시할 게시글 수
 # 표시할 페이지 7개

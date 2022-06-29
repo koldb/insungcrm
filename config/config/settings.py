@@ -27,6 +27,7 @@ SECRET_KEY = 'django-insecure-lhg(8$sl)0=zsgc3wsu#mumkj1#k*wk_v=%-4p8-$225kz_fk8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# 모든 접속 가능하도록 설정
 ALLOWED_HOSTS = ['*']
 
 # Application definition
@@ -170,6 +171,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
+# 언어 / 타임존 설정 
 LANGUAGE_CODE = 'ko-kr'
 
 TIME_ZONE = 'Asia/Seoul'
@@ -181,6 +183,7 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
+# static 경로 설정
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',

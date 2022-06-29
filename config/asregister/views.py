@@ -1,5 +1,4 @@
 import json
-
 from django.db.models.functions import TruncMonth, TruncWeek
 from django.shortcuts import render, redirect, get_object_or_404, reverse
 import sys
@@ -22,7 +21,6 @@ import shutil
 import pandas as pd
 import numpy as np
 
-
 # Create your views here.
 
 # 임시 메인페이지
@@ -32,19 +30,16 @@ def index(request):
 
 
 # AS 입력
+# 로그인 필수 decorator 사용
 @login_required
 def as_insert(request):
-    print('as 입력 도달')
+    print('as 입력 시작')
     login_session = request.session.get('login_session')
     user_name = request.session.get('user_name')
     user_phone = request.session.get('user_phone')
-    print(user_name)
-    print(user_phone)
-    # render context로 넘길때 key:value 로 넘겨야 넘어가고 받아진다
 
     if request.method == 'GET':
         print('겟 도달')
-        # render context로 넘길때 key:value 로 넘겨야 넘어가고 받아진다
         context = {'login_session': login_session, 'user_name': user_name, 'user_phone': user_phone}
         print('겟 끝나 나감')
         return render(request, 'assheet/as_insert.html', context)
@@ -62,7 +57,7 @@ def as_insert(request):
         insert.symptom = request.POST['symptom']
 
         try:
-            ex_pm = Product_Management.objects.exclude(status='폐기')
+            ex_pm = Product_Management.objects.exclude(status='폐기') #exclude : 제외 조건
             pm_modify = get_object_or_404(ex_pm, serial=request.POST['serial'])
             pm_modify.product_name = request.POST['product_name']
             pm_modify.current_location = request.POST['cname']
@@ -80,7 +75,6 @@ def as_insert(request):
         print('입력 끝나 나감')
         # return render(request, 'assheet/as_insert.html', context)
         return redirect('asregister:as_list')
-
 
 # AS 접수건 리스트
 @login_required
@@ -159,11 +153,13 @@ def as_list(request):
                         | Q(option__icontains=query) | Q(serial__icontains=query) | Q(
                             symptom__icontains=query)).order_by('-rg_date', 'finish')
                 elif search_sort == 'rg_date':
+                    #end_date 날짜에 11시59분59초 를 더하여 계산
                     e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
                                                                                                   seconds=59)
                     company_sheet = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by(
                         '-rg_date', 'finish')
                 elif search_sort == 'rp_date':
+                    # __range : 날짜 범위 조건 설정
                     company_sheet = ASsheet.objects.all().filter(rp_date__range=[startdate, enddate]).order_by(
                         '-rg_date', 'finish')
                 elif search_sort == 'end_date':
@@ -172,14 +168,13 @@ def as_list(request):
                 else:
                     company_sheet = ASsheet.objects.all().order_by('-rg_date', 'finish')
 
-            # 한달이상 미처리건 조회
+            # 한달이상 미처리건 조회 / relativedelta 한달 계산할때 사용하는 함수
             over_as = ASsheet.objects.filter(rg_date__lte=date.today() - relativedelta(months=1)).exclude(
                 finish='종료').order_by('-rg_date')
 
             page = request.GET.get('page', '1')
             paginator = Paginator(company_sheet, 10)
             page_obj = paginator.get_page(page)
-            upfile = ASUploadFile.objects.all()
 
             context = {'login_session': login_session, 'company_sheet': company_sheet, 'page_obj': page_obj,
                        'sort': sort, 'user_name': user_name, 'search_sort': search_sort,
@@ -286,6 +281,7 @@ def as_list(request):
     elif request.method == 'POST':
         print('포스트인가')
         print("포스트 리스트 끝")
+        #포스트로 오지않는다 / 만에 하나를 위함
         return redirect('asregister:as_list')
 
 
@@ -294,7 +290,7 @@ def AsUploadFile(request, pk):
     login_session = request.session.get('login_session')
     user_name = request.session.get('user_name')
     if request.method == "POST":
-        if request.FILES.get('uploadedFile') is not None:
+        if request.FILES.get('uploadedFile') is not None: #수식 한글로 표현
             if get_object_or_404(ASsheet, no=pk):
                 # 템플릿에서 데이터 가져오기
                 cname = login_session
@@ -315,6 +311,8 @@ def AsUploadFile(request, pk):
                         menu=menu
                     )
                     uploadfile.save()
+                    #새로고침으로 인한 재업로드 방지를 위하여 HttpResponseRedirect 사용
+                    #args 를 사용할 경우 값을 들고 보냄
                 return HttpResponseRedirect(reverse('asregister:AsUploadFile', args=[pk]))
     else:
         login_session = request.session.get('login_session')
@@ -346,6 +344,7 @@ def as_downloadfile(request, pk):
 
 
 # AS 액셀 다운로드 openpyxl 사용
+# openpyxl 사용 이유 : xlsx 사용을 위하여
 def AS_excel_openpyxl(request):
     login_session = request.session.get('login_session')
     response = HttpResponse(
@@ -490,14 +489,12 @@ def AS_excel_openpyxl(request):
             asrow.user_name
         ]
 
-        # Assign the data for each cell of the row
         for col_num, cell_value in enumerate(row, 1):
             cell = ws.cell(row=row_num, column=col_num)
             cell.value = cell_value
 
     wb.save(response)
     return response
-
 
 # as 파일 삭제
 def ASfile_delete(request, pk):
@@ -507,8 +504,10 @@ def ASfile_delete(request, pk):
         as_file = get_object_or_404(ASUploadFile, no=pk)
         page_no = as_file.sheet_no_id
         if as_file.cname == login_session or login_session == 'insung':
+            #delete() 삭제 함수
             as_file.delete()
             print('삭제완료')
+            #redirect 시 f' {값}을 통하여 해당 url로 이동 가능
             return redirect(f'/asregister/AsUploadFile/{page_no}')
         else:
             print("삭제 됨?")
@@ -533,7 +532,7 @@ def as_detail(request, pk):
         if request.GET.get('edate', '') is not None:
             enddate = request.GET.get('edate', '')
         page = request.GET.get('page', '')
-
+        #try / except 통한 예외 처리
         try:
             upfile = ASUploadFile.objects.filter(sheet_no_id=pk).count()
             context = {'detailView': detailView, 'login_session': login_session, 'upfile': upfile,
@@ -557,8 +556,6 @@ def as_modify(request, pk):
     login_session = request.session.get('login_session')
     user_name = request.session.get('user_name')
     user_phone = request.session.get('user_phone')
-    # render context로 넘길때 key:value 로 넘겨야 넘어가고 받아진다
-
     detailView = get_object_or_404(ASsheet, no=pk)
 
     if request.method == 'GET':
@@ -588,10 +585,10 @@ def as_modify(request, pk):
             detailView.asaction = request.POST.get('action', None)
         if request.POST['finish'] == '종료':
             if request.POST['after_serial'] == '':
-                print('확인')
                 detailView.end_date = date.today()
                 try:
                     print('pm 수정 시작')
+                    # 전, 후 시리얼 저장
                     ex_pm = Product_Management.objects.exclude(status='폐기')
                     pm_modify = get_object_or_404(ex_pm, serial=request.POST['serial'])
                     pm_modify2 = get_object_or_404(ex_pm, serial=request.POST['after_serial'])
@@ -605,6 +602,7 @@ def as_modify(request, pk):
                     print("pm 까지 수정 저장완료")
                 except:
                     print('후 시리얼 없어 예외처리')
+                    #전 시리얼만 저장
                     detailView.save()
             elif request.POST['serial'] == '':
                 print('후 시리얼 없어 전 시리얼만 업데이트')
@@ -646,6 +644,7 @@ def as_delete(request, pk):
         print('삭제완료')
         return redirect('asregister:as_list')
     else:
+        #조건 해당 안되면 삭제안되고 돌아감
         return redirect(f'/asregister/as_detail/{pk}')
 
 
@@ -749,15 +748,15 @@ def as_chart(request):
     sm_category = request.GET.get('sm', '')
     asaction = request.GET.get('action', '')
 
-    from_to = pd.date_range(startdate, enddate)
-    from_to_list = from_to.strftime("%Y-%m-%d").tolist()  # 날짜 포맷팅을 지정
+    # 사용 안했으나 혹시 몰라서 남겨 둠
+    # from_to = pd.date_range(startdate, enddate)
+    # from_to_list = from_to.strftime("%Y-%m-%d").tolist()  # 날짜 포맷팅을 지정
 
     if search_sort == 'rg_date':
         if la_category == '' and me_category == '' and sm_category == '' and asaction == '':
             print('여기')
             e_date = datetime.datetime.strptime(enddate, '%Y-%m-%d') + datetime.timedelta(hours=23, minutes=59,
                                                                                           seconds=59)
-            # chart = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by('-rg_date', 'finish')
             chart = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).annotate(
                 stat=TruncWeek('rg_date')).values('stat'). \
                 annotate(stat_count=Count('product_name')).values('stat', 'stat_count', 'product_name')
@@ -767,8 +766,6 @@ def as_chart(request):
                                                                                           seconds=59)
             chartdata = ASsheet.objects.all().filter(rg_date__gte=startdate, rg_date__lte=e_date).order_by('-rg_date',
                                                                                                            'finish')
-            # chart = chartdata.filter(Q(la_category__exact=la_category) | Q(me_category__exact=me_category) | \
-            #                          Q(sm_category__exact=sm_category) | Q(asaction__exact=asaction)).order_by('-rg_date', 'finish')
             chart = chartdata.filter(Q(la_category__exact=la_category) | Q(me_category__exact=me_category) | \
                                      Q(sm_category__exact=sm_category) | Q(asaction__exact=asaction)).annotate(
                 stat=TruncWeek('rg_date')).values('stat'). \
@@ -803,15 +800,17 @@ def as_chart(request):
                 stat=TruncWeek('rg_date')).values('stat'). \
                 annotate(stat_count=Count('product_name')).values('stat', 'stat_count', 'product_name')
 
+    # 리스트로 만들어 넣어서 보냄
     chart_pro = []
     chart_stat = []
+    chart_stat2 = []
     chart_stat_cou = []
     for i in chart:
         chart_pro.append(i['product_name'])
         chart_stat.append(str(i['stat']))
+        chart_stat2.append(i['stat'])
         chart_stat_cou.append(i['stat_count'])
 
-    print(chart_stat_cou)
     context = {'login_session': login_session, 'user_name': user_name, 'chart': chart, 'chart_pro': json.dumps(chart_pro), 'chart_stat': json.dumps(chart_stat),
-               'chart_stat_cou': json.dumps(chart_stat_cou)}
+               'chart_stat_cou': json.dumps(chart_stat_cou), 'startdate': startdate, 'enddate': enddate}
     return render(request, 'assheet/as_chart_result.html', context)

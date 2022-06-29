@@ -1,6 +1,7 @@
 import os
 from uuid import uuid4
 
+# 파일 저장 경로, 파일명 함수
 def rename_file_to_uuid(instance, filename):
     upload_to = f'{instance.menu}'
     ext = filename.split('.')[-1]

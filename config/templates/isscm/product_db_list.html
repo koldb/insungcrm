@@ -61,7 +61,7 @@
         </thead>
         <tbody>
         {% for list in productlist %}
-        <tr class="m" style="text-align:center;" >
+        <tr class="m" style="text-align:center;"  onclick="location.href='{% url 'isscm:product_db_modify' list.no %}'">
             <td>{{ forloop.counter }}</td>
             <td>{{ list.center_code }}</td>
             <td>{{ list.center }}</td>

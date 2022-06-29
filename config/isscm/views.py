@@ -128,7 +128,7 @@ def searchData(request):
                 print(pname)
         else:
             print("없음")
-            n = '시리얼과 일치하는 제품명이 없습니다.'
+            n = '일치하는 제품명이 없습니다.'
             pname.append(n)
         return JsonResponse(pname, safe=False)
 
@@ -1098,7 +1098,8 @@ def sub_list_excel_openpyxl(request):
                 print('product_list : ', product_list)
                 for i in product_list:
                     sid = i['s_id']
-                    v = sub_sheet.objects.all().filter(id__icontains=sid).order_by('-rg_date')
+                    # 정확한 숫자로 필터 거르기위해 exact 사용
+                    v = sub_sheet.objects.all().filter(id__exact=sid).order_by('-rg_date')
                     for w in v:
                         rows.append(w)
                 print('rows : ', rows)
@@ -1122,8 +1123,15 @@ def sub_list_excel_openpyxl(request):
                 rows = sub_sheet.objects.all().filter(product_name__icontains=query,
                                                       cname=login_session).order_by('-rg_date')
             elif search_sort == 'serial':
-                rows = sub_sheet.objects.all().filter(serial__icontains=query,
-                                                      cname=login_session).order_by('-rg_date')
+                rows = list()
+                product_list = product_info.objects.filter(serial__icontains=query, cname=login_session).values('s_id').distinct()
+                print('product_list : ', product_list)
+                for i in product_list:
+                    sid = i['s_id']
+                    # 정확한 숫자로 필터 거르기위해 exact 사용
+                    v = sub_sheet.objects.all().filter(id__exact=sid).order_by('-rg_date')
+                    for w in v:
+                        rows.append(w)
             elif search_sort == 'm_title':
                 rows = sub_sheet.objects.all().filter(m_title__icontains=query, cname=login_session).order_by(
                     '-rg_date')
@@ -1154,8 +1162,6 @@ def sub_list_excel_openpyxl(request):
 
     for sublistrow in rows:
         row_num += 1
-
-        # Define the data for each cell in the row
         row = [
             sublistrow.rg_date.strftime('%Y-%m-%d'),
             sublistrow.product_name,
@@ -1170,7 +1176,6 @@ def sub_list_excel_openpyxl(request):
             sublistrow.user_name
         ]
 
-        # Assign the data for each cell of the row
         for col_num, cell_value in enumerate(row, 1):
             cell = ws.cell(row=row_num, column=col_num)
             cell.value = cell_value
@@ -1205,7 +1210,6 @@ def product_info_excel(request):
     else:
         print('일반 다운로드')
         rows = product_info.objects.filter(s_id_id=sub_id, cname=login_session).order_by('-rg_date')
-    # 첫번째 열: 설정한 컬럼명 순서대로 스타일 적용하여 생성
     print("다운 중간2")
 
     row_num = 1
@@ -1216,7 +1220,6 @@ def product_info_excel(request):
     for plrow in rows:
         row_num += 1
 
-        # Define the data for each cell in the row
         row = [
             plrow.rg_date.strftime('%Y-%m-%d'),
             plrow.product_name,
@@ -1230,7 +1233,6 @@ def product_info_excel(request):
         ]
         print(row)
 
-        # Assign the data for each cell of the row
         for col_num, cell_value in enumerate(row, 1):
             cell = ws.cell(row=row_num, column=col_num)
             cell.value = cell_value
@@ -1265,6 +1267,32 @@ def product_db_insert(request):
 
         product.save()
         return HttpResponseRedirect(reverse('isscm:product_db_list'))
+
+#제품명 db 수정
+def product_db_modify(request, pk):
+    login_session = request.session.get('login_session')
+    user_name = request.session.get('user_name')
+    user_dept = request.session.get('user_dept')
+    detailview = get_object_or_404(ProductDb, no=pk)
+    if request.method == 'GET':
+        print('get 옴')
+        context = {'detailview': detailview, 'login_session': login_session, 'user_name': user_name, 'user_dept': user_dept}
+        return render(request, 'isscm/product_db_modify.html', context)
+    else:
+        print('포스트')
+        detailview.center_code = request.POST['center_code']
+        detailview.center = request.POST['center']
+        detailview.warehouse_code = request.POST['warehouse_code']
+        detailview.warehouse_name = request.POST['warehouse_name']
+        detailview.product_code = request.POST['product_code']
+        detailview.product_num = request.POST['product_num']
+        detailview.scan_code = request.POST['scan_code']
+        detailview.product_name = request.POST['product_name']
+        detailview.account_code = request.POST['account_code']
+
+        detailview.save()
+        return HttpResponseRedirect(reverse('isscm:product_db_list'))
+
 
 
 # 제품명 DB 리스트

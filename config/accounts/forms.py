@@ -4,7 +4,7 @@ from .models import User
 from argon2 import PasswordHasher, exceptions
 from django.shortcuts import render, redirect
 
-
+#회원가입 폼
 class RegisterForm(forms.ModelForm):
     user_id = forms.CharField(
         label='아이디',

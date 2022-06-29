@@ -158,6 +158,7 @@ const comm_save = (no) => {
         {% else %}
         내용 :
         {% endif %}
+        <!---->
         <input type="text" value="{{ comment.content }}" style="border:0 solid black; font-size:25px;" id="comm_content{{comment.no}}" readonly >
         <div>
             [ {{ comment.rg_date | date:'Y-m-d H:i:s' }} ] -  <b>{{ comment.register }}</b>

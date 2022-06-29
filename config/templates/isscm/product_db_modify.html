@@ -1,0 +1,86 @@
+{% extends "base/base2.html" %}
+{% block content %}
+
+<style xmlns="http://www.w3.org/1999/html">
+  table {
+    width: 100%;
+    border: 1px solid #dcdcdc;
+    border-collapse: collapse;
+  }
+  th, td {
+    border: 1px solid #dcdcdc;
+    text-align: center;
+  }
+  textarea {
+    width: 100%;
+    height: 10em;
+  }
+
+</style>
+
+
+<script type="text/javascript">
+   $(function() {
+    $("input:text").keydown(function(evt) {
+        if (evt.keyCode == 13) return false; });
+
+    $("#product_name").autocomplete({
+          source: '{% url 'isscm:searchData' %}',
+          minLength: 1
+       });
+ });
+</script>
+
+
+
+<!--제품 DB 수정 페이지-->
+<div class="container my-3">
+    <form method="post" action="{% url 'isscm:product_db_modify' detailview.no %}" id="frm">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="center_code">센터 코드</label>
+            <input type="text" class="form-control" name="center_code" id="center_code" value="{{detailview.center_code}}">
+        </div>
+        <div class="mb-3">
+            <label for="center">센터명</label>
+            <input type="text" class="form-control" name="center" id="center" value="{{detailview.center}}">
+        </div>
+        <div class="mb-3">
+            <label for="warehouse_code">창고 코드</label>
+            <input type="text" class="form-control" name="warehouse_code" id="warehouse_code" value="{{detailview.warehouse_code}}">
+        </div>
+        <div class="mb-3">
+            <label for="warehouse_name">창고명</label>
+            <input type="text" class="form-control" name="warehouse_name" id="warehouse_name" value="{{detailview.warehouse_name}}">
+        </div>
+        <div class="mb-3">
+            <label for="product_code">상품 코드</label>
+            <input type="text" class="form-control" name="product_code" id="product_code" value="{{detailview.product_code}}">
+        </div>
+        <div class="mb-3">
+            <label for="product_num">상품 번호</label>
+            <input type="text" class="form-control" name="product_num" id="product_num" value="{{detailview.product_num}}">
+        </div>
+        <div class="mb-3">
+            <label for="scan_code">스캔 코드</label>
+            <input type="text" class="form-control" name="scan_code" id="scan_code" value="{{detailview.scan_code}}">
+        </div>
+        <div class="mb-3">
+            <label for="product_name">상품명</label>
+            <input type="text" class="form-control" name="product_name" id="product_name" value="{{detailview.product_name}}" required >
+        </div>
+        <div class="mb-3">
+            <label for="account_code">거래처 코드</label>
+            <input type="text" class="form-control" name="account_code" id="account_code" value="{{detailview.account_code}}">
+        </div>
+
+         <div >
+            <button type="submit" class="btn btn-primary"  id="myBtn">제출</button>
+            <input type="button" class="btn btn-primary" onclick="location.href='{% url 'isscm:product_db_list' %}'" value="목록으로">
+        </div>
+
+    </form>
+</div>
+
+
+{% endblock %}

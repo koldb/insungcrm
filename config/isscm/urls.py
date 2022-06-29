@@ -27,6 +27,7 @@ urlpatterns = [
     path('product_modify/<int:pk>/', views.product_modify, name='product_modify'),
     path('product_delete/<int:pk>/<int:sid>/', views.product_delete, name='product_delete'),
     path('product_db_insert/', views.product_db_insert, name='product_db_insert'),
+    path('product_db_modify/<int:pk>/', views.product_db_modify, name='product_db_modify'),
     path('product_db_list/', views.product_db_list, name='product_db_list'),
     path('product_db_delete/<int:pk>/', views.product_db_delete, name='product_db_delete'),
     path('product_info_excel/', views.product_info_excel, name='product_info_excel'),

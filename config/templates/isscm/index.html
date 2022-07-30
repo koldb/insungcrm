@@ -137,7 +137,11 @@
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="font-size:25px;">
                                 <b> 주간 견적 실적(1팀/2팀)</b></div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {% if es_week1.total_price__sum == None or es_week2.total_price__sum == None %}
+                                <b>{{ es_week1.total_price__sum|default_if_none:""  }}</b> / <b>{{ es_week2.total_price__sum|default_if_none:""  }}</b>
+                                {% else %}
                                 <b>{{ es_week1.total_price__sum|intcomma }}</b> / <b>{{ es_week2.total_price__sum|intcomma }}</b>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -153,7 +157,11 @@
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="font-size:25px;">
                                 <b>월간 견적 실적(1팀/2팀)</b></div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {% if es_month1.total_price__sum == None or es_month2.total_price__sum == None %}
+                                <b>{{ es_month1.total_price__sum|default_if_none:"" }}</b> / <b>{{ es_month2.total_price__sum|default_if_none:"" }}</b>
+                                {% else %}
                                 <b>{{ es_month1.total_price__sum|intcomma }}</b> / <b>{{ es_month2.total_price__sum|intcomma }}</b>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -186,7 +194,7 @@
                                     </tr>
                                     {% endfor %}
                                     <td style="font-weight: bold">합계</td>
-                                    <td style="font-weight: bold">{{ es_num_sum.quantity__sum }}</td>
+                                    <td style="font-weight: bold">{{ es_num_sum.quantity__sum|default_if_none:"0" }}</td>
                                 </table>
                             </div>
                         </div>
@@ -215,7 +223,7 @@
                                     </tr>
                                     {% endfor %}
                                     <td style="font-weight: bold">합계</td>
-                                    <td style="font-weight: bold">{{ as_num_sum.product_name__count }}</td>
+                                    <td style="font-weight: bold">{{ as_num_sum.product_name__count|default_if_none:"0" }}</td>
                                 </table>
                             </div>
                         </div>
@@ -249,7 +257,7 @@
                                     </tr>
                                     {% endfor %}
                                     <td style="font-weight: bold">합계</td>
-                                    <td style="font-weight: bold">{{ es_cnum_sum.count__sum }}</td>
+                                    <td style="font-weight: bold">{{ es_cnum_sum.count__sum|default_if_none:"0" }}</td>
                                 </table>
                             </div>
                         </div>
@@ -278,7 +286,7 @@
                                     </tr>
                                     {% endfor %}
                                     <td style="font-weight: bold">합계</td>
-                                    <td style="font-weight: bold">{{ as_cnum_sum.count__sum }}</td>
+                                    <td style="font-weight: bold">{{ as_cnum_sum.count__sum|default_if_none:"0" }}</td>
                                 </table>
                             </div>
                         </div>

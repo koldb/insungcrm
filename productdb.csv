@@ -1,35 +1,9 @@
 순번,센터코드,센터명,창고코드,창고명,상품코드,상품번호,스캔코드,상품명,거래처코드
-1,1,로지비스(주) 용인1센터,1,정상창고,155906,71228117,,HP BD IDS ProDesk 400 G6 Microtower PC (A9-넥스쿼드-200909),5710
-2,1,로지비스(주) 용인1센터,1,정상창고,158737,71363302,,HP BD IDS ProDesk 400 G6 MT PC (A9-넥스쿼드-201206),5710
-3,1,로지비스(주) 용인1센터,1,정상창고,171212,34281549,,HP BD PC EDK 800 G8 TWR IDS Base Unit DT PC (A9-넥스쿼드-210811),5710
-4,1,로지비스(주) 용인1센터,1,정상창고,164450,33763793,,HP BD PC EliteDesk 800 G6 Tower PC (A9-엘트로닉스-210309),5710
-5,1,로지비스(주) 용인1센터,1,정상창고,164448,33877466,,HP BD PC EliteDesk 800 G6 Tower PC (A9-엠로-210402),5710
-6,1,로지비스(주) 용인1센터,1,정상창고,157347,71228115,,HP BD PC IDS EliteDesk 800 G5 Tower PC (A9-넥스쿼드-200909),5710
-7,1,로지비스(주) 용인1센터,1,정상창고,171366,34281557,,HP BD PC IDS ProDesk 400 G7 Microtower PC (A9-넥스쿼드-210811),5710
-8,1,로지비스(주) 용인1센터,1,정상창고,169255,34154185,,HP BD PC IDS ProDesk 400 G7 Microtower PC (A9-코센-210603),5710
-9,1,로지비스(주) 용인1센터,1,정상창고,174897,3V2W2PC,3V2W2PC#AB1,HP BD PC ProDesk 400G6 DM i310100T 8GB/128GBPC,5710
-10,1,로지비스(주) 용인1센터,1,정상창고,163431,71421151,,HP BD WS IDS Z4 G4 WKS (A9-덴티움-210127),5710
-11,1,로지비스(주) 용인1센터,1,정상창고,168619,71508760,,HP BD WS IDS Z4 G4 WKS (A9-덴티움-210422),5710
-12,1,로지비스(주) 용인1센터,1,정상창고,170474,71647331,,HP BD WS IDS Z4 G4 WKS (A9-덴티움-210728),5710
-13,1,로지비스(주) 용인1센터,1,정상창고,179831,34911629,,HP BD WS IDS Z4 G4 WKS (A9-덴티움-211230),5710
-14,1,로지비스(주) 용인1센터,1,정상창고,170784,9VH72AA,,HP MN E22 G4 FHD Monitor,5710
-15,1,로지비스(주) 용인1센터,1,정상창고,163213,9VF99AA,9VF99AA/CAB1,HP MN E24 G4 FHD Monitor,5710
-16,1,로지비스(주) 용인1센터,1,정상창고,177287,9VJ40AA,,HP MN E24i G4 WUXGA Monitor,5710
-17,1,로지비스(주) 용인1센터,1,정상창고,175693,9VH85AA,,HP MN E24t G4 FHD Touch Monitor,5710
-18,1,로지비스(주) 용인1센터,1,정상창고,174896,9VG71AA,,HP MN E27 G4 FHD Monitor,5710
-19,1,로지비스(주) 용인1센터,1,정상창고,152927,E4U30AA,,HP MN EliteDisplay E190i LED MNT,5710
-20,1,로지비스(주) 용인1센터,1,정상창고,152926,1FH45AA,,HP MN EliteDisplay E223 Monitor,5710
-21,1,로지비스(주) 용인1센터,1,정상창고,155912,W2Z50AA,,HP MN EliteDisplay E230t 23-in TouchMNT,5710
-22,1,로지비스(주) 용인1센터,1,정상창고,154151,1FH46AA,,HP MN EliteDisplay E233 Monitor,5710
-23,1,로지비스(주) 용인1센터,1,정상창고,150419,1FH47AA,,HP MN EliteDisplay E243 Monitor,5710
-24,1,로지비스(주) 용인1센터,1,정상창고,152925,1FH49AA,,HP MN EliteDisplay E243i Monitor,5710
-25,1,로지비스(주) 용인1센터,1,정상창고,155904,1FH50AA,,HP MN EliteDisplay E273 Monitor,5710
-26,1,로지비스(주) 용인1센터,1,정상창고,150341,1FH52AA,,HP MN EliteDisplay E273q Monitor,5710
-27,1,로지비스(주) 용인1센터,1,정상창고,176122,9VG82AA,,HP MN MNTR E27q G4 QHD,5710
-28,1,로지비스(주) 용인1센터,1,정상창고,150342,7VH44AA,,HP MN P24h G4 FHD Monitor,5710
-29,1,로지비스(주) 용인1센터,1,정상창고,172997,9TT78AA,9TT78AA/CAB1,HP MN P24v G4 FHD Monitor,5710
-30,1,로지비스(주) 용인1센터,1,정상창고,151868,1JS05A4,,HP MN Z22n G2 Display,5710
-31,1,로지비스(주) 용인1센터,1,정상창고,152924,1JS06A4,,HP MN Z23n G2 Display,5710
-32,1,로지비스(주) 용인1센터,1,정상창고,158739,1JS07A4,,HP MN Z24nf G2 Display,5710
-33,1,로지비스(주) 용인1센터,1,정상창고,160244,E5C12AA,,HP NBO X500 Wired Mouse,5710
-34,1,로지비스(주) 용인1센터,1,정상창고,163212,3V2W0PC,3V2W0PC#AB1,HP PC ProDesk 400G6 DM i310100T 8GB/128GBPC,5710
+1,1,로지비스(주) 용인1센터,1,정상창고,111111,22222222,,HP BD IDS ProDesk 400 G6 Microtower PC(테스트),1212
+2,1,로지비스(주) 용인1센터,1,정상창고,111112,22222223,,HP BD IDS ProDesk 400 G6 MT PC(테스트),1213
+3,1,로지비스(주) 용인1센터,1,정상창고,111113,22222224,,HP BD IDS ProDesk 400 G7 Microtower PC(테스트),1214
+4,1,로지비스(주) 용인1센터,1,정상창고,111114,22222225,,HP BD IDS ProDesk 400 G7 MT PC(테스트),1215
+5,1,로지비스(주) 용인1센터,1,정상창고,111115,22222226,,HP BD IDS ProDesk 400 G8 Microtower PC(테스트),1216
+6,1,로지비스(주) 용인1센터,1,정상창고,111116,22222227,,HP BD IDS ProDesk 400 G8 MT PC(테스트),1217
+7,1,로지비스(주) 용인1센터,1,정상창고,111117,22222228,,HP BD IDS ProDesk 400 G9 Microtower PC(테스트),1218
+8,1,로지비스(주) 용인1센터,1,정상창고,111118,22222229,,HP BD IDS ProDesk 400 G9 MT PC(테스트),1219

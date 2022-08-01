@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-lhg(8$sl)0=zsgc3wsu#mumkj1#k*wk_v=%-4p8-$225kz_fk8
 DEBUG = True
 
 # 모든 접속 가능하도록 설정
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['.myscm.kro.kr']
 
 # Application definition
 
